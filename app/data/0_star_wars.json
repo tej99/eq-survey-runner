@@ -4,7 +4,7 @@
     "schema_version": "0.0.1",
     "survey_id": "0",
     "title": "Star Wars",
-    "theme": "starwars",
+    "theme": "default",
     "description": "Kitchen sink test for the Star Wars questionnaire",
     "introduction": {
         "description": "May the force be with you"
@@ -47,7 +47,12 @@
                                                     "NEGATIVE_INTEGER": "Negative age you can not be.",
                                                     "NOT_INTEGER": "Please enter your age."
                                                 }
-                                            }
+                                            },
+                                            "widgets": [
+                                              {
+                                                "type": "TextWidget"
+                                              }
+                                            ]
                                         }
                                     ],
                                     "description": "",
@@ -76,7 +81,12 @@
                                                     "NEGATIVE_INTEGER": "How can it be negative?",
                                                     "NOT_INTEGER": "Please only enter whole numbers into the field."
                                                 }
-                                            }
+                                            },
+                                            "widgets": [
+                                              {
+                                                "type": "CurrencyWidget"
+                                              }
+                                            ]
                                         }
                                     ],
                                     "description": "",
@@ -105,7 +115,12 @@
                                                     "NEGATIVE_INTEGER": "How can it be negative?",
                                                     "NOT_INTEGER": "Please only enter whole numbers into the field."
                                                 }
-                                            }
+                                            },
+                                            "widgets": [
+                                              {
+                                                "type": "TextWidget"
+                                              }
+                                            ]
                                         }
                                     ],
                                     "description": "",
@@ -129,29 +144,34 @@
                                             "id": "a5dc09e8-36f2-4bf4-97be-c9e6ca8cbe0d",
                                             "label": "",
                                             "mandatory": true,
-                                            "options": [
-                                                {
-                                                    "label": "Lion",
-                                                    "value": "Lion"
-                                                },
-                                                {
-                                                    "label": "Elephant",
-                                                    "value": "Elephant"
-                                                },
-                                                {
-                                                    "label": "Cow",
-                                                    "value": "Cow"
-                                                },
-                                                {
-                                                    "label": "Hippo",
-                                                    "value": "Hippo"
-                                                }
-                                            ],
                                             "q_code": "4",
-                                            "type": "Radio",
+                                            "type": "String",
                                             "validation": {
                                                 "messages": {}
-                                            }
+                                            },
+                                            "widgets": [
+                                              {
+                                                  "type": "RadioGroupWidget",
+                                                  "options": [
+                                                      {
+                                                          "label": "Lion",
+                                                          "value": "Lion"
+                                                      },
+                                                      {
+                                                          "label": "Elephant",
+                                                          "value": "Elephant"
+                                                      },
+                                                      {
+                                                          "label": "Cow",
+                                                          "value": "Cow"
+                                                      },
+                                                      {
+                                                          "label": "Hippo",
+                                                          "value": "Hippo"
+                                                      }
+                                                  ]
+                                              }
+                                            ]
                                         }
                                     ],
                                     "description": "",
@@ -175,29 +195,34 @@
                                             "id": "7587eb9b-f24e-4dc0-ac94-66118b896c10",
                                             "label": "",
                                             "mandatory": false,
-                                            "options": [
-                                                {
-                                                    "label": "I've been waiting for you, Obi-Wan",
-                                                    "value": "I've been waiting for you, Obi-Wan"
-                                                },
-                                                {
-                                                    "label": "Luke, I am your father",
-                                                    "value": "Luke, I am your father"
-                                                },
-                                                {
-                                                    "label": "Together we can rule the galaxy",
-                                                    "value": "Together we can rule the galaxy"
-                                                },
-                                                {
-                                                    "label": "I find your lack of faith disturbing",
-                                                    "value": "I find your lack of faith disturbing"
-                                                }
-                                            ],
                                             "q_code": "5",
-                                            "type": "Radio",
+                                            "type": "String",
                                             "validation": {
                                                 "messages": {}
-                                            }
+                                            },
+                                            "widgets": [
+                                              {
+                                                "type": "RadioGroupWidget",
+                                                "options": [
+                                                    {
+                                                        "label": "I've been waiting for you, Obi-Wan",
+                                                        "value": "I've been waiting for you, Obi-Wan"
+                                                    },
+                                                    {
+                                                        "label": "Luke, I am your father",
+                                                        "value": "Luke, I am your father"
+                                                    },
+                                                    {
+                                                        "label": "Together we can rule the galaxy",
+                                                        "value": "Together we can rule the galaxy"
+                                                    },
+                                                    {
+                                                        "label": "I find your lack of faith disturbing",
+                                                        "value": "I find your lack of faith disturbing"
+                                                    }
+                                                ]
+                                              }
+                                            ]
                                         }
                                     ],
                                     "description": "",
@@ -221,37 +246,42 @@
                                             "id": "9587eb9b-f24e-4dc0-ac94-66117b896c10",
                                             "label": "",
                                             "mandatory": true,
-                                            "options": [
-                                                {
-                                                    "label": "Luke Skywalker",
-                                                    "value": "Luke Skywalker"
-                                                },
-                                                {
-                                                    "label": "Yoda",
-                                                    "value": "Yoda"
-                                                },
-                                                {
-                                                    "label": "Anakin Skywalker",
-                                                    "value": "Anakin Skywalker"
-                                                },
-                                                {
-                                                    "label": "Rey",
-                                                    "value": "Rey"
-                                                },
-                                                {
-                                                    "label": "Obi-Wan Kenobi",
-                                                    "value": "Obi-Wan Kenobi"
-                                                },
-                                                {
-                                                    "label": "Qui-Gon Jinn",
-                                                    "value": "Qui-Gon Jinn"
-                                                }
-                                            ],
                                             "q_code": "6",
-                                            "type": "Checkbox",
+                                            "type": "String",
                                             "validation": {
                                                 "messages": {}
-                                            }
+                                            },
+                                            "widgets": [
+                                              {
+                                                "type": "CheckboxGroupWidget",
+                                                "options": [
+                                                    {
+                                                        "label": "Luke Skywalker",
+                                                        "value": "Luke Skywalker"
+                                                    },
+                                                    {
+                                                        "label": "Yoda",
+                                                        "value": "Yoda"
+                                                    },
+                                                    {
+                                                        "label": "Anakin Skywalker",
+                                                        "value": "Anakin Skywalker"
+                                                    },
+                                                    {
+                                                        "label": "Rey",
+                                                        "value": "Rey"
+                                                    },
+                                                    {
+                                                        "label": "Obi-Wan Kenobi",
+                                                        "value": "Obi-Wan Kenobi"
+                                                    },
+                                                    {
+                                                        "label": "Qui-Gon Jinn",
+                                                        "value": "Qui-Gon Jinn"
+                                                    }
+                                                ]
+                                              }
+                                            ]
                                         }
                                     ],
                                     "description": "",
@@ -275,34 +305,39 @@
                                             "id": "5587eb9b-f24e-4dc0-ac94-66117b896c10",
                                             "label": "",
                                             "mandatory": false,
-                                            "options": [
-                                                {
-                                                    "label": "Luke Skywalker",
-                                                    "value": "Luke Skywalker"
-                                                },
-                                                {
-                                                    "label": "Han Solo",
-                                                    "value": "Han Solo"
-                                                },
-                                                {
-                                                    "label": "The Emperor",
-                                                    "value": "The Emperor"
-                                                },
-                                                {
-                                                    "label": "R2D2",
-                                                    "value": "R2D2"
-                                                },
-                                                {
-                                                    "label": "Senator Amidala",
-                                                    "value": "Senator Amidala"
-                                                },
-                                                {
-                                                    "label": "Yoda",
-                                                    "value": "Yoda"
-                                                }
+                                            "widgets": [
+                                              {
+                                                "type": "CheckboxGroupWidget",
+                                                "options": [
+                                                    {
+                                                        "label": "Luke Skywalker",
+                                                        "value": "Luke Skywalker"
+                                                    },
+                                                    {
+                                                        "label": "Han Solo",
+                                                        "value": "Han Solo"
+                                                    },
+                                                    {
+                                                        "label": "The Emperor",
+                                                        "value": "The Emperor"
+                                                    },
+                                                    {
+                                                        "label": "R2D2",
+                                                        "value": "R2D2"
+                                                    },
+                                                    {
+                                                        "label": "Senator Amidala",
+                                                        "value": "Senator Amidala"
+                                                    },
+                                                    {
+                                                        "label": "Yoda",
+                                                        "value": "Yoda"
+                                                    }
+                                                ]
+                                              }
                                             ],
                                             "q_code": "7",
-                                            "type": "Checkbox",
+                                            "type": "String",
                                             "validation": {
                                                 "messages": {}
                                             }
@@ -399,7 +434,12 @@
                                                     "NEGATIVE_INTEGER": "How can it be negative?",
                                                     "NOT_INTEGER": "Please only enter whole numbers into the field."
                                                 }
-                                            }
+                                            },
+                                            "widgets": [
+                                              {
+                                                "type" : "TextInputWidget"
+                                              }
+                                            ]
                                         }
                                     ],
                                     "description": "",
@@ -436,10 +476,15 @@
                                             "mandatory": true,
                                             "options": [],
                                             "q_code": "10",
-                                            "type": "Textarea",
+                                            "type": "String",
                                             "validation": {
                                                 "messages": {}
-                                            }
+                                            },
+                                            "widgets": [
+                                              {
+                                                "type": "TextAreaWidget"
+                                              }
+                                            ]
                                         }
                                     ],
                                     "description": "",
@@ -463,21 +508,26 @@
                                             "id": "7587qe9b-f24e-4dc0-ac94-66118b896c10",
                                             "label": "",
                                             "mandatory": true,
-                                            "options": [
-                                                {
-                                                    "label": "Yes, Really!",
-                                                    "value": "Yes"
-                                                },
-                                                {
-                                                    "label": "No",
-                                                    "value": "No"
-                                                }
-                                            ],
                                             "q_code": "43",
-                                            "type": "Radio",
+                                            "type": "String",
                                             "validation": {
                                                 "messages": {}
-                                            }
+                                            },
+                                            "widgets": [
+                                              {
+                                                "type": "RadioGroupWidget",
+                                                "options": [
+                                                    {
+                                                        "label": "Yes, Really!",
+                                                        "value": "Yes"
+                                                    },
+                                                    {
+                                                        "label": "No",
+                                                        "value": "No"
+                                                    }
+                                                ]
+                                              }
+                                            ]
                                         }
                                     ],
                                     "description": "",

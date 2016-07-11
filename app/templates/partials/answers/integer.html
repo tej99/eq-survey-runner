@@ -1,4 +1,5 @@
 <div class="field">
-  {{form.label(answer)}}
-  {{form.input('text', question, answer)}}
+  {% for widget in answer.widgets %}
+  {{ widget.render()|safe }}
+  {% endfor %}
 </div>

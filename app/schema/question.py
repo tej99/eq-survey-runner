@@ -18,6 +18,27 @@ class Question(Item):
         self.display = Display()
         self.type = None
 
+    @staticmethod
+    def get_instance(question_type):
+        # Import subclasses, avoid circular dependencies
+        from app.schema.questions.custom_question import CustomQuestion
+        from app.schema.questions.date_range_question import DateRangeQuestion
+        from app.schema.questions.textarea_question import TextareaQuestion
+        from app.schema.questions.currency_question import CurrencyQuestion
+        from app.schema.questions.integer_question import IntegerQuestion
+
+        question_type = str(question_type).upper()
+        if question_type == 'CUSTOM':
+            return CustomQuestion()
+        elif question_type == "DATERANGE":
+            return DateRangeQuestion()
+        elif question_type == "CURRENCY":
+            return CurrencyQuestion()
+        elif question_type == "TEXTAREA":
+            return TextareaQuestion()
+        elif question_type == "INTEGER":
+            return IntegerQuestion()
+
     def add_answer(self, answer):
         if answer not in self.answers:
             self.answers.append(answer)

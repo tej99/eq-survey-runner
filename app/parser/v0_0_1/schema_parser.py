@@ -13,6 +13,7 @@ from app.schema.questionnaire import Questionnaire
 from app.schema.group import Group
 from app.schema.block import Block
 from app.schema.section import Section
+from app.schema.widget import Widget
 from app.schema.display import Display
 from app.schema.properties import Properties
 
@@ -28,6 +29,7 @@ from app.schema.answers.integer_answer import IntegerAnswer
 from app.schema.answers.percentage_answer import PercentageAnswer
 from app.schema.answers.positiveinteger_answer import PositiveIntegerAnswer
 from app.schema.answers.radio_answer import RadioAnswer
+from app.schema.answers.string_answer import StringAnswer
 from app.schema.answers.textarea_answer import TextareaAnswer
 from app.schema.answers.textfield_answer import TextfieldAnswer
 
@@ -63,6 +65,7 @@ class SchemaParser(AbstractSchemaParser):
             'PERCENTAGE': PercentageAnswer,
             'POSITIVEINTEGER': PositiveIntegerAnswer,
             'RADIO': RadioAnswer,
+            'STRING': StringAnswer,
             'TEXTAREA': TextareaAnswer,
             'TEXTFIELD': TextfieldAnswer
         })
@@ -288,6 +291,11 @@ class SchemaParser(AbstractSchemaParser):
             if 'validation' in schema.keys():
                 self._parse_validation(answer, schema['validation'])
 
+            if 'widgets' in schema.keys():
+                for widget_schema in schema['widgets']:
+                    widget = self._parse_widget(widget_schema)
+                    if widget:
+                        answer.add_widget(widget)
             # register the answer
             questionnaire.register(answer)
 
@@ -297,6 +305,25 @@ class SchemaParser(AbstractSchemaParser):
             raise e
 
         return answer
+
+    def _parse_widget(self, schema):
+        try:
+            widget_type = ParserUtils.get_required_string(schema, 'type')
+
+            widget = Widget.get_instance(widget_type)
+            if widget:
+                del schema['type']
+                # Import properties as-is
+                widget.__dict__ = {**widget.__dict__, **schema}
+
+            return widget
+
+        except Exception as e:
+            logging.error('Error parsing schema')
+            logging.debug(e)
+            raise(e)
+
+        return None
 
     def _parse_validation(self, answer, schema):
         if 'messages' in schema.keys():

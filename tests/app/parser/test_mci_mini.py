@@ -5,7 +5,9 @@ from app.schema.group import Group
 from app.schema.block import Block
 from app.schema.section import Section
 from app.schema.question import Question
+from app.schema.questions.custom_question import CustomQuestion
 from app.schema.answer import Answer
+from app.schema.answers.integer_answer import IntegerAnswer
 from app.schema.introduction import Introduction
 import os
 import json
@@ -62,11 +64,13 @@ class MciMiniParsingTest(unittest.TestCase):
 
         # check the question properties
         question = section.questions[0]
+        assert isinstance(question, CustomQuestion)
         assert question.id == "4ba2ec8a-582f-4985-b4ed-20355deba55a"
         assert question.title == "On 12 January 2016 what was the number of employees for the business named above?"
         assert question.description == "An employee is anyone aged 16 years or over that your organisation directly pays from its payroll(s), in return for carrying out a full-time or part-time job or being on a training scheme."
         assert len(question.answers) == 1
         assert isinstance(question.answers[0], Answer)
+        assert isinstance(question.answers[0], IntegerAnswer)
 
         # Check the answer properties
         answer = question.answers[0]
@@ -80,7 +84,7 @@ class MciMiniParsingTest(unittest.TestCase):
         # check the answer properties on question 2
         question_two = section.questions[1]
         answer = question_two.answers[0]
-        assert answer.type == "Textarea"
+        assert answer.type == "String"
         assert answer.display is not None
         assert answer.display.properties is not None
         print(answer.display.properties.max_length)

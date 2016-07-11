@@ -17,9 +17,14 @@ class Answer(Item):
         self.display = None
         self.messages = {}
         self.templatable_properties = []
-        self.options = []
         self.alias = None
         self.type_checkers = []
+        self.widgets = []
+
+    def add_widget(self, widget):
+        widget.name = self.code
+        widget.container = self
+        self.widgets.append(widget)
 
     def construct_state(self):
         return State(self.id)

@@ -1,6 +1,8 @@
 from bs4 import BeautifulSoup
 import jinja2
 import flask
+import json
+
 
 blueprint = flask.Blueprint('filters', __name__)
 
@@ -27,6 +29,9 @@ blueprint.add_app_template_filter(prettify)
 def dumpobj(context, my_obj):
     if isinstance(my_obj, str) or isinstance(my_obj, int):
         return my_obj
+
+    if isinstance(my_obj, object):
+        return json.dumps(my_obj)
 
     variables = vars(my_obj)
     output = {}

@@ -6,6 +6,9 @@ class IntegerAnswer(Answer):
     def __init__(self):
         super().__init__()
 
+    def _cast_user_input(self, user_input):
+        return int(user_input)
+
 
 class PositiveIntegerAnswer(Answer):
     def __init__(self):

@@ -1,1 +1,23 @@
-<h1>DROPDOWN</h1>
+{% set label = {
+  'for': answer.id,
+  'text': answer.label
+} %}
+{% include 'partials/forms/label.html' %}
+
+{% set select = {
+  'name': answer.id,
+  'id': answer.id,
+  'options': [{
+    selected: false,
+    disabled: false,
+    value: 'option-1',
+    text: 'Option 1'
+  }, {
+    selected: true,
+    disabled: false,
+    value: 'option-2',
+    text: 'Option 2'
+  }]
+} %}
+
+{% include 'partials/forms/select' %}

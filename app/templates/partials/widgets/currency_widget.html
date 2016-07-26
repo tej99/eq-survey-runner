@@ -1,6 +1,17 @@
-<!-- partials/widgets/text_widget.html -->
-<!-- BEGIN -->
-{% import 'macros/forms.html' as form %}
-{{form.label(answer)}}
-{{form.input('currency', question, answer)}}
-<!-- END -->
+{% set label = {
+  'for': answer.id,
+  'text': answer.label
+} %}
+{% include 'partials/forms/label.html' %}
+
+<div class="input-type input-type--currency" data-type="£">
+  {% set input = {
+    'type': 'text',
+    'valueType': 'currency',
+    'value': (answer.value or "")|e,
+    'name': answer.id,
+    'id': answer.id,
+    'placeholder': answer.placeholder
+  } %}
+  {% include 'partials/forms/input.html' %}
+</div>

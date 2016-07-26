@@ -1,0 +1,18 @@
+{% set attr = {
+  class: 'input input--select',
+  name: select.name
+} %}
+
+<select {{attr|xmlattr}}>
+  {%- for option in select.options -%}
+
+    {% set optionAttr = {
+      value: option.value,
+      disabled: option.disabled ? 'disabled' : '',
+      selected: option.selected ? 'selected' : ''
+    } %}
+
+    <option {{optionAttr|xmlattr}}>{{option.text}}</option>
+
+  {%- endfor -%}
+</select>

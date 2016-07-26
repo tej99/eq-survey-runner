@@ -10,6 +10,14 @@ class DateAnswer(SchemaAnswer):
     def __init__(self, name='', config={}):
 
         super().__init__()
+        self.defaults = {
+            'collect_day': True,
+            'collect_month': True,
+            'collect_year': True,
+            'default_day': 1,
+            'default_month': 1,
+            'default_year': 1900
+        }
         # Build our config from defaults, overriding defaults with supplied config
         self._config = ObjectFromDict({**self.defaults, **config})
         self.name = name

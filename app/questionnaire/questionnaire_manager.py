@@ -3,6 +3,7 @@ import logging
 from app.authentication.session_management import session_manager
 from app.metadata.metadata_store import MetaDataStore
 from app.piping.plumbing_preprocessor import PlumbingPreprocessor
+from app.questionnaire.state import State
 from app.questionnaire.state_manager import StateManager
 from app.questionnaire.user_action_processor import UserActionProcessor, UserActionProcessorException
 from app.questionnaire_state.confirmation import Confirmation as StateConfirmation
@@ -32,19 +33,29 @@ class QuestionnaireManager(object):
     The doubly linked list approach allows us to maintain the path the user has taken through the question. If that path
     changes we archive off the nodes in case the user revisits that path.
     '''
-    def __init__(self, schema):
-        self.submitted_at = None
+    def __init__(self, schema, current=None, first=None, archive={}, submitted_at=None, valid_locations=None):
+        self.submitted_at = submitted_at
         self._schema = schema
-        self._current = None  # the latest node
-        self._first = None  # the first node in the doubly linked list
-        self._archive = {}  # a dict of discarded nodes for later use (if needed)
-        self._valid_locations = self._build_valid_locations()
+        self._current = current  # the latest node
+        self._first = first  # the first node in the doubly linked list
+        self._archive = archive  # a dict of discarded nodes for later use (if needed)
+        if valid_locations:
+            self._valid_locations = valid_locations
+        else:
+            self._valid_locations = self._build_valid_locations()
+
+    def convert_to_state(self):
+        return State(self._schema, self._current, self._first, self._archive, self.submitted_at, self._valid_locations)
+
+    @staticmethod
+    def convert_from_state(state):
+        return QuestionnaireManager(state.schema, state.current, state.first, state.archive, state.submitted_at, state.valid_locations)
 
     @staticmethod
     def new_instance(schema):
         questionnaire_manager = QuestionnaireManager(schema)
         # immediately save it to the database
-        StateManager.save_state(questionnaire_manager)
+        StateManager.save_state(questionnaire_manager.convert_to_state())
         logger.debug("Constructing new state")
         return questionnaire_manager
 
@@ -52,7 +63,8 @@ class QuestionnaireManager(object):
     def get_instance():
         if StateManager.has_state():
             logger.debug("StateManager loading state")
-            return StateManager.get_state()
+            state = StateManager.get_state()
+            return QuestionnaireManager.convert_from_state(state)
         else:
             return None
 
@@ -93,7 +105,7 @@ class QuestionnaireManager(object):
         else:
             logger.debug("creating new state for %s", item_id)
             self._create_new_state(item_id)
-        StateManager.save_state(self)
+        StateManager.save_state(self.convert_to_state())
 
     def _create_new_state(self, item_id):
 
@@ -124,7 +136,7 @@ class QuestionnaireManager(object):
             if item_id == self._current.item_id:
                 state = self._current.state
                 state.update_state(user_input)
-                StateManager.save_state(self)
+                StateManager.save_state(self.convert_to_state())
             else:
                 raise ValueError("Updating state for incorrect node")
         else:

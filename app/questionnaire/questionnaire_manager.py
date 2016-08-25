@@ -179,11 +179,11 @@ class QuestionnaireManager(object):
         if self._current:
             current_location = self._current.item_id
         else:
-            current_location = self._get_first_location()
+            current_location = self.get_first_location()
         logger.debug("get current location returning %s", current_location)
         return current_location
 
-    def _get_first_location(self):
+    def get_first_location(self):
         if self._schema.introduction:
             return "introduction"
         else:
@@ -281,7 +281,13 @@ class QuestionnaireManager(object):
             raise InvalidLocationException()
         self.go_to_state(location)
 
-    def process_incoming_answers(self, location, post_data):
+    def process_incoming_answers(self, location, post_data, replay=False):
+        # if we're not replaying post data
+        # then save the post data for recovering state purposes
+        if not replay:
+            StateManager.save_post_date(post_data)
+
+        # now process the request
         logger.debug("Processing post data for %s", location)
         # ensure we're in the correct location
         self.go_to_state(location)

@@ -1,7 +1,7 @@
 import logging
 
 from app import settings
-from app.globals import get_metadata
+from app.globals import get_answers, get_metadata
 from app.submitter.submitter import SubmitterFactory
 
 from flask_login import current_user
@@ -10,7 +10,11 @@ logger = logging.getLogger(__name__)
 
 
 class UserActionProcessorException(Exception):
-    pass
+    def __init__(self, message, next_location):
+        # Call the base class constructor with the parameters it needs
+        super(UserActionProcessorException, self).__init__(message)
+
+        self.next_location = next_location
 
 
 class UserActionProcessor(object):
@@ -89,10 +93,10 @@ class SubmitAnswers(UserAction):
         self._questionnaire_manager = questionnaire_manager
 
     def perform_action(self):
-        answers = self._questionnaire_manager.get_answers()
+        answers = get_answers(current_user)
 
         # check that all the answers we have are valid before submitting the data
-        is_valid = self._questionnaire_manager.validate_all_answers()
+        is_valid, invalid_location = self._questionnaire_manager.validate_all_answers()
 
         if is_valid:
             submitter = SubmitterFactory.get_submitter()
@@ -101,4 +105,4 @@ class SubmitAnswers(UserAction):
             logger.debug("setting submitted at %s", local_submitted_at)
             self._questionnaire_manager.submitted_at = local_submitted_at.strftime(settings.DISPLAY_DATETIME_FORMAT)
         else:
-            raise UserActionProcessorException("Unable to submit - answers are not valid")
+            raise UserActionProcessorException("Unable to submit - answers are not valid", invalid_location)

@@ -76,6 +76,6 @@ def login():
     questionnaire_manager = QuestionnaireManagerFactory.get_instance()
 
     # get the current location of the user
-    current_location = questionnaire_manager.get_current_location()
+    current_location = questionnaire_manager.navigator.get_first_location()
 
     return redirect('/questionnaire/' + eq_id + '/' + form_type + '/' + period_id + '/' + collection_id + '/' + current_location)

@@ -1,7 +1,7 @@
 import logging
 
 from app.authentication.session_management import session_manager
-from app.globals import get_metadata, get_questionnaire_store
+from app.globals import get_answers, get_metadata, get_questionnaire_store
 
 from app.questionnaire.questionnaire_manager_factory import QuestionnaireManagerFactory
 from app.templating.template_register import TemplateRegistry
@@ -47,32 +47,20 @@ def add_cache_control(response):
 @questionnaire_blueprint.route('<location>', methods=["GET"])
 @login_required
 def get_questionnaire(eq_id, form_type, period_id, collection_id, location):
-    g.questionnaire_manager.go_to(location)
     return render_page(location, True)
 
 
 @questionnaire_blueprint.route('<location>', methods=["POST"])
 @login_required
 def post_questionnaire(eq_id, form_type, period_id, collection_id, location):
-    valid = g.questionnaire_manager.process_incoming_answers(location, request.form)
-    if not valid:
+    valid, next_location = g.questionnaire_manager.process_incoming_answers(location, request.form)
+    if not valid and not next_location:
         return render_page(location, False)
 
-    next_location = g.questionnaire_manager.get_current_location()
+    next_location = next_location or g.questionnaire_manager.navigator.get_next_location(get_answers(current_user), location)
     metadata = get_metadata(current_user)
     logger.info("Redirecting user to next location %s with tx_id=%s", next_location, metadata["tx_id"])
     return redirect_to_questionnaire_page(eq_id, form_type, period_id, collection_id, next_location)
-
-
-@questionnaire_blueprint.route('previous', methods=['GET'])
-@login_required
-def go_to_previous_page(eq_id, form_type, period_id, collection_id):
-    q_manager = g.questionnaire_manager
-    current_location = q_manager.get_current_location()
-    answers = q_manager.get_answers()
-    previous_location = q_manager.navigator.get_previous_location(answers, current_location)
-    g.questionnaire_manager.go_to(previous_location)
-    return redirect_to_questionnaire_page(eq_id, form_type, period_id, collection_id, previous_location)
 
 
 @questionnaire_blueprint.route('thank-you', methods=["GET"])
@@ -81,7 +69,6 @@ def get_thank_you(eq_id, form_type, period_id, collection_id):
     if not same_survey(eq_id, form_type, period_id, collection_id):
         return redirect("/information/multiple-surveys")
 
-    g.questionnaire_manager.go_to('thank-you')
     thank_you_page = render_page('thank-you', True)
     # Delete user data on request of thank you page.
     delete_user_data()
@@ -91,8 +78,13 @@ def get_thank_you(eq_id, form_type, period_id, collection_id):
 @questionnaire_blueprint.route('summary', methods=["GET"])
 @login_required
 def get_summary(eq_id, form_type, period_id, collection_id):
-    g.questionnaire_manager.go_to('summary')
-    return render_page('summary', True)
+    if g.questionnaire_manager.navigator.can_reach_summary(get_answers(current_user)):
+        is_valid, invalid_location = g.questionnaire_manager.validate_all_answers()
+
+        if is_valid:
+            return render_page('summary', True)
+
+    return redirect_to_questionnaire_page(eq_id, form_type, period_id, collection_id, invalid_location)
 
 
 def delete_user_data():
@@ -129,4 +121,4 @@ def render_template(template, context):
     except KeyError:
         logger.info("No theme set ")
         theme = None
-    return render_theme_template(theme, template, meta=context['meta'], content=context['content'])
+    return render_theme_template(theme, template, meta=context['meta'], content=context['content'], previous_location=context['previous_location'])

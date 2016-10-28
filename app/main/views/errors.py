@@ -67,7 +67,7 @@ def invalid_location(error=None):
                                 form_type=values["form_type"],
                                 period_id=values["period_id"],
                                 collection_id=values["collection_id"],
-                                location=g.questionnaire_manager.get_current_location()))
+                                location=g.questionnaire_manager.navigator.get_first_location()))
     except KeyError:
         return internal_server_error(error)
 

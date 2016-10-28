@@ -8,13 +8,14 @@ logger = logging.getLogger(__name__)
 
 class SummaryTemplatePreprocessor(object):
 
-    def build_view_data(self, node, schema, state_items):
+    def build_view_data(self, schema, state_items, previous_location):
 
         metadata_template_preprocessor = MetaDataTemplatePreprocessor()
 
         render_data = {
             "meta": metadata_template_preprocessor.build_metadata(schema),
-            "content": self.build_summary_data(node, schema, state_items),
+            "content": self.build_summary_data(schema, state_items),
+            "previous_location": previous_location,
         }
 
         logger.debug("Rendering data is %s", render_data)
@@ -22,7 +23,7 @@ class SummaryTemplatePreprocessor(object):
         return render_data
 
     @staticmethod
-    def build_summary_data(node, schema, state_items):
+    def build_summary_data(schema, state_items):
         # An array of the sections to be shown on the summary page and their contents
         summary_sections = []
 

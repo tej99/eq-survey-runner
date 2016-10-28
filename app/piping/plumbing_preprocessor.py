@@ -1,7 +1,7 @@
 import logging
 
 
-from app.globals import get_metadata
+from app.globals import get_answers, get_metadata
 from app.libs.utils import ObjectFromDict
 from app.piping.plumber import Plumber
 
@@ -53,7 +53,7 @@ class PlumbingPreprocessor(object):
         aliases = schema.aliases
         values = {}
         for alias, item_id in aliases.items():
-            value = questionnaire_manager.find_answer(item_id)
+            value = get_answers(current_user).get(item_id)
             if value is None:
                 value = ""  # Empty string
             values[alias] = value

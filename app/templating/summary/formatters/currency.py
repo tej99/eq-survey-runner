@@ -5,4 +5,4 @@ class CurrencyFormatter(AbstractFormatter):
 
     @staticmethod
     def format(schema_answers, state_answers, user_answer):
-        return "£{:,}".format(user_answer)
+        return "£{:,}".format(int(user_answer))

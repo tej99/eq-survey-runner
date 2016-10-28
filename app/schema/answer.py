@@ -1,11 +1,14 @@
 import logging
 
+from app.globals import get_answers
 from app.questionnaire_state.exceptions import StateException
 from app.questionnaire_state.state_answer import StateAnswer
 from app.schema.exceptions import TypeCheckingException
 from app.schema.item import Item
 
 import bleach
+
+from flask_login import current_user
 
 logger = logging.getLogger(__name__)
 
@@ -86,6 +89,8 @@ class Answer(Item):
             if state.input:
                 try:
                     state.value = self.get_typed_value(state.input)
+
+                    get_answers(current_user)[self.id] = state.value
                 except TypeCheckingException as e:
                     state.is_valid = False
                     state.errors = []

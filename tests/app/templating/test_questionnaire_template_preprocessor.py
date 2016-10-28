@@ -35,14 +35,13 @@ class TestQuestionnaireTemplatePreprocessor(SurveyRunnerTestCase):
 
     def test_build_view_data(self):
         block = StateBlock("1", None)
-        node = Node("1")
 
         questionnaire_template_preprocessor = QuestionnaireTemplatePreprocessor()
         original_get_metadata_method = MetaDataTemplatePreprocessor._get_metadata
 
         MetaDataTemplatePreprocessor._get_metadata = self.get_metadata
         state_items = [block]
-        render_data = questionnaire_template_preprocessor.build_view_data(node, self.questionnaire, state_items)
+        render_data = questionnaire_template_preprocessor.build_view_data(self.questionnaire, state_items, "")
 
         self.assertIsNotNone(render_data)
         self.assertEqual(block, render_data['content'])

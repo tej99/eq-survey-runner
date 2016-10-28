@@ -1,8 +1,11 @@
 import logging
 
+from app.globals import get_answers
 from app.questionnaire_state.exceptions import StateException
 from app.schema.answer import Answer
 from app.schema.widgets.checkbox_group_widget import CheckboxGroupWidget
+
+from flask_login import current_user
 
 logger = logging.getLogger(__name__)
 
@@ -31,6 +34,7 @@ class CheckboxAnswer(Answer):
                 super(CheckboxAnswer, self).mandatory_error(state)
 
             # Here we just report on whether the answer has passed type checking
+            get_answers(current_user)[self.id] = self.get_typed_value(state.input)
             return state.is_valid
         else:
             raise StateException('Cannot validate - incorrect state class')

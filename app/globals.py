@@ -35,3 +35,12 @@ def get_answers(user):
 
     questionnaire_store = get_questionnaire_store(user.user_id, user.user_ik)
     return questionnaire_store.answers
+
+
+def get_visited_blocks(user):
+    if user.is_anonymous:
+        logger.debug("Anonymous user requesting visited_blocks get instance")
+        return None
+
+    questionnaire_store = get_questionnaire_store(user.user_id, user.user_ik)
+    return questionnaire_store.visited_blocks

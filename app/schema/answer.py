@@ -90,7 +90,7 @@ class Answer(Item):
                 try:
                     state.value = self.get_typed_value(state.input)
 
-                    get_answers(current_user)[self.id] = state.value
+                    get_answers(current_user)[self.id] = state.other or state.value
                 except TypeCheckingException as e:
                     state.is_valid = False
                     state.errors = []

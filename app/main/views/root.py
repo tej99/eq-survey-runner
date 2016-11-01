@@ -2,7 +2,7 @@ import logging
 
 from app.authentication.authenticator import Authenticator
 from app.frontend_messages import get_messages
-from app.globals import get_metadata
+from app.globals import get_answers, get_metadata, get_visited_blocks
 from app.questionnaire.questionnaire_manager_factory import QuestionnaireManagerFactory
 
 from flask import redirect
@@ -75,7 +75,14 @@ def login():
 
     questionnaire_manager = QuestionnaireManagerFactory.get_instance()
 
-    # get the current location of the user
     current_location = questionnaire_manager.navigator.get_first_location()
+
+    visited_blocks = get_visited_blocks(current_user)
+
+    if visited_blocks:
+        incomplete_blocks = [item for item in questionnaire_manager.navigator.get_location_path(get_answers(current_user)) if item not in visited_blocks]
+
+        if incomplete_blocks:
+            current_location = incomplete_blocks[0]
 
     return redirect('/questionnaire/' + eq_id + '/' + form_type + '/' + period_id + '/' + collection_id + '/' + current_location)

@@ -76,6 +76,8 @@ class QuestionnaireManager(object):
             # Store answers in QuestionnaireStore
             questionnaire_store = get_questionnaire_store(current_user.user_id, current_user.user_ik)
 
+            questionnaire_store.visited_blocks.append(location)
+
             questionnaire_store.save()
 
             # process the user action

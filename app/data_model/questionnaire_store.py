@@ -49,17 +49,9 @@ class QuestionnaireStore:
 
         return self.data["ANSWERS"]
 
-    @answers.setter
-    def answers(self, answers):
-        self.data["ANSWERS"] = answers
-
     @property
     def visited_blocks(self):
         if "VISITED_BLOCKS" not in self.data:
             self.data["VISITED_BLOCKS"] = []
 
         return self.data["VISITED_BLOCKS"]
-
-    @visited_blocks.setter
-    def visited_blocks(self, visited_blocks):
-        self.data["VISITED_BLOCKS"] = visited_blocks

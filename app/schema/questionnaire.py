@@ -27,9 +27,6 @@ class Questionnaire(object):
             self.groups.append(group)
             group.container = self
 
-    def get_items_by_id_keys(self):
-        return self.items_by_id.keys
-
     def get_item_by_id(self, item_id):
 
         if item_id == self.id:

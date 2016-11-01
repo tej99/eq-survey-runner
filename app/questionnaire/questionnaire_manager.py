@@ -19,12 +19,8 @@ class InvalidLocationException(Exception):
 class QuestionnaireManager(object):
     '''
     This class represents a user journey through a survey. It models the request/response process of the web application
-    using a doubly linked list. Each node in the list is a reference to a schema item and the answer the user has entered.
-    A new node is created by a GET request and subsequently updated via a POST request.
-    The doubly linked list approach allows us to maintain the path the user has taken through the question. If that path
-    changes we archive off the nodes in case the user revisits that path.
     '''
-    def __init__(self, schema, current=None, first=None, tail=None, archive=None, valid_locations=None, submitted_at=None, json=None):
+    def __init__(self, schema, submitted_at=None, json=None):
         self.submitted_at = submitted_at
         self._json = json
         self._schema = schema

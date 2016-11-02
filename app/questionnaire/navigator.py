@@ -22,6 +22,20 @@ def evaluate_rule(rule, answer):
     return False
 
 
+def evaluate_goto(goto_rule, answers):
+    if 'when' in goto_rule.keys():
+        answer_index = goto_rule['when']['id']
+        if answer_index in answers:
+            answer = answers[answer_index]
+            if evaluate_rule(goto_rule, answer):
+                return True
+        else:
+            return False
+    elif 'id' in goto_rule.keys():
+        return True
+    return None
+
+
 def build_path(blocks, block_id, answers, path):
     """
     Recursive method which visits all the blocks and returns path taken
@@ -42,17 +56,12 @@ def build_path(blocks, block_id, answers, path):
 
     if 'routing_rules' in blocks[block_id_index] and len(blocks[block_id_index]['routing_rules']) > 0:
         for rule in blocks[block_id_index]['routing_rules']:
-            goto_rule = rule['goto']
-            if 'when' in goto_rule.keys():
-                answer_index = goto_rule['when']['id']
-                if answer_index in answers:
-                    answer = answers[answer_index]
-                    if evaluate_rule(goto_rule, answer):
-                        return build_path(blocks, goto_rule['id'], answers, path)
-                else:
+            if 'goto' in rule:
+                should_go = evaluate_goto(rule['goto'], answers)
+                if should_go is True:
+                    return build_path(blocks, rule['goto']['id'], answers, path)
+                elif should_go is False:
                     return path
-            elif 'id' in goto_rule.keys():
-                return build_path(blocks, goto_rule['id'], answers, path)
     elif block_id_index != len(blocks) - 1:
         next_block_id = blocks[block_id_index + 1]['id']
         return build_path(blocks, next_block_id, answers, path)

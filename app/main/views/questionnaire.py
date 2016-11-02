@@ -1,7 +1,7 @@
 import logging
 
 from app.authentication.session_management import session_manager
-from app.globals import get_answers, get_metadata, get_questionnaire_store
+from app.globals import get_answers, get_metadata, get_questionnaire_store, get_visited_blocks
 
 from app.questionnaire.questionnaire_manager_factory import QuestionnaireManagerFactory
 from app.templating.template_register import TemplateRegistry
@@ -78,13 +78,11 @@ def get_thank_you(eq_id, form_type, period_id, collection_id):
 @questionnaire_blueprint.route('summary', methods=["GET"])
 @login_required
 def get_summary(eq_id, form_type, period_id, collection_id):
-    if g.questionnaire_manager.navigator.can_reach_summary(get_answers(current_user)):
-        is_valid, invalid_location = g.questionnaire_manager.validate_all_answers()
+    current_location = g.questionnaire_manager.navigator.get_current_location(get_answers(current_user), get_visited_blocks(current_user))
+    if current_location is 'summary':
+        return render_page('summary', True)
 
-        if is_valid:
-            return render_page('summary', True)
-
-    return redirect_to_questionnaire_page(eq_id, form_type, period_id, collection_id, invalid_location)
+    return redirect_to_questionnaire_page(eq_id, form_type, period_id, collection_id, current_location)
 
 
 def delete_user_data():

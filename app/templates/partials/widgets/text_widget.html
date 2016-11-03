@@ -1,6 +1,6 @@
 <!-- BEGIN TextWidget -->
 {% set label = {
-  'for': answer.id,
+  'for': 'input-' ~ answer.id,
   'text': answer.label
 } %}
 {% include 'partials/forms/label.html' %}

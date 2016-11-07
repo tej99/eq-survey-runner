@@ -51,6 +51,11 @@
 
             <div class="block" id="{{block.id}}">
 
+            {% if block.description %}
+                <div class="section__description mars">{{block.description|safe}}</div>
+              {% endif %}
+
+
             {% for section in state.children %}
 
               {% include 'partials/section.html' %}
@@ -60,8 +65,7 @@
             </div>
 
           </div>
-
-      <button class="btn btn--secondary qa-btn-submit venus" type="submit" name="action[save_continue]">Save and continue</button>
+      <button class="btn btn--secondary qa-btn-submit venus" type="submit" name="action[save_continue]">{% if block.text_only %}Continue{% else %}Save and continue{% endif %}</button>
       <br/>
       <div class="u-mt-xs">
         <a class="mars" href="{{previous_location}}">Previous</a>

@@ -13,11 +13,13 @@ class Block(Item):
         self.questionnaire = None
         self.validation = None
         self.questionnaire = None
-        self.templatable_properties = []
+        self.templatable_properties = ['description']
         self.display = Display()
         self.routing_rules = []
         self.skip_condition = None
         self.repetition = 1
+        self.text_only = False
+        self.descritpion = None
 
     def add_section(self, section):
         if section not in self.sections:

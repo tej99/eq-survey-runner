@@ -189,3 +189,25 @@ class ParserUtils(object):
                 raise SchemaParserException("Expected integer '{field}' is not an integer".format(field=key))
         else:
             return None
+
+    @staticmethod
+    def get_optional_boolean(obj, key, default_value=None):
+        """Get an optional property from the dict
+
+        Gets the optional values associated with the key in the dict, or returns
+        None if the key is not found.
+
+        :param obj: A dict on json object
+        :param key: The name of the property to retrieve
+
+        :returns: An array of the values or None
+
+        """
+
+        value = ParserUtils.get_optional(obj, key)
+        if isinstance(value, bool):
+            return value
+        elif value is None:
+            return default_value
+        else:
+            raise SchemaParserException("Expected string '{field}' is not a bool".format(field=key))

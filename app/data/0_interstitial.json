@@ -1,0 +1,137 @@
+{
+    "mime_type": "application/json/ons/eq",
+    "questionnaire_id": "99",
+    "schema_version": "0.0.1",
+    "survey_id": "999",
+    "title": "Interstitial Page Example",
+    "description": "Interstitial Page",
+    "theme": "default",
+    "introduction": {
+        "description": "<p>The information supplied is being used to produced a demo for Interstitial demo.</p>",
+        "information_to_provide": [
+          "Address",
+          "Monthly expenditure"
+        ]
+    },
+    "display": {
+        "properties": {}
+    },
+    "eq_id": "1",
+    "groups": [
+        {
+            "blocks": [
+                {
+                    "display": {
+                        "properties": {}
+                    },
+                    "id": "5de8fddb-bfba-4e9d-a6e8-b665a11a67f1",
+                    "sections": [
+                        {
+                            "description": "",
+                            "display": {
+                                "properties": {}
+                            },
+                            "id": "2d5e6844-d1c0-4280-baa4-26ee68b81489",
+                            "questions": [
+                                {
+                                    "answers": [
+                                        {
+                                            "alias": "address",
+                                            "display": {},
+                                            "guidance": "",
+                                            "id": "cd620b83-87d7-4788-a47a-4402f7beb7ff",
+                                            "label": "Please enter your address",
+                                            "mandatory": true,
+                                            "options": [],
+                                            "q_code": "45",
+                                            "type": "TextField"
+                                        }
+                                    ],
+                                    "description": "",
+                                    "display": {
+                                        "properties": {}
+                                    },
+                                    "id": "07dacdfc-6f51-46d2-b5db-536e0f047d57",
+                                    "title": "",
+                                    "type": "General",
+                                    "validation": []
+                                }
+                            ],
+                            "title": "Household details",
+                            "validation": []
+                        }
+                    ],
+                    "title": "Interstitial Page Example",
+                    "validation": []
+                },
+                {
+                    "display": {
+                        "properties": {}
+                    },
+                    "id": "4b71a067-88d7-45b2-8d23-7ebf37ab4aa2",
+                    "title": "Monthly Business Survey",
+                    "validation": [],
+                    "description": "<p>You enter your address as <strong>{{answers.address}}</strong></p><p>Every ten years the census gives us a complete picture of the nation. It allows us to compare different groups of people across the United Kingdom because the same questions are asked, and the information is recorded, in the same way throughout England, Wales, Scotland and Northern Ireland.The census provides information that government needs to develop policies, plan and run public services, and allocate funding.</p>",
+                    "text_only": true
+                },
+                {
+                    "display": {
+                        "properties": {}
+                    },
+                    "id": "6680589b-6cd8-4aa7-b2d5-56058b444f63",
+                    "sections": [
+                        {
+                            "description": "",
+                            "display": {
+                                "properties": {}
+                            },
+                            "id": "a69fd55b-cdb2-4563-884d-afdea3d071c0",
+                            "questions": [
+                                {
+                                    "answers": [
+                                        {
+                                            "display": {},
+                                            "guidance": "",
+                                            "id": "5b77a1d7-c792-4650-bebc-b08d342af781",
+                                            "label": "Household spend",
+                                            "mandatory": true,
+                                            "options": [],
+                                            "q_code": "21",
+                                            "type": "Currency",
+                                            "validation": {
+                                                "messages": {
+                                                    "INTEGER_TOO_LARGE": "The maximum value allowed is 9999999999. Please correct your answer.",
+                                                    "MANDATORY": "Please provide a value, even if your value is 0.",
+                                                    "NEGATIVE_INTEGER": "The value cannot be negative. Please correct your answer.",
+                                                    "NOT_INTEGER": "Please only enter whole numbers into the field."
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    "description": "Round your figures to the nearest whole pound (£). Even if your figures are zero, please still complete.",
+                                    "display": {
+                                        "properties": {}
+                                    },
+                                    "id": "df16ef15-2551-4f27-9a6b-7b4e6fef59a0",
+                                    "title": "How much does this household speed a month?",
+                                    "type": "General",
+                                    "validation": []
+                                }
+                            ],
+                            "title": "Household expenditure",
+                            "validation": []
+                        }
+                    ],
+                    "title": "Household details",
+                    "validation": []
+                }
+            ],
+            "display": {
+                "properties": {}
+            },
+            "id": "07f40cd2-0704-4804-9f32-19309089a51b",
+            "title": "",
+            "validation": []
+        }
+    ]
+}

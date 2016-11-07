@@ -55,6 +55,6 @@ def _build_summary(questionnaire_schema):
     sections = []
     for group in questionnaire_schema['groups']:
         for block in group['blocks']:
-            if block['id'] in path:
+            if block['id'] in path and not ("text_only" in block and block['text_only']):
                 sections.extend([Section(block['id'], section, answers) for section in block['sections']])
     return sections

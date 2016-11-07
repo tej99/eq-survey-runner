@@ -184,6 +184,8 @@ class SchemaParser(AbstractSchemaParser):
             block.id = ParserUtils.get_required_string(schema, "id")
             block.title = ParserUtils.get_optional_string(schema, "title")
             block.routing_rules = ParserUtils.get_optional_array(schema, 'routing_rules')
+            block.text_only = ParserUtils.get_optional_boolean(schema, "text_only", False)
+            block.description = ParserUtils.get_optional_string(schema, "description")
 
             # register the block
             questionnaire.register(block)
@@ -193,11 +195,12 @@ class SchemaParser(AbstractSchemaParser):
             logging.info(e)
             raise e
 
-        if "sections" in schema.keys():
-            for section_schema in schema['sections']:
-                block.add_section(self._parse_section(section_schema, questionnaire))
-        else:
-            raise SchemaParserException('Block must contain at least one section')
+        if not block.text_only:
+            if "sections" in schema.keys():
+                for section_schema in schema['sections']:
+                    block.add_section(self._parse_section(section_schema, questionnaire))
+            else:
+                raise SchemaParserException('Block must contain at least one section')
 
         return block
 

@@ -32,7 +32,7 @@ class QuestionnaireManager(object):
 
             self.build_state(location, post_data)
 
-            if self.state:
+            if self.state and not self.state.schema_item.text_only:
                 self._conditional_display(self.state)
                 is_valid = self.state.schema_item.validate(self.state)
                 # Todo, this doesn't feel right, validation is casting the user values to their type.

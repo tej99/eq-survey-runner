@@ -225,9 +225,12 @@
               },
               "required": [
                 "id",
-                "title",
-                "sections"
-              ]
+                "title"
+              ],
+              "oneOf": [
+                      {"required": ["sections"]},
+                      {"required": ["text_only"]}
+                    ]
             }
           }
         },

@@ -5,20 +5,22 @@ with open('1_0112.json', 'r') as jsonData:
     data = json.load(jsonData)
 
     #jsonData.close()
+
+
+# Prints off everything in the title area
+def first_layer():
     var = ''
-
-##### Prints off everything in the title area
-
     var += data["title"] + '\n'
-
     var += data["description"] + '\n'
-
     var += data['introduction']['description'] + '\n'
-
     var += data['introduction']['information_to_provide'][0] + '\n'
     var += data['introduction']['information_to_provide'][1] + '\n'
     var += data['introduction']['information_to_provide'][2] + '\n'
     var += data['introduction']['information_to_provide'][3] + '\n'
+    print var
+
+#first_layer()
+
 
     # if not data['groups']:
     #     print 'No Data!'
@@ -35,7 +37,7 @@ with open('1_0112.json', 'r') as jsonData:
     # var += "\n".join(data['introduction']['information_to_provide'][0:])
 
 
-##### Extract all data that can be translated
+# Extract all data that can be translated
 
     # print(data["mime_type"])
     # print(data["questionnaire_id"])
@@ -49,9 +51,9 @@ with open('1_0112.json', 'r') as jsonData:
     # print(data['introduction']['information_to_provide'][0:])
     # print(data["eq_id"])
 
-##### Prints off everything in 'groups > blocks > sections > questions > answers
+# Prints off everything in 'groups > blocks > sections > questions > answers
 
-##### prints section 1 (Reporting Period)
+# prints section 1 (Reporting Period)
 
     # print(data['groups'][0]['blocks'][0]['sections'][0]['questions'][0]['answers'][0]['label'])
     # print(data['groups'][0]['blocks'][0]['sections'][0]['questions'][0]['answers'][0]['validation'])
@@ -62,11 +64,8 @@ with open('1_0112.json', 'r') as jsonData:
     # print(data['groups'][0]['blocks'][0]['sections'][0]['questions'][0]['description'])
     # print(data['groups'][0]['blocks'][0]['sections'][0]['questions'][0]['title'])
 
-##### First sections part
-##### Blocks == sections in the data
 
-
-##### prints section 2 (Retail Turnover)
+# prints section 2 (Retail Turnover)
 
     # print(data['groups'][0]['blocks'][1]['sections'][0]['questions'][0]['answers'][0]['label'])
     # print(data['groups'][0]['blocks'][1]['sections'][0]['questions'][0]['answers'][0]['validation'])
@@ -78,7 +77,7 @@ with open('1_0112.json', 'r') as jsonData:
     # print(data['groups'][0]['blocks'][1]['title'])
 
 
-##### prints section 3 (Internet Sales)
+# prints section 3 (Internet Sales)
 
 
     # print(data['groups'][0]['blocks'][2]['sections'][0]['questions'][0]['answers'][0]['label'])
@@ -91,7 +90,7 @@ with open('1_0112.json', 'r') as jsonData:
     # print(data['groups'][0]['blocks'][2]['title'])
 
 
-##### prints section 4 (Changes in total retail turnover)
+# prints section 4 (Changes in total retail turnover)
 
     # print(data['groups'][0]['blocks'][3]['sections'][0]['questions'][0]['answers'][0]['label'])
     # print(data['groups'][0]['blocks'][3]['sections'][0]['questions'][0]['answers'][0]['validation'])
@@ -103,7 +102,7 @@ with open('1_0112.json', 'r') as jsonData:
     # print(data['groups'][0]['blocks'][3]['title'])
 
 
-##### prints section 5 (Employees)
+# prints section 5 (Employees)
 
     # print(data['groups'][0]['blocks'][4]['sections'][0]['questions'][0]['answers'][0]['label'])
     # print(data['groups'][0]['blocks'][4]['sections'][0]['questions'][0]['answers'][0]['validation'])
@@ -127,7 +126,7 @@ with open('1_0112.json', 'r') as jsonData:
     # print(data['groups'][0]['blocks'][4]['title'])
 
 
-##### prints section 6 (Changes in employee figures)
+# prints section 6 (Changes in employee figures)
 
     # print(data['groups'][0]['blocks'][5]['sections'][0]['questions'][0]['answers'][0]['label'])
     # print(data['groups'][0]['blocks'][5]['sections'][0]['questions'][0]['answers'][0]['validation'])
@@ -140,7 +139,7 @@ with open('1_0112.json', 'r') as jsonData:
 
 
 
-##### prints last part ( main titles?)
+# prints last part ( main titles?)
     # print(data['groups'][0]['blocks'][0]['sections'][0]['title'])
     # print(data['groups'][0]['blocks'][0]['title'])
 
@@ -149,7 +148,7 @@ with open('1_0112.json', 'r') as jsonData:
     # print data
 
 
-##### print variable + write to a file
+# print variable + write to a file
     # print var
     #
     # test_file = open('test.txt', 'w')
@@ -163,27 +162,44 @@ with open('1_0112.json', 'r') as jsonData:
 
 ##### try a for loop
 ##### prints off all data in groups
+def groups_data():
+    if data['groups'] == []:
+        print 'No Data!'
+    else:
+        for rows in data['groups']:
+            print rows['blocks']
 
     # if data['groups'] == []:
     #     print 'No Data!'
     # else:
-    #     for rows in data['groups']:
-    #         print rows['blocks']
+    # for group in data['groups']:
 
 
+# All ID in blocks
+def blocks_id():
+    for group in data['groups']:
+        for block in group['blocks']:
+            print (block.get('id'))
 
 
-    # if data['groups'] == []:
-    #     print 'No Data!'
-    # else:
-    #     for rows in data['groups']:
-    #         for rows1 in data['blocks']:
-    #             for rows2 in data['sections']:
-    #                 for rows3 in data['questions']:
-    #                     print rows3 in data['answers']
+# All ID in sections
+def sections_id():
+    for group in data['groups']:
+        for block in group['blocks']:
+            for section in block['sections']:
+                 print (section.get('id'))
 
 
+# All ID in answers *Doesn't work*
+def answers_id():
+    for group in data['groups']:
+        for block in group['blocks']:
+            for section in block['sections']:
+                for question in section['answers']:
+                    print (question.get('id'))
 
+sections_id()
+answers_id()
 
 
 #     data["mime_type"] = 'something/test'
@@ -206,4 +222,4 @@ with open('1_0112.json', 'r') as jsonData:
     #     json.dump(data, f)
 
 # Reading data back
-    
+

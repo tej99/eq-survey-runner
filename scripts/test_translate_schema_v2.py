@@ -1,6 +1,5 @@
 import json
 
-
 with open('/Users/liamtoozer/projects/eq-survey-runner/app/data/1_0112.json', 'r', encoding="utf8") as jsonData:
     data = json.load(jsonData)
 
@@ -23,8 +22,8 @@ def get_header_text():
   return the_list
 
 
-def is_empty_text(text, key):
-  return (text.get(key) != None and text.get(key) != '')
+def is_text_present(text, key):
+  return text.get(key) != None and text.get(key) != ''
 
 
 
@@ -39,10 +38,8 @@ def get_blocks_text(keys):
     for group in data['groups']:
         for block in group['blocks']:
 
-          # if block.get(key) != None and block.get(key) != '':
-          #   the_list.append("blocks: " + block.get(key))
-          if not is_empty_text(block, key):
-            print(True)
+          if is_text_present(block, key):
+            the_list.append("blocks: " + block.get(key))
 
   return the_list
 
@@ -61,7 +58,7 @@ def get_sections_text(keys):
             for section in block['sections']:
 
                 # Check we've actually found something
-                if section.get(key) != None and section.get(key) != '':
+                if is_text_present(section, key):
                   the_list.append("sections: " + section.get(key))
 
   return the_list
@@ -83,7 +80,7 @@ def get_questions_text(keys):
                 for question in section['questions']:
 
                   # Check we've actually found something
-                  if question.get(key) != None and question.get(key) != '':
+                  if is_text_present(question, key):
                     the_list.append("questions: " + question.get(key))
 
   return the_list
@@ -104,7 +101,7 @@ def get_answers_text(keys):
                     for answer in question['answers']:
 
                       # Check we've actually found something
-                      if answer.get(key) != None and answer.get(key) != '':
+                      if is_text_present(answer, key):
                         the_list.append("answers" + answer.get(key))
 
   return the_list
@@ -125,6 +122,8 @@ def get_validation_message_text():
                     if 'validation' in answer:  # Ensure key is available!
 
                       for key, value in answer['validation']['messages'].items():
+
+                        if is_text_present(answer['validation']['messages'], key):
                           the_list.append("messages: " + value)
 
   return the_list
@@ -148,8 +147,6 @@ def get_translatable_text():
   question_text = get_questions_text(keys)
   validation_text = get_validation_message_text()
 
-  combined = header_text + blocks_text + sections_text + question_text + validation_text
-
   # Convert to set to remove all duplicates
   unique_text = set(header_text + blocks_text + sections_text + question_text + validation_text)
 
@@ -169,7 +166,7 @@ def output_to_file(text_list):
     print("%s" % line)
 
   # Dump the output to a file
-  test_file = open('test.txt', 'w')
+  test_file = open('test.txt', 'w', encoding="utf8")
 
   for line in text_list:
     test_file.write("%s\n" % line)
@@ -182,9 +179,6 @@ def run():
   text = get_translatable_text()
 
   output_to_file(text)
-
-
-
 
 
 ### Entry point for entire script for now...

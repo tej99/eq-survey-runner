@@ -144,7 +144,7 @@ def output_to_file(text_list):
         print("%s" % line)
 
     # Dump the output to a file
-    test_file = open('test.txt', 'w')
+    test_file = open('test.txt', 'w', encoding="utf8")
 
     for line in text_list:
         test_file.write("%s\n" % line)
@@ -162,13 +162,4 @@ def run():
 run()
 
 
-# print(json.dumps(data))
-# print data
-
-#     data["mime_type"] = 'something/test'
-#
-#     jsonData.seek(0)
-#
-#     target_file = open('small_new.json', 'w')
-#
-#     json_dump = json.dumps(data,
+# Testing

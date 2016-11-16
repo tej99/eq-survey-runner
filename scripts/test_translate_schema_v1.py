@@ -21,6 +21,10 @@ def get_header_text():
     return the_list
 
 
+def is_text_present(text, key):
+    return text.get(key) != None and text.get(key) != ''
+
+
 # All text from 'blocks' with given keys
 def get_blocks_text(keys):
     # The list of strings we're going to build up
@@ -30,7 +34,7 @@ def get_blocks_text(keys):
 
         for group in data['groups']:
             for block in group['blocks']:
-                if block.get(key) != None and block.get(key) != '':
+                if is_text_present(block, key):
                     the_list.append("blocks: " + block.get(key))
 
     return the_list
@@ -48,8 +52,8 @@ def get_sections_text(keys):
             for block in group['blocks']:
                 for section in block['sections']:
                     # Check we've actually found something
-                    if section.get(key) != None and section.get(key) != '':
-                        the_list.append("sections: " + section.get(key))
+                    if is_text_present(section, key):
+                       the_list.append("sections: " + section.get(key))
 
     return the_list
 
@@ -66,7 +70,7 @@ def get_questions_text(keys):
                 for section in block['sections']:
                     for question in section['questions']:
                         # Check we've actually found something
-                        if question.get(key) != None and question.get(key) != '':
+                        if is_text_present(question, key):
                             the_list.append("questions: " + question.get(key))
 
     return the_list
@@ -85,7 +89,7 @@ def get_answers_text(keys):
                     for question in section['questions']:
                         for answer in question['answers']:
                             # Check we've actually found something
-                            if answer.get(key) != None and answer.get(key) != '':
+                            if is_text_present(answer, key):
                                 the_list.append("answers" + answer.get(key))
 
     return the_list
@@ -105,7 +109,8 @@ def get_validation_message_text():
                         if 'validation' in answer:  # Ensure key is available!
 
                             for key, value in answer['validation']['messages'].items():
-                                the_list.append("messages: " + value)
+                                if is_text_present(answer['validation']['messages'], key):
+                                    the_list.append("messages: " + value)
 
     return the_list
 

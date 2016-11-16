@@ -23,6 +23,10 @@ def get_header_text():
   return the_list
 
 
+def is_empty_text(text, key):
+  return (text.get(key) != None and text.get(key) != '')
+
+
 
 # All text from 'blocks' with given keys
 def get_blocks_text(keys):
@@ -35,8 +39,10 @@ def get_blocks_text(keys):
     for group in data['groups']:
         for block in group['blocks']:
 
-          if block.get(key) != None and block.get(key) != '':
-            the_list.append("blocks: " + block.get(key))
+          # if block.get(key) != None and block.get(key) != '':
+          #   the_list.append("blocks: " + block.get(key))
+          if not is_empty_text(block, key):
+            print(True)
 
   return the_list
 

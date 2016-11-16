@@ -3,7 +3,6 @@ import json
 
 with open('/Users/darrellcox/projects/eq-survey-runner/app/data/1_0112.json', 'r', encoding="utf8") as jsonData:
     data = json.load(jsonData)
-
     jsonData.close()
 
 
@@ -34,7 +33,7 @@ def get_blocks_text(keys):
                 if block.get(key) != None and block.get(key) != '':
                     the_list.append("blocks: " + block.get(key))
 
-                return the_list
+    return the_list
 
 
 # All text from 'sections' with given keys
@@ -52,7 +51,7 @@ def get_sections_text(keys):
                     if section.get(key) != None and section.get(key) != '':
                         the_list.append("sections: " + section.get(key))
 
-                    return the_list
+    return the_list
 
 
 # All text from 'questions' with given keys
@@ -70,7 +69,7 @@ def get_questions_text(keys):
                         if question.get(key) != None and question.get(key) != '':
                             the_list.append("questions: " + question.get(key))
 
-                        return the_list
+    return the_list
 
 
 # All text from 'answers' with given keys
@@ -89,7 +88,7 @@ def get_answers_text(keys):
                             if answer.get(key) != None and answer.get(key) != '':
                                 the_list.append("answers" + answer.get(key))
 
-                            return the_list
+    return the_list
 
 
 # All text from 'messages' with given keys
@@ -108,7 +107,7 @@ def get_validation_message_text():
                             for key, value in answer['validation']['messages'].items():
                                 the_list.append("messages: " + value)
 
-                                return the_list
+    return the_list
 
 
 # Wrapper function which generates the output file
@@ -127,7 +126,7 @@ def get_translatable_text():
     question_text = get_questions_text(keys)
     validation_text = get_validation_message_text()
 
-    combined = header_text + blocks_text + sections_text + question_text + validation_text
+    # combined = header_text + blocks_text + sections_text + question_text + validation_text
 
     # Convert to set to remove all duplicates
     unique_text = set(header_text + blocks_text + sections_text + question_text + validation_text)

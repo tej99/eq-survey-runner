@@ -17,7 +17,7 @@ def first_layer():
     var += data['introduction']['information_to_provide'][1] + '\n'
     var += data['introduction']['information_to_provide'][2] + '\n'
     var += data['introduction']['information_to_provide'][3] + '\n'
-    print var
+    print(var)
 
 #first_layer()
 
@@ -164,10 +164,10 @@ def first_layer():
 ##### prints off all data in groups
 def groups_data():
     if data['groups'] == []:
-        print 'No Data!'
+        print('No Data!')
     else:
         for rows in data['groups']:
-            print rows['blocks']
+            print(rows['blocks'])
 
     # if data['groups'] == []:
     #     print 'No Data!'

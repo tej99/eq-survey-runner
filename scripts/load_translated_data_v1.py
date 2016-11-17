@@ -1,21 +1,34 @@
 import json
+import re
 
 with open('/Users/darrellcox/projects/eq-survey-runner/app/data/1_0112.json', 'r', encoding="utf8") as jsonData:
     data = json.load(jsonData)
     jsonData.close()
-    # print(data)
+
 
 text_file = open('/Users/darrellcox/projects/eq-survey-runner/scripts/test.txt', 'r', encoding="utf8")
 list1 = text_file.readlines()
+# list1.split("|")
+
+
+def choose_awkward_characters():
+    s = '{{exercise.start_date|pretty_date}}'
+    result = re.search('{{(.*)}}', s)
+    print(result.group(1))
 
 
 def print_all_translatable():
     for value in list1:
-        print("%s" % value)
+        new_lists = value.split("±")
+        print(new_lists)
+        print("%s" % value.split("±"))
+        # if json data equals whatever is in new_lists[0] print new_lists[1]
+        if new_lists[0] == 'RSI Description':
+            print(new_lists[1])
 
+#print_all_translatable()
+choose_awkward_characters()
 print_all_translatable()
-
-
 
 # content = data.read()
 # data.seek(0)

@@ -146,13 +146,13 @@ def get_translatable_text():
 def output_to_file(text_list):
     # Output the list - this is just for testing! Please remove after!
     for line in text_list:
-        print("|%s|" % line + line.upper())
+        print("%s±" % line + line.upper())
 
     # Dump the output to a file
     test_file = open('test.txt', 'w', encoding="utf8")
 
     for line in text_list:
-        test_file.write("|%s|" % line + line.upper() + '\n')
+        test_file.write("%s±" % line + line.upper() + '\n')
 
     test_file.close()
 

@@ -243,7 +243,6 @@ run()
 
 
 def get_all_values(d, depth):
-  print("here")
   if depth == 1:
     for i in d.values():
       yield i

@@ -11,14 +11,18 @@ def get_header_text():
     # The list of strings we're going to build up
     the_list = []
 
-    the_list.append("header: " + data['title'])
-    the_list.append("header: " + data['description'])
-    the_list.append("header: " + data['introduction']['description'])
+    the_list.append(data['title'])
+    the_list.append(data['description'])
+    the_list.append(data['introduction']['description'])
 
     for value in data['introduction']['information_to_provide']:
-        the_list.append("header: " + value)
+        the_list.append(value)
 
     return the_list
+
+
+def is_text_present(text, key):
+    return text.get(key) != None and text.get(key) != ''
 
 
 # All text from 'blocks' with given keys
@@ -30,8 +34,8 @@ def get_blocks_text(keys):
 
         for group in data['groups']:
             for block in group['blocks']:
-                if block.get(key) != None and block.get(key) != '':
-                    the_list.append("blocks: " + block.get(key))
+                if is_text_present(block, key):
+                    the_list.append(block.get(key))
 
     return the_list
 
@@ -48,8 +52,8 @@ def get_sections_text(keys):
             for block in group['blocks']:
                 for section in block['sections']:
                     # Check we've actually found something
-                    if section.get(key) != None and section.get(key) != '':
-                        the_list.append("sections: " + section.get(key))
+                    if is_text_present(section, key):
+                       the_list.append(section.get(key))
 
     return the_list
 
@@ -66,8 +70,8 @@ def get_questions_text(keys):
                 for section in block['sections']:
                     for question in section['questions']:
                         # Check we've actually found something
-                        if question.get(key) != None and question.get(key) != '':
-                            the_list.append("questions: " + question.get(key))
+                        if is_text_present(question, key):
+                            the_list.append(question.get(key))
 
     return the_list
 
@@ -85,8 +89,8 @@ def get_answers_text(keys):
                     for question in section['questions']:
                         for answer in question['answers']:
                             # Check we've actually found something
-                            if answer.get(key) != None and answer.get(key) != '':
-                                the_list.append("answers" + answer.get(key))
+                            if is_text_present(answer, key):
+                                the_list.append(answer.get(key))
 
     return the_list
 
@@ -105,7 +109,8 @@ def get_validation_message_text():
                         if 'validation' in answer:  # Ensure key is available!
 
                             for key, value in answer['validation']['messages'].items():
-                                the_list.append("messages: " + value)
+                                if is_text_present(answer['validation']['messages'], key):
+                                    the_list.append(value)
 
     return the_list
 
@@ -141,13 +146,13 @@ def get_translatable_text():
 def output_to_file(text_list):
     # Output the list - this is just for testing! Please remove after!
     for line in text_list:
-        print("%s" % line)
+        print("|%s|" % line + line.upper())
 
     # Dump the output to a file
     test_file = open('test.txt', 'w', encoding="utf8")
 
     for line in text_list:
-        test_file.write("%s\n" % line)
+        test_file.write("|%s|" % line + line.upper() + '\n')
 
     test_file.close()
 

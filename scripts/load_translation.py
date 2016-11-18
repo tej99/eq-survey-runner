@@ -3,13 +3,13 @@ import ast
 from collections import OrderedDict
 
 with open('/Users/liamtoozer/projects/eq-survey-runner/app/data/1_0112.json', 'r', encoding="utf8") as jsonData:
-    # data = json.load(jsonData, object_pairs_hook=OrderedDict)
+    data = json.load(jsonData, object_pairs_hook=OrderedDict)
 
-    data = json.load(jsonData)
+    # data = json.load(jsonData)
     print(data)
 
 
-with open("/Users/liamtoozer/projects/eq-survey-runner/scripts/test.txt", "r") as file:
+with open("/Users/liamtoozer/projects/eq-survey-runner/scripts/test.txt", "r", encoding="utf8") as file:
 
   lines = list(file)
 
@@ -37,8 +37,10 @@ with open("/Users/liamtoozer/projects/eq-survey-runner/scripts/test.txt", "r") a
   print(json_str)
 
   # Convert string into dictionary, ready for json.dumps()
-  # Is this the best alternative to built-in eval()?
-  json_str = dict(ast.literal_eval(json_str))
+  # Is this the best alternative to built-in eval()? Not sure of an alternative?
+  # this does not allow an ordereddict
+  # json_str = dict(ast.literal_eval(json_str))
+  json_str = OrderedDict(eval(json_str))
 
 
 

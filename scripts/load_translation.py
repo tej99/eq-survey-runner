@@ -1,4 +1,5 @@
 import json
+import ast
 from collections import OrderedDict
 
 with open('/Users/liamtoozer/projects/eq-survey-runner/app/data/1_0112.json', 'r', encoding="utf8") as jsonData:
@@ -17,7 +18,7 @@ with open("/Users/liamtoozer/projects/eq-survey-runner/scripts/test.txt", "r") a
   new_list = []
 
 
-  # Remove newline characters and split each line into 2 by the separator
+  # Remove newline characters and split each line into 2 by using a given separator
   # (i.e. ["translatable text] with ["translated text"])
   for line in lines:
       line = line.strip()
@@ -35,12 +36,13 @@ with open("/Users/liamtoozer/projects/eq-survey-runner/scripts/test.txt", "r") a
 
   print(json_str)
 
+  # Convert string into dictionary, ready for json.dumps()
+  # Is this the best alternative to built-in eval()?
+  json_str = dict(ast.literal_eval(json_str))
 
-  # Write out to new json file??? No idea how to do this if we have a string to dict!
-  # target_file = open('translated.json', 'w')
-  #
-  # # json_dump = json.dumps(json_str, indent=4, separators=(',', ': '))
-  #
-  # jdict = dict(json_str)
-  # json_dump = json.dumps(jdict)
-  # target_file.write(json_dump)
+
+
+  target_file = open('translated.json', 'w')
+
+  out = json.dumps(json_str, indent=4, separators=(',', ': '))
+  target_file.writelines(out)

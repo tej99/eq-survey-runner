@@ -1,3 +1,19 @@
+# TODO
+"""
+1 - Make nested loops less horrendous. Use recursion instead?
+
+2 - Ignore any text between '<' and '>' and '{' and '}'.
+
+3 - Find a way to remove all hardcoding. Can these be held globally in a properties file?
+
+4 - Get unit tests set up for running of script (e.g. against different JSON, outputs etc)
+
+5 - Add/amend other team/best practice stuff that's been missed out.
+
+6 - Will this be run from command line for now? Guard against different inputs.
+"""
+
+
 import json
 
 with open('/Users/liamtoozer/projects/eq-survey-runner/app/data/1_0112.json', 'r', encoding="utf8") as jsonData:

@@ -10,6 +10,7 @@ text_file = open('/Users/darrellcox/projects/eq-survey-runner/scripts/test.txt',
 list1 = text_file.readlines()
 # list1.split("|")
 
+jsonString = str(data)
 
 def choose_awkward_characters():
     s = '{{exercise.start_date|pretty_date}}'
@@ -20,15 +21,20 @@ def choose_awkward_characters():
 def print_all_translatable():
     for value in list1:
         new_lists = value.split("±")
-        print(new_lists)
+        #sprint(new_lists)
         print("%s" % value.split("±"))
         # if json data equals whatever is in new_lists[0] print new_lists[1]
-        if new_lists[0] == 'RSI Description':
+        if new_lists[0:] == jsonString:
             print(new_lists[1])
 
+#        for row in new_list:
+#           if json_str == new_list[row][0]:
+#               json_str.replace(new_list[row][0], new_list[row][1])
+
 #print_all_translatable()
-choose_awkward_characters()
+#choose_awkward_characters()
 print_all_translatable()
+
 
 # content = data.read()
 # data.seek(0)

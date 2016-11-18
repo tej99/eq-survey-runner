@@ -142,13 +142,14 @@ def get_translatable_text():
   ]
 
   header_text = get_header_text()
-  blocks_text = get_blocks_text(keys)
-  sections_text = get_sections_text(keys)
+  block_text = get_blocks_text(keys)
+  section_text = get_sections_text(keys)
   question_text = get_questions_text(keys)
+  answer_text = get_answers_text(keys)
   validation_text = get_validation_message_text()
 
   # Convert to set to remove all duplicates
-  unique_text = set(header_text + blocks_text + sections_text + question_text + validation_text)
+  unique_text = set(header_text + block_text + section_text + question_text + answer_text + validation_text)
 
   # Convert back to list to sort
   sorted_list = list(unique_text)

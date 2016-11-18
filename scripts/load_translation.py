@@ -98,8 +98,8 @@ with open("/Users/liamtoozer/projects/eq-survey-runner/scripts/test.txt", "r") a
     #         print(new_lists[1])
 
     json_str = str(data)
-    # new_lists = []
     new_list = []
+
 
 
     for line in lines:
@@ -112,22 +112,21 @@ with open("/Users/liamtoozer/projects/eq-survey-runner/scripts/test.txt", "r") a
         # if new_lists[0] == 'RSI Description':
         #     print(new_lists[1])
 
+    print(new_list)
+
+    # print(json_str)
+    # print(new_list[31][0])
+    # print(json_str.replace(new_list[31][0], str(new_list[31][0]).upper()))
 
     index = 0
     new_string = ''
     for row in new_list:
       if new_list[index][0] in json_str:
-        json_str = json_str.replace(new_list[index][0], new_list[index][1])
+        json_str = json_str.replace(new_list[index][0], str(new_list[index][0]).upper())
       index = index + 1
 
     print(json_str)
 
-    # for row in new_list:
-    #   if json_str == new_list[row][0]:
-    #     json_str.replace(new_list[row][0], new_list[row][1])
-
-    # if new_list[5][0] in json_str:
-    #   print(new_list[5][1])
 
     # for i, j in new_list:
     #     print(j)
@@ -138,10 +137,6 @@ with open("/Users/liamtoozer/projects/eq-survey-runner/scripts/test.txt", "r") a
     # for i in new_list:
     #   # print(json_str.replace(new_list[0][0], new_list[0][1]))
     #   print(json_str.replace(new_list[i][0], new_list[i][1]))
-
-
-      #print(json_str.replace(new_list[0][0], new_list[0][1]))
-      # print(json_str.replace(new_list[0][i], new_list[0][j]))
 
 
 

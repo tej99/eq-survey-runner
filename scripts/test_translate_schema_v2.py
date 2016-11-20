@@ -16,140 +16,25 @@
 
 import json
 
+TEXT_SEPARATOR = "|"
+
 with open('/Users/liamtoozer/projects/eq-survey-runner/app/data/1_0112.json', 'r', encoding="utf8") as jsonData:
     data = json.load(jsonData)
 
     jsonData.close()
 
 
-# All translatable text from first layer of file
-def get_header_text():
-
-  # The list of strings we're going to build up
-  the_list = []
-
-  the_list.append(data['title'])
-  the_list.append(data['description'])
-  the_list.append(data['introduction']['description'])
-
-  for value in data['introduction']['information_to_provide']:
-    the_list.append(value)
-
-  return the_list
-
-
 def is_text_present(text, key):
   return text.get(key) != None and text.get(key) != ''
 
 
-
-# All text from 'blocks' with given keys
-def get_blocks_text(keys):
-
-  # The list of strings we're going to build up
-  the_list = []
-
-  for key in keys:
-
-    for group in data['groups']:
-        for block in group['blocks']:
-
-          if is_text_present(block, key):
-            the_list.append(block.get(key))
-
-  return the_list
-
-
-
-# All text from 'sections' with given keys
-def get_sections_text(keys):
-
-  # The list of strings we're going to build up
-  the_list = []
-
-  for key in keys:
-
-    for group in data['groups']:
-        for block in group['blocks']:
-            for section in block['sections']:
-
-                # Check we've actually found something
-                if is_text_present(section, key):
-                  the_list.append(section.get(key))
-
-  return the_list
-
-
-
-
-# All text from 'questions' with given keys
-def get_questions_text(keys):
-
-  # The list of strings we're going to build up
-  the_list = []
-
-  for key in keys:
-
-    for group in data['groups']:
-        for block in group['blocks']:
-            for section in block['sections']:
-                for question in section['questions']:
-
-                  # Check we've actually found something
-                  if is_text_present(question, key):
-                    the_list.append(question.get(key))
-
-  return the_list
-
-
-# All text from 'answers' with given keys
-def get_answers_text(keys):
-
-  # The list of strings we're going to build up
-  the_list = []
-
-  for key in keys:
-
-    for group in data['groups']:
-        for block in group['blocks']:
-            for section in block['sections']:
-                for question in section['questions']:
-                    for answer in question['answers']:
-
-                      # Check we've actually found something
-                      if is_text_present(answer, key):
-                        the_list.append(answer.get(key))
-
-  return the_list
-
-
-# All text from 'messages' with given keys
-def get_validation_message_text():
-
-  # The list of strings we're going to build up
-  the_list = []
-
-  for group in data['groups']:
-      for block in group['blocks']:
-          for section in block['sections']:
-              for question in section['questions']:
-                  for answer in question['answers']:
-
-                    if 'validation' in answer:  # Ensure key is available!
-
-                      for key, value in answer['validation']['messages'].items():
-
-                        if is_text_present(answer['validation']['messages'], key):
-                          the_list.append(value)
-
-  return the_list
-
-
-
-
 # Wrapper function which generates the output file
-def get_translatable_text():
+def get_text():
 
+  # The list of strings we're going to build up
+  translatable_text = []
+
+  # The list of keys we need to get text for
   keys = [
     'description',
     'guidance',
@@ -157,38 +42,72 @@ def get_translatable_text():
     'title'
   ]
 
-  header_text = get_header_text()
-  block_text = get_blocks_text(keys)
-  section_text = get_sections_text(keys)
-  question_text = get_questions_text(keys)
-  answer_text = get_answers_text(keys)
-  validation_text = get_validation_message_text()
+  # Get translatable text from 'header' in file
+  translatable_text.append(data['title'])
+  translatable_text.append(data['description'])
+  translatable_text.append(data['introduction']['description'])
+
+  for value in data['introduction']['information_to_provide']:
+    translatable_text.append(value)
+
+
+  # Now build up translatable text from the nested dictionaries and lists
+  for key in keys:
+
+    for group in data['groups']:
+      for block in group['blocks']:
+        if is_text_present(block, key):
+          translatable_text.append(block.get(key))
+
+        for section in block['sections']:
+          if is_text_present(section, key):
+            translatable_text.append(section.get(key))
+
+          for question in section['questions']:
+            if is_text_present(question, key):
+              translatable_text.append(question.get(key))
+
+            for answer in question['answers']:
+                if is_text_present(answer, key):
+                  translatable_text.append(answer.get(key))
+
+                if 'validation' in answer:  # Ensure key is available!
+
+                  for value in answer['validation']['messages'].values():
+                    if is_text_present(answer['validation']['messages'], key):
+                      translatable_text.append(value)
+
+  return translatable_text
+
+
+def get_translatable_text():
+
+  text = get_text()
+  text.sort()
 
   # Convert to set to remove all duplicates
-  unique_text = set(header_text + block_text + section_text + question_text + answer_text + validation_text)
+  unique_text = set(text)
 
   # Convert back to list to sort
-  sorted_list = list(unique_text)
-  sorted_list.sort()
+  sorted_translatable_text = list(unique_text)
+  sorted_translatable_text.sort()
 
-  return sorted_list
-
+  # return sorted_list
+  return sorted_translatable_text
 
 
 
 def output_to_file(text_list):
 
-  # Output the list - this is just for testing! Please remove after!
-  for line in text_list:
-    print("%s±" % line + line.upper())
-
   # Dump the output to a file
-  test_file = open('test.txt', 'w', encoding="utf8")
+  with open('test.txt', 'w', encoding="utf8") as test_file:
 
-  for line in text_list:
-    test_file.write("%s±" % line + line.upper() + "\n")
+    # Output the list - this is just for testing! Please remove after!
+    for line in text_list:
+      print("%s" % line + TEXT_SEPARATOR + line.upper())
 
-  test_file.close()
+    for line in text_list:
+      test_file.write("%s" % line + TEXT_SEPARATOR + line.upper() + "\n")
 
 
 
@@ -200,56 +119,3 @@ def run():
 
 ### Entry point for entire script for now...
 run()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# print(json.dumps(data))
-# print data
-
-
-
-
-
-#     data["mime_type"] = 'something/test'
-#
-#     jsonData.seek(0)
-#
-#     target_file = open('small_new.json', 'w')
-#
-#     json_dump = json.dumps(data, indent=4, separators=(',', ': '))
-#
-#     target_file.write(json_dump)
-#
-#     #json_dump = json.dumps(data, indent=4, separators=(',', ': '))
-#
-# #with open("file.txt", "w") as att_file:
-# #    att_file.write(data)
-
-
-    # with open('data.json', 'w') as f:
-    #     json.dump(data, f)
-
-# Reading data back
-

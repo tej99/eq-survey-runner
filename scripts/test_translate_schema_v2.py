@@ -1,16 +1,12 @@
 # TODO
 """
-1 - Make nested loops less horrendous. Use recursion instead?
+- Find a way to remove all hardcoding. Can these be held globally in a properties file?
 
-2 - Ignore any text between '<' and '>' and '{' and '}'.
+- Get unit tests set up for running of script (e.g. against different JSON, outputs etc)
 
-3 - Find a way to remove all hardcoding. Can these be held globally in a properties file?
+- Add/amend other team/best practice stuff that's been missed out.
 
-4 - Get unit tests set up for running of script (e.g. against different JSON, outputs etc)
-
-5 - Add/amend other team/best practice stuff that's been missed out.
-
-6 - Will this be run from command line for now? Guard against different inputs.
+- Will this be run from command line for now? Guard against different inputs.
 """
 
 
@@ -26,29 +22,27 @@ def is_text_present(text, key):
   return text.get(key) != None and text.get(key) != ''
 
 
-# Wrapper function which generates the output file
+# Builds and returns a list of translatable text from JSON file
 def get_text():
 
-  # The list of strings we're going to build up
-  translatable_text = []
+  # Get the JSON file
+  with open(file, 'r', encoding="utf8") as jsonData:
+    data = json.load(jsonData)
 
-  # The list of keys we need to get text for
+  # Create the list of strings we're going to build up and assign 'header' text first
+  translatable_text = [data['title'], data['description'], data['introduction']['description']]
+
+  for value in data['introduction']['information_to_provide']:
+    translatable_text.append(value)
+
+
+  # Keys we need to get text for
   keys = [
     'description',
     'guidance',
     'label',
     'title'
   ]
-
-  # Get translatable text from 'header' in file
-  with open(file, 'r', encoding="utf8") as jsonData:
-    data = json.load(jsonData)
-
-  translatable_text = [data['title'], data['description'], data['introduction']['description']]
-
-  for value in data['introduction']['information_to_provide']:
-    translatable_text.append(value)
-
 
   # Now build up translatable text from the nested dictionaries and lists
   for key in keys:
@@ -73,7 +67,6 @@ def get_text():
                 if 'validation' in answer:  # Ensure key is available!
 
                   for value in answer['validation']['messages'].values():
-                    if is_text_present(answer['validation']['messages'], key):
                       translatable_text.append(value)
 
   return translatable_text
@@ -82,7 +75,7 @@ def get_text():
 def sort_text(text_to_sort):
 
   # Convert to set to remove all duplicates
-  unique_text = set(text)
+  unique_text = set(text_to_sort)
 
   # Convert back to list to sort
   sorted_translatable_text = list(unique_text)
@@ -107,31 +100,28 @@ def output_to_file(text_list):
 
 
 def usage():
+    print()
     print('Usage: python ' + os.path.basename(__file__) + ' <json_schema_file_name>')
-    exit(0)
+    exit(1)
 
 
 def check_file_exists(file_name):
 
     if not os.path.isfile(file_name):
-        print('JSON file ' + '\'' + file_name + '\'' + ' not found.')
-        exit(1)
+      print()
+      print('JSON file ' + '\'' + file_name + '\'' + ' not found.')
+      exit(2)
 
 
 
 ### Entry point for entire script for now...
-if len(sys.argv) == 2:
+# if len(sys.argv) < 2:
+#   usage()     # Incorrect number of args passed in
 
-  file = SCHEMA_DIR + sys.argv[1]
 
+# file = SCHEMA_DIR + sys.argv[1]
+file = SCHEMA_DIR + '1_0112.json'
+check_file_exists(file)
 
-  check_file_exists(file)
+output_to_file(sort_text(get_text()))
 
-  text = get_text()
-
-  sorted_text = sort_text(text)
-
-  output_to_file(sorted_text)
-
-else:
-  usage()     # Incorrect number of args passed in

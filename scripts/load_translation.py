@@ -15,7 +15,7 @@ import json
 import ast
 from collections import OrderedDict
 
-with open('/Users/liamtoozer/projects/eq-survey-runner/app/data/1_0112.json', 'r', encoding="utf8") as jsonData:
+with open('/Users/darrellcox/projects/eq-survey-runner/app/data/1_0112.json', 'r', encoding="utf8") as jsonData:
     # data = json.load(jsonData, object_pairs_hook=OrderedDict)
     data = json.load(jsonData, object_pairs_hook=OrderedDict)
 
@@ -23,7 +23,7 @@ with open('/Users/liamtoozer/projects/eq-survey-runner/app/data/1_0112.json', 'r
     print(data)
 
 
-with open("/Users/liamtoozer/projects/eq-survey-runner/scripts/test.txt", "r", encoding="utf8") as file:
+with open("/Users/darrellcox/projects/eq-survey-runner/scripts/test.txt", "r", encoding="utf8") as file:
 
   lines = list(file)
 

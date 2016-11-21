@@ -1,19 +1,31 @@
-import json
+# TODO
+"""
+1 - Make nested loops less horrendous. Use recursion instead?
 
+2 - Ignore any text between '<' and '>' and '{' and '}'.
+
+3 - Find a way to remove all hardcoding. Can these be held globally in a properties file?
+
+4 - Get unit tests set up for running of script (e.g. against different JSON, outputs etc)
+
+5 - Add/amend other team/best practice stuff that's been missed out.
+
+6 - Will this be run from command line for now? Guard against different inputs.
+"""
+
+
+import json
 
 with open('/Users/darrellcox/projects/eq-survey-runner/app/data/1_0112.json', 'r', encoding="utf8") as jsonData:
     data = json.load(jsonData)
+
     jsonData.close()
 
 
 # All translatable text from first layer of file
 def get_header_text():
     # The list of strings we're going to build up
-    the_list = []
-
-    the_list.append(data['title'])
-    the_list.append(data['description'])
-    the_list.append(data['introduction']['description'])
+    the_list = [data['title'], data['description'], data['introduction']['description']]
 
     for value in data['introduction']['information_to_provide']:
         the_list.append(value)
@@ -34,6 +46,7 @@ def get_blocks_text(keys):
 
         for group in data['groups']:
             for block in group['blocks']:
+
                 if is_text_present(block, key):
                     the_list.append(block.get(key))
 
@@ -42,7 +55,6 @@ def get_blocks_text(keys):
 
 # All text from 'sections' with given keys
 def get_sections_text(keys):
-
     # The list of strings we're going to build up
     the_list = []
 
@@ -53,8 +65,7 @@ def get_sections_text(keys):
                 for section in block['sections']:
                     # Check we've actually found something
                     if is_text_present(section, key):
-                       the_list.append(section.get(key))
-
+                        the_list.append(section.get(key))
     return the_list
 
 
@@ -72,7 +83,6 @@ def get_questions_text(keys):
                         # Check we've actually found something
                         if is_text_present(question, key):
                             the_list.append(question.get(key))
-
     return the_list
 
 
@@ -91,7 +101,6 @@ def get_answers_text(keys):
                             # Check we've actually found something
                             if is_text_present(answer, key):
                                 the_list.append(answer.get(key))
-
     return the_list
 
 
@@ -105,13 +114,10 @@ def get_validation_message_text():
             for section in block['sections']:
                 for question in section['questions']:
                     for answer in question['answers']:
-
                         if 'validation' in answer:  # Ensure key is available!
-
                             for key, value in answer['validation']['messages'].items():
                                 if is_text_present(answer['validation']['messages'], key):
                                     the_list.append(value)
-
     return the_list
 
 
@@ -126,19 +132,18 @@ def get_translatable_text():
     ]
 
     header_text = get_header_text()
-    blocks_text = get_blocks_text(keys)
-    sections_text = get_sections_text(keys)
+    block_text = get_blocks_text(keys)
+    section_text = get_sections_text(keys)
     question_text = get_questions_text(keys)
+    answer_text = get_answers_text(keys)
     validation_text = get_validation_message_text()
 
-    # combined = header_text + blocks_text + sections_text + question_text + validation_text
-
     # Convert to set to remove all duplicates
-    unique_text = set(header_text + blocks_text + sections_text + question_text + validation_text)
+    unique_text = set(header_text + block_text + section_text + question_text + answer_text + validation_text)
 
     # Convert back to list to sort
     sorted_list = list(unique_text)
-    sorted_list.sort()
+    sorted_list.sort(reverse=True)
 
     return sorted_list
 
@@ -152,7 +157,7 @@ def output_to_file(text_list):
     test_file = open('test.txt', 'w', encoding="utf8")
 
     for line in text_list:
-        test_file.write("%s±" % line + line.upper() + '\n')
+        test_file.write("%s±" % line + line.upper() + "\n")
 
     test_file.close()
 
@@ -162,9 +167,5 @@ def run():
 
     output_to_file(text)
 
-
 # Entry point for entire script for now...
 run()
-
-
-# Testing

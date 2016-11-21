@@ -15,13 +15,11 @@
 
 
 import json
+import os.path
+import sys
 
 TEXT_SEPARATOR = "|"
-
-with open('/Users/liamtoozer/projects/eq-survey-runner/app/data/1_0112.json', 'r', encoding="utf8") as jsonData:
-    data = json.load(jsonData)
-
-    jsonData.close()
+SCHEMA_DIR = "/Users/liamtoozer/projects/eq-survey-runner/app/data/"
 
 
 def is_text_present(text, key):
@@ -43,9 +41,10 @@ def get_text():
   ]
 
   # Get translatable text from 'header' in file
-  translatable_text.append(data['title'])
-  translatable_text.append(data['description'])
-  translatable_text.append(data['introduction']['description'])
+  with open(file, 'r', encoding="utf8") as jsonData:
+    data = json.load(jsonData)
+
+  translatable_text = [data['title'], data['description'], data['introduction']['description']]
 
   for value in data['introduction']['information_to_provide']:
     translatable_text.append(value)
@@ -80,19 +79,15 @@ def get_text():
   return translatable_text
 
 
-def get_translatable_text():
-
-  text = get_text()
-  text.sort()
+def sort_text(text_to_sort):
 
   # Convert to set to remove all duplicates
   unique_text = set(text)
 
   # Convert back to list to sort
   sorted_translatable_text = list(unique_text)
-  sorted_translatable_text.sort()
+  sorted_translatable_text.sort(reverse=True)
 
-  # return sorted_list
   return sorted_translatable_text
 
 
@@ -111,11 +106,32 @@ def output_to_file(text_list):
 
 
 
-def run():
-  text = get_translatable_text()
+def usage():
+    print('Usage: python ' + os.path.basename(__file__) + ' <json_schema_file_name>')
+    exit(0)
 
-  output_to_file(text)
+
+def check_file_exists(file_name):
+
+    if not os.path.isfile(file_name):
+        print('JSON file ' + '\'' + file_name + '\'' + ' not found.')
+        exit(1)
+
 
 
 ### Entry point for entire script for now...
-run()
+if len(sys.argv) == 2:
+
+  file = SCHEMA_DIR + sys.argv[1]
+
+
+  check_file_exists(file)
+
+  text = get_text()
+
+  sorted_text = sort_text(text)
+
+  output_to_file(sorted_text)
+
+else:
+  usage()     # Incorrect number of args passed in

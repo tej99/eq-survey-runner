@@ -15,7 +15,12 @@ jsonString = str(data)
 def choose_awkward_characters():
     s = '{{exercise.start_date|pretty_date}}'
     result = re.search('{{(.*)}}', s)
-    print(result.group(1))
+    r = 'hello there {{what}} you doing {{another time}} then'
+
+    tester = re.split('({{.+?}})', r)
+    # print(type(tester))
+    print(''.join(tester))
+    #print(result.group(1))
 
 
 def print_all_translatable():
@@ -32,8 +37,8 @@ def print_all_translatable():
 #               json_str.replace(new_list[row][0], new_list[row][1])
 
 #print_all_translatable()
-#choose_awkward_characters()
-print_all_translatable()
+choose_awkward_characters()
+#print_all_translatable()
 
 
 # content = data.read()

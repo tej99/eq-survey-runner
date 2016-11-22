@@ -12,10 +12,11 @@
 
 import json
 import os.path
+import re
 import sys
 
-TEXT_SEPARATOR = "|"
-SCHEMA_DIR = "/Users/liamtoozer/projects/eq-survey-runner/app/data/"
+TEXT_SEPARATOR = "±"
+SCHEMA_DIR = "/Users/darrellcox/projects/eq-survey-runner/app/data/"
 
 
 def is_text_present(text, key):
@@ -88,6 +89,8 @@ def output_to_file(text_list):
 
         # Output the list - this is just for testing! Please remove after!
         for line in text_list:
+            # tester = re.split('({{.+?}})', line, maxsplit=1)
+            # print(tester)
             print("%s" % line + TEXT_SEPARATOR + line.upper())
 
         for line in text_list:

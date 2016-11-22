@@ -1,225 +1,119 @@
+# TODO
+"""
+- Find a way to remove all hardcoding. Can these be held globally in a properties file?
+
+- Get unit tests set up for running of script (e.g. against different JSON, outputs etc)
+
+- Add/amend other team/best practice stuff that's been missed out.
+
+- Will this be run from command line for now? Guard against different inputs.
+"""
+
+
 import json
+import os.path
+import sys
+
+TEXT_SEPARATOR = "|"
+SCHEMA_DIR = "/Users/liamtoozer/projects/eq-survey-runner/app/data/"
 
 
-with open('1_0112.json', 'r') as jsonData:
-    data = json.load(jsonData)
-
-    #jsonData.close()
+def is_text_present(text, key):
+    return text.get(key) != None and text.get(key) != ''
 
 
-# Prints off everything in the title area
-def first_layer():
-    var = ''
-    var += data["title"] + '\n'
-    var += data["description"] + '\n'
-    var += data['introduction']['description'] + '\n'
-    var += data['introduction']['information_to_provide'][0] + '\n'
-    var += data['introduction']['information_to_provide'][1] + '\n'
-    var += data['introduction']['information_to_provide'][2] + '\n'
-    var += data['introduction']['information_to_provide'][3] + '\n'
-    print(var)
+# Builds and returns a list of translatable text from JSON file
+def get_text():
 
-#first_layer()
+    # Get the JSON file
+    with open(file, 'r', encoding="utf8") as jsonData:
+      data = json.load(jsonData)
 
+    # Create the list of strings we're going to build up and assign 'header' text first
+    translatable_text = [data['title'], data['description'], data['introduction']['description']]
 
-    # if not data['groups']:
-    #     print 'No Data!'
-    # else:
-    #     for rows in data['groups']:
-    #         var += data['blocks']
+    for value in data['introduction']['information_to_provide']:
+        translatable_text.append(value)
 
+    # Keys we need to get text for
+    keys = [
+      'description',
+      'guidance',
+      'label',
+      'title'
+    ]
 
-    # for var1 in jsonData:
-    #     for attribute, value in var1.iteritems():
-    #       var += attribute, value
+    # Now build up translatable text from the nested dictionaries and lists
+    for key in keys:
 
+        for group in data['groups']:
+            for block in group['blocks']:
+                if is_text_present(block, key):
+                    translatable_text.append(block.get(key))
 
-    # var += "\n".join(data['introduction']['information_to_provide'][0:])
+                for section in block['sections']:
+                    if is_text_present(section, key):
+                        translatable_text.append(section.get(key))
 
+                    for question in section['questions']:
+                        if is_text_present(question, key):
+                            translatable_text.append(question.get(key))
 
-# Extract all data that can be translated
+                        for answer in question['answers']:
+                            if is_text_present(answer, key):
+                                translatable_text.append(answer.get(key))
 
-    # print(data["mime_type"])
-    # print(data["questionnaire_id"])
-    # print(data["schema_version"])
-    # print(data["survey_id"])
-    # print(data["title"])
-    # print(data["description"])
-    # print(data["theme"])
-    # print(data["introduction"])
-    # print(data['introduction']['description'])
-    # print(data['introduction']['information_to_provide'][0:])
-    # print(data["eq_id"])
+                            if 'validation' in answer:  # Ensure key is available!
 
-# Prints off everything in 'groups > blocks > sections > questions > answers
+                                for value in answer['validation']['messages'].values():
+                                    translatable_text.append(value)
 
-# prints section 1 (Reporting Period)
-
-    # print(data['groups'][0]['blocks'][0]['sections'][0]['questions'][0]['answers'][0]['label'])
-    # print(data['groups'][0]['blocks'][0]['sections'][0]['questions'][0]['answers'][0]['validation'])
-    #
-    # print(data['groups'][0]['blocks'][0]['sections'][0]['questions'][0]['answers'][1]['label'])
-    # print(data['groups'][0]['blocks'][0]['sections'][0]['questions'][0]['answers'][1]['validation'])
-    #
-    # print(data['groups'][0]['blocks'][0]['sections'][0]['questions'][0]['description'])
-    # print(data['groups'][0]['blocks'][0]['sections'][0]['questions'][0]['title'])
+    return translatable_text
 
 
-# prints section 2 (Retail Turnover)
+def sort_text(text_to_sort):
+    # Convert to set to remove all duplicates
+    unique_text = set(text_to_sort)
 
-    # print(data['groups'][0]['blocks'][1]['sections'][0]['questions'][0]['answers'][0]['label'])
-    # print(data['groups'][0]['blocks'][1]['sections'][0]['questions'][0]['answers'][0]['validation'])
-    #
-    # print(data['groups'][0]['blocks'][1]['sections'][0]['questions'][0]['description'])
-    # print(data['groups'][0]['blocks'][1]['sections'][0]['questions'][0]['title'])
-    #
-    # print(data['groups'][0]['blocks'][1]['sections'][0]['title'])
-    # print(data['groups'][0]['blocks'][1]['title'])
+    # Convert back to list to sort
+    sorted_translatable_text = list(unique_text)
+    sorted_translatable_text.sort(reverse=True)
 
-
-# prints section 3 (Internet Sales)
+    return sorted_translatable_text
 
 
-    # print(data['groups'][0]['blocks'][2]['sections'][0]['questions'][0]['answers'][0]['label'])
-    # print(data['groups'][0]['blocks'][2]['sections'][0]['questions'][0]['answers'][0]['validation'])
-    #
-    # print(data['groups'][0]['blocks'][2]['sections'][0]['questions'][0]['description'])
-    # print(data['groups'][0]['blocks'][2]['sections'][0]['questions'][0]['title'])
-    #
-    # print(data['groups'][0]['blocks'][2]['sections'][0]['title'])
-    # print(data['groups'][0]['blocks'][2]['title'])
+def output_to_file(text_list):
+    # Dump the output to a file
+    with open('test.txt', 'w', encoding="utf8") as test_file:
+
+        # Output the list - this is just for testing! Please remove after!
+        for line in text_list:
+            print("%s" % line + TEXT_SEPARATOR + line.upper())
+
+        for line in text_list:
+            test_file.write("%s" % line + TEXT_SEPARATOR + line.upper() + "\n")
 
 
-# prints section 4 (Changes in total retail turnover)
-
-    # print(data['groups'][0]['blocks'][3]['sections'][0]['questions'][0]['answers'][0]['label'])
-    # print(data['groups'][0]['blocks'][3]['sections'][0]['questions'][0]['answers'][0]['validation'])
-    #
-    # print(data['groups'][0]['blocks'][3]['sections'][0]['questions'][0]['description'])
-    # print(data['groups'][0]['blocks'][3]['sections'][0]['questions'][0]['title'])
-    #
-    # print(data['groups'][0]['blocks'][3]['sections'][0]['title'])
-    # print(data['groups'][0]['blocks'][3]['title'])
+def usage():
+    print()
+    print('Usage: python ' + os.path.basename(__file__) + ' <json_schema_file_name>')
+    exit(1)
 
 
-# prints section 5 (Employees)
-
-    # print(data['groups'][0]['blocks'][4]['sections'][0]['questions'][0]['answers'][0]['label'])
-    # print(data['groups'][0]['blocks'][4]['sections'][0]['questions'][0]['answers'][0]['validation'])
-    #
-    # print(data['groups'][0]['blocks'][4]['sections'][0]['questions'][0]['answers'][1]['label'])
-    # print(data['groups'][0]['blocks'][4]['sections'][0]['questions'][0]['answers'][1]['validation'])
-    #
-    # print(data['groups'][0]['blocks'][4]['sections'][0]['questions'][0]['answers'][2]['label'])
-    # print(data['groups'][0]['blocks'][4]['sections'][0]['questions'][0]['answers'][2]['validation'])
-    #
-    # print(data['groups'][0]['blocks'][4]['sections'][0]['questions'][0]['answers'][3]['label'])
-    # print(data['groups'][0]['blocks'][4]['sections'][0]['questions'][0]['answers'][3]['validation'])
-    #
-    # print(data['groups'][0]['blocks'][4]['sections'][0]['questions'][0]['answers'][4]['label'])
-    # print(data['groups'][0]['blocks'][4]['sections'][0]['questions'][0]['answers'][4]['validation'])
-    #
-    # print(data['groups'][0]['blocks'][4]['sections'][0]['questions'][0]['description'])
-    # print(data['groups'][0]['blocks'][4]['sections'][0]['questions'][0]['title'])
-    #
-    # print(data['groups'][0]['blocks'][4]['sections'][0]['title'])
-    # print(data['groups'][0]['blocks'][4]['title'])
+def check_file_exists(file_name):
+    if not os.path.isfile(file_name):
+        print()
+        print('JSON file ' + '\'' + file_name + '\'' + ' not found.')
+        exit(2)
 
 
-# prints section 6 (Changes in employee figures)
-
-    # print(data['groups'][0]['blocks'][5]['sections'][0]['questions'][0]['answers'][0]['label'])
-    # print(data['groups'][0]['blocks'][5]['sections'][0]['questions'][0]['answers'][0]['validation'])
-    #
-    # print(data['groups'][0]['blocks'][5]['sections'][0]['questions'][0]['description'])
-    # print(data['groups'][0]['blocks'][5]['sections'][0]['questions'][0]['title'])
-    #
-    # print(data['groups'][0]['blocks'][5]['sections'][0]['title'])
-    # print(data['groups'][0]['blocks'][5]['title'])
+# Entry point for entire script for now...
+# if len(sys.argv) < 2:
+#   usage()     # Incorrect number of args passed in
 
 
+# file = SCHEMA_DIR + sys.argv[1]
+file = SCHEMA_DIR + '1_0112.json'
+check_file_exists(file)
 
-# prints last part ( main titles?)
-    # print(data['groups'][0]['blocks'][0]['sections'][0]['title'])
-    # print(data['groups'][0]['blocks'][0]['title'])
-
-
-    # print(json.dumps(data))
-    # print data
-
-
-# print variable + write to a file
-    # print var
-    #
-    # test_file = open('test.txt', 'w')
-    #
-    # test_file.write(var)
-
-
-
-
-
-
-##### try a for loop
-##### prints off all data in groups
-def groups_data():
-    if data['groups'] == []:
-        print('No Data!')
-    else:
-        for rows in data['groups']:
-            print(rows['blocks'])
-
-    # if data['groups'] == []:
-    #     print 'No Data!'
-    # else:
-    # for group in data['groups']:
-
-
-# All ID in blocks
-def blocks_id():
-    for group in data['groups']:
-        for block in group['blocks']:
-            print (block.get('id'))
-
-
-# All ID in sections
-def sections_id():
-    for group in data['groups']:
-        for block in group['blocks']:
-            for section in block['sections']:
-                 print (section.get('id'))
-
-
-# All ID in answers *Doesn't work*
-def answers_id():
-    for group in data['groups']:
-        for block in group['blocks']:
-            for section in block['sections']:
-                for question in section['answers']:
-                    print (question.get('id'))
-
-sections_id()
-answers_id()
-
-
-#     data["mime_type"] = 'something/test'
-#
-#     jsonData.seek(0)
-#
-#     target_file = open('small_new.json', 'w')
-#
-#     json_dump = json.dumps(data, indent=4, separators=(',', ': '))
-#
-#     target_file.write(json_dump)
-#
-#     #json_dump = json.dumps(data, indent=4, separators=(',', ': '))
-#
-# #with open("file.txt", "w") as att_file:
-# #    att_file.write(data)
-
-
-    # with open('data.json', 'w') as f:
-    #     json.dump(data, f)
-
-# Reading data back
-
+output_to_file(sort_text(get_text()))

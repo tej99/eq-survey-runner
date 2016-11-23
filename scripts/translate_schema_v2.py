@@ -20,7 +20,7 @@ OUTPUT_DIR = os.path.expanduser('~') + "/OUTPUTS"
 print(os.path.expanduser('~'))
 
 def get_text_for_container(container):
-  # extracted_text = []
+
   extracted_text = ''
 
   for key in ['description', 'guidance', 'label', 'title']:
@@ -28,7 +28,6 @@ def get_text_for_container(container):
     value = container.get(key)
 
     if value is not None and value != '':
-        # extracted_text.append(value)
       extracted_text += value
 
   return extracted_text
@@ -72,14 +71,14 @@ def get_text(json_file_to_deserialise):
 
 def sort_text(text_to_sort):
 
-  # Convert to set to remove all duplicates
-  unique_text = set(text_to_sort)
+  sorted_text = list(text_to_sort)
+  sorted_text.sort(reverse=True)
 
-  # Convert back to list to sort
-  sorted_translatable_text = list(unique_text)
-  sorted_translatable_text.sort(reverse=True)
+  return sorted_text
 
-  return sorted_translatable_text
+
+def remove_duplicates(text_with_duplicates):
+  return set(text_with_duplicates)
 
 
 def output_to_file(text_list):
@@ -93,8 +92,6 @@ def output_to_file(text_list):
 
     for line in text_list:
       test_file.write("%s" % line + TEXT_SEPARATOR + line.upper() + "\n")
-
-
 
 
 
@@ -113,7 +110,7 @@ def output_to_file(text_list):
 #   text = get_text(json_file)
 #
 #   click.echo('Making list unique...')
-#   # unique_text = remove_duplicates(text)
+#   unique_text = remove_duplicates(text)
 #
 #   click.echo('Sorting list...')
 #   # sorted_text = sort_text(unique_text)
@@ -134,7 +131,9 @@ file = SCHEMA_DIR + '1_0112.json'
 
 text = get_text(file)
 
-sorted_text = sort_text(text)
+unique_text = remove_duplicates(text)
+
+sorted_text = sort_text(unique_text)
 
 output_to_file(sorted_text)
 

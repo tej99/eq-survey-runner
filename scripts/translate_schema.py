@@ -31,10 +31,11 @@ def get_text():
       data = json.load(jsonData)
 
     # Create the list of strings we're going to build up and assign 'header' text first
-    translatable_text = [data['title'], data['description'], data['introduction']['description']]
+    # translatable_text = [data['title'], data['description'], data['introduction']['description']]
+    translatable_text = [data['title'], data['description']]
 
-    for value in data['introduction']['information_to_provide']:
-        translatable_text.append(value)
+    # for value in data['introduction']['information_to_provide']:
+    #     translatable_text.append(value)
 
     # Keys we need to get text for
     keys = [
@@ -45,11 +46,11 @@ def get_text():
     ]
 
     # Now build up translatable text from the nested dictionaries and lists
-    for key in keys:
+    for key in keys: ##
 
         for group in data['groups']:
             for block in group['blocks']:
-                if is_text_present(block, key):
+                if is_text_present(block, key): ##
                     translatable_text.append(block.get(key))
 
                 for section in block['sections']:
@@ -116,7 +117,8 @@ def check_file_exists(file_name):
 
 
 # file = SCHEMA_DIR + sys.argv[1]
-file = SCHEMA_DIR + '1_0112.json'
+# file = SCHEMA_DIR + '1_0112.json'
+file = SCHEMA_DIR + 'census_household.json'
 check_file_exists(file)
 
 output_to_file(sort_text(get_text()))

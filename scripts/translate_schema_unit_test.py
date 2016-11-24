@@ -2,11 +2,20 @@ import unittest
 import re
 import os
 
-def is_text_present(text, key):
-    return text.get(key) != None and text.get(key) != ''
+
+def get_text_for_container(container):
+    extracted_text = ''
+
+    for key in ['description', 'guidance', 'label', 'title']:
+        value = container.get(key)
+
+    if value is not None and value != '':
+        extracted_text += value
+
+    return extracted_text
 
 
-def get_text1():
+def get_text():
     data = {
         "title": "Survey",
         "description": "Describe this",
@@ -24,18 +33,37 @@ def get_text1():
     print(translatable_text1)
     return translatable_text1
 
-    translatable_text2 = translatable_text1
+
+def get_text2():
+    data = {
+        "title": "Survey",
+        "description": "Describe this",
+        "introduction": {
+            "description": "Describe the inside of this",
+            "information_to_provide": [
+                "value of total retail turnover",
+                "value of internet sales",
+                "numbers of employees",
+                "reasons for changes to figures"
+            ]
+        }
+    }
+    translatable_text2 = get_text()
 
     for value in data['introduction']['information_to_provide']:
         translatable_text2.append(value)
     print(translatable_text2)
     return translatable_text2
 
+
 def sort_text(text_to_sort):
-    unique_text = set(text_to_sort)
-    sorted_translatable_text = list(unique_text)
-    sorted_translatable_text.sort(reverse=True)
-    return sorted_translatable_text
+    sorted_text = list(text_to_sort)
+    sorted_text.sort(reverse=True)
+    return sorted_text
+
+
+def remove_duplicates(text_with_duplicates):
+    return set(text_with_duplicates)
 
 
 # def output_to_file(text_list):
@@ -60,7 +88,6 @@ def check_file_exists(file_name):
         some_file = 'JSON file ' + '\'' + file_name + '\'' + ' not found.'
         print(some_file)
         return some_file
-        exit(2)
 
 
 class TestTranslationSchema(unittest.TestCase):
@@ -68,19 +95,45 @@ class TestTranslationSchema(unittest.TestCase):
     def test_init(self):
         self.assertTrue(True)
 
-    # def test_is_text_present(self):
-    #     test_present_text = is_text_present('', key)
-    #     self.assertEqual(test_present_text)
-    #     self.assertNotEqual(test_present_text)
+    def test_get_text_for_container(self):
+        data = {
+            "title": "Survey",
+            "description": "Describe this",
+            "introduction": {
+                "description": "Describe the inside of this",
+                "information_to_provide": [
+                    "value of total retail turnover",
+                    "value of internet sales",
+                    "numbers of employees",
+                    "reasons for changes to figures"
+                ]
+            }
+        }
+        this_text = get_text_for_container(data)
+        self.assertEqual(this_text, 'Survey')
 
-    def test_get_text(self):
-        test_getting = get_text1()
+    def test_get_text1(self):
+        test_getting = get_text()
         self.assertEqual(test_getting, ['Survey', 'Describe this', 'Describe the inside of this'])
 
+    def test_get_text2(self):
+        test_getting = get_text2()
+        self.assertEqual(test_getting, ['Survey',
+                                        'Describe this',
+                                        'Describe the inside of this',
+                                        'value of total retail turnover',
+                                        'value of internet sales',
+                                        'numbers of employees',
+                                        'reasons for changes to figures'])
+
     def test_sort(self):
-        test_sorting = sort_text('helloooooo')
+        test_sorting = sort_text('helloo')
         # takes out the string, removes duplicates and sorts in reverse
-        self.assertEqual(test_sorting, ['o', 'l', 'h', 'e'])
+        self.assertEqual(test_sorting, ['o', 'o', 'l', 'l', 'h', 'e'])
+
+    def test_remove_duplicates(self):
+        test_duplication = remove_duplicates('aaaaaaaaa')
+        self.assertEqual(test_duplication, {'a'})
 
     # def test_output(self):
     #     test_output_file = output_to_file('stuff in file')

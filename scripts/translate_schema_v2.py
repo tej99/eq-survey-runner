@@ -1,23 +1,18 @@
 # TODO
 """
-- Find a way to remove all hardcoding. Can these be held globally in a properties file?
-
 - Get unit tests set up for running of script (e.g. against different JSON, outputs etc)
 
 - Add/amend other team/best practice stuff that's been missed out.
-
-- Will this be run from command line for now? Guard against different inputs.
 """
 
 import json
-import os
 import click
+import os
 
 TEXT_SEPARATOR = "±"
-SCHEMA_DIR = os.path.expanduser('~') + "/projects/eq-survey-runner/app/data/"
-OUTPUT_DIR = os.path.expanduser('~') + "/OUTPUTS"
+OUTPUT_FILE_EXTENSION = ".translate.txt"
+STDOUT_EXCEPTION = 'red'
 
-print(os.path.expanduser('~'))
 
 def get_text_for_container(container):
 
@@ -38,7 +33,12 @@ def get_text(json_file_to_deserialise):
 
   # Get the JSON file
   with open(json_file_to_deserialise, 'r', encoding="utf8") as json_data:
-    data = json.load(json_data)
+    try:
+      data = json.load(json_data)
+    except ValueError:
+      click.secho("Error decoding JSON. Please ensure file is valid JSON format.", fg=STDOUT_EXCEPTION)
+      exit(1)
+
 
   # Create the list of strings we're going to build up and assign 'header' text first
   translatable_text = [data['title'], data['description'], data['introduction']['description']]
@@ -81,75 +81,64 @@ def remove_duplicates(text_with_duplicates):
   return set(text_with_duplicates)
 
 
-def output_to_file(text_list):
-
-  # Dump the output to a file
-  with open('test.txt', 'w', encoding="utf8") as test_file:
-
-    # Output the list - this is just for testing! Please remove after!
-    for line in text_list:
-      print("%s" % line + TEXT_SEPARATOR + line.upper())
+def output_text_to_file(text_list, file_name):
+  with open(file_name, 'w', encoding="utf8") as test_file:
 
     for line in text_list:
-      test_file.write("%s" % line + TEXT_SEPARATOR + line.upper() + "\n")
+      test_file.write("%s" % line + TEXT_SEPARATOR + line.upper() + "\r\n")
+      # print("%s" % line + TEXT_SEPARATOR + line.upper())     # Output the list - this is just for testing! Please remove after!
 
 
+def strip_directory_and_extension(file):
 
-# @click.command()
-# @click.argument('json_file', type=click.Path(exists=True))
-# def main(json_file):
-#   """
-#   This script takes a JSON schema file and outputs all translatable text into
-#   a separate text file.
-#   """
-#   click.echo("JSON file '" + json_file + "'provided")
-#
-#   # json_file = SCHEMA_DIR + '1_0112.json'
-#
-#   click.echo('Creating list of translatable text from ' + json_file)
-#   text = get_text(json_file)
-#
-#   click.echo('Making list unique...')
-#   unique_text = remove_duplicates(text)
-#
-#   click.echo('Sorting list...')
-#   # sorted_text = sort_text(unique_text)
-#   sorted_text = sort_text(text)
-#
-#   click.echo('Outputting list into file...')
-#   output_to_file(sorted_text)
-#
-#   click.echo('Script complete.\nOutput of translated text: ' + "OUTPUT TEXT FILE LOCATION")
-#
-#
-# if __name__ == '__main__':
-#     main()
+  file_basename = os.path.basename(file)
+  file_name = os.path.splitext(file_basename)[0]
+
+  return file_name
 
 
+def create_output_file_name_with_directory(output_directory, json_file):
 
-file = SCHEMA_DIR + '1_0112.json'
+  file_name = strip_directory_and_extension(json_file) + OUTPUT_FILE_EXTENSION
+  file_name_with_directory = os.path.join(output_directory, file_name)
 
-text = get_text(file)
-
-unique_text = remove_duplicates(text)
-
-sorted_text = sort_text(unique_text)
-
-output_to_file(sorted_text)
+  return file_name_with_directory
 
 
+@click.command()
+@click.argument('json_file', type=click.Path(exists=True))
+@click.option(
+  '-o', '--output_directory',
+  default=os.getcwd(),
+  type=click.Path(exists=True),
+  help='Specify directory for text output file.'
+)
+def main(json_file, output_directory):
+  """
+Reads in a JSON schema file and outputs all translatable text into
+a separate text file in current directory (unless specified with '--output_directory' or '-o' option).
+
+Parameters: \n
+\tJSON_FILE - JSON file in the current path or in a fully-qualified path.
+  """
+
+  click.echo('Creating list of translatable text from: ' + json_file)
+  text = get_text(json_file)
+
+  click.echo('Removing duplicate text...')
+  unique_text = remove_duplicates(text)
+  sorted_text = sort_text(unique_text)
 
 
+  output_file_name = create_output_file_name_with_directory(output_directory, json_file)
 
-# def usage():
-#     print()
-#     print('Usage: python ' + os.path.basename(__file__) + ' <json_schema_file_name>')
-#     exit(1)
-#
-#
-# def check_file_exists(file_name):
-#
-#     if not os.path.isfile(file_name):
-#       print()
-#       print('JSON file ' + '\'' + file_name + '\'' + ' not found.')
-#       exit(2)
+  click.echo('Outputting text to file...')
+  output_text_to_file(sorted_text, output_file_name)
+
+  click.echo('Finished successfully!')
+  click.echo('\tTranslated text output: ' + output_file_name)
+  exit(0)
+
+
+if __name__ == '__main__':
+    main()

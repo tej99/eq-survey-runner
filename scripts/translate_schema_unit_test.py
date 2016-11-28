@@ -90,6 +90,26 @@ def check_file_exists(file_name):
         return some_file
 
 
+def strip_directory_and_extension(file):
+
+  file_basename = os.path.basename(file)
+  file_name = os.path.splitext(file_basename)[0]
+
+  return file_name
+
+
+def create_output_file_name_with_directory(output_directory, json_file):
+
+  file_name = strip_directory_and_extension(json_file)
+  file_name_with_extension = file_name + ".translate.txt"
+  file_name_with_directory = os.path.join(output_directory, file_name_with_extension)
+
+  return file_name_with_directory
+
+
+
+
+
 class TestTranslationSchema(unittest.TestCase):
 
     def test_init(self):
@@ -148,15 +168,27 @@ class TestTranslationSchema(unittest.TestCase):
         something = regular_expression('start {{exercise.start_date|pretty_date}} end')
         self.assertEquals(something, ['start ', '{{exercise.start_date|pretty_date}}', ' end'])
 
+### May need to change this now as the Click library is checking for this.
     def test_check_file_exists1(self):
         # tests if the file exists
         test_file1 = check_file_exists('some_file')
         self.assertEquals(test_file1, 'JSON file \'some_file\' not found.')
 
+### May need to change this now as the Click library is checking for this.
     def test_check_file_exists2(self):
         # tests if the file exists
         test_file2 = check_file_exists('another_file')
         self.assertNotEquals(test_file2, 'JSON file \'some_file\' not found.')
+
+    def test_strip_directory_and_extension(self):
+        # tests if directory and extension is removed from file name
+        full_file_name = strip_directory_and_extension("/directory/file_name.txt")
+        self.assertEquals(full_file_name, "file_name")
+
+    def test_create_output_file_name_with_directory(self):
+        # tests if a file name and directory is changed to an outputfile
+        full_file_name = create_output_file_name_with_directory("/directory/test_directory/", "file_name.json")
+        self.assertEquals(full_file_name, "/directory/test_directory/file_name.translate.txt")
 
 
 if __name__ == '__main__':

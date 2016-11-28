@@ -16,50 +16,52 @@ STDOUT_EXCEPTION = 'red'
 
 def get_text_for_container(container):
 
-  extracted_text = ''
+  extracted_text = []
 
   for key in ['description', 'guidance', 'label', 'title']:
 
     value = container.get(key)
 
     if value is not None and value != '':
-      extracted_text += value
+      extracted_text.append(value)
 
   return extracted_text
 
 
-# Builds and returns a list of translatable text from JSON file
-def get_text(json_file_to_deserialise):
+def get_text(data):
 
-  # Get the JSON file
-  with open(json_file_to_deserialise, 'r', encoding="utf8") as json_data:
-    try:
-      data = json.load(json_data)
-    except ValueError:
-      click.secho("Error decoding JSON. Please ensure file is valid JSON format.", fg=STDOUT_EXCEPTION)
-      exit(1)
+  translatable_text = []
+
+  # Get header text - could this be moved to separate function?
+  translatable_text.extend(get_text_for_container(data))
+
+  try:
+    translatable_text.append(data['introduction']['description'])
+  except KeyError:
+    pass  # key not present, so continue
+
+  try:
+    for value in data['introduction']['information_to_provide']:
+      translatable_text.append(value)
+  except KeyError:
+    pass  # key not present, so continue
 
 
-  # Create the list of strings we're going to build up and assign 'header' text first
-  translatable_text = [data['title'], data['description'], data['introduction']['description']]
-
-  for value in data['introduction']['information_to_provide']:
-    translatable_text.append(value)
 
 
   # Now build up translatable text from the nested dictionaries and lists
   for group in data['groups']:
     for block in group['blocks']:
-      translatable_text.append(get_text_for_container(block))
+      translatable_text.extend(get_text_for_container(block))
 
       for section in block['sections']:
-        translatable_text.append(get_text_for_container(section))
+        translatable_text.extend(get_text_for_container(section))
 
         for question in section['questions']:
-          translatable_text.append(get_text_for_container(question))
+          translatable_text.extend(get_text_for_container(question))
 
           for answer in question['answers']:
-            translatable_text.append(get_text_for_container(answer))
+            translatable_text.extend(get_text_for_container(answer))
 
             if 'validation' in answer:  # Ensure key is available!
 
@@ -86,7 +88,7 @@ def output_text_to_file(text_list, file_name):
 
     for line in text_list:
       test_file.write("%s" % line + TEXT_SEPARATOR + line.upper() + "\r\n")
-      # print("%s" % line + TEXT_SEPARATOR + line.upper())     # Output the list - this is just for testing! Please remove after!
+      print("%s" % line + TEXT_SEPARATOR + line.upper())     # Output the list - this is just for testing! Please remove after!
 
 
 def strip_directory_and_extension(file):
@@ -99,44 +101,63 @@ def strip_directory_and_extension(file):
 
 def create_output_file_name_with_directory(output_directory, json_file):
 
-  file_name = strip_directory_and_extension(json_file) + OUTPUT_FILE_EXTENSION
-  file_name_with_directory = os.path.join(output_directory, file_name)
+  file_name = strip_directory_and_extension(json_file)
+  file_name_with_extension = file_name + OUTPUT_FILE_EXTENSION
+  file_name_with_directory = os.path.join(output_directory, file_name_with_extension)
 
   return file_name_with_directory
 
 
+def deserialise_json(json_file_to_deserialise):
+  with open(json_file_to_deserialise, 'r', encoding="utf8") as json_data:
+    try:
+      data = json.load(json_data)
+    except ValueError:
+      click.secho("Error decoding JSON. Please ensure file is valid JSON format.", fg=STDOUT_EXCEPTION)
+      exit(1)
+
+  return data
+
+
+
+
+
 @click.command()
-@click.argument('json_file', type=click.Path(exists=True))
-@click.option(
-  '-o', '--output_directory',
-  default=os.getcwd(),
-  type=click.Path(exists=True),
-  help='Specify directory for text output file.'
+# @click.argument('json_file', required=True, type=click.Path(exists=True))
+@click.argument('json_file', required=False, default="/Users/liamtoozer/projects/eq-survey-runner/app/data/census_household.json", type=click.Path(exists=True))
+
+@click.option('-o', '--output_directory', default=os.getcwd(),
+              type=click.Path(exists=True), help='Specify directory for text output file.'
 )
 def main(json_file, output_directory):
   """
-Reads in a JSON schema file and outputs all translatable text into
-a separate text file in current directory (unless specified with '--output_directory' or '-o' option).
+Takes a JSON file and outputs all translatable text into
+a separate text file in current directory (unless otherwise
+specified with '--output_directory' or '-o' option).
 
 Parameters: \n
 \tJSON_FILE - JSON file in the current path or in a fully-qualified path.
   """
 
+
   click.echo('Creating list of translatable text from: ' + json_file)
-  text = get_text(json_file)
+  deserialised_json = deserialise_json(json_file)
+  text = get_text(deserialised_json)
+
 
   click.echo('Removing duplicate text...')
   unique_text = remove_duplicates(text)
   sorted_text = sort_text(unique_text)
 
 
-  output_file_name = create_output_file_name_with_directory(output_directory, json_file)
-
   click.echo('Outputting text to file...')
+  output_file_name = create_output_file_name_with_directory(output_directory, json_file)
   output_text_to_file(sorted_text, output_file_name)
 
-  click.echo('Finished successfully!')
-  click.echo('\tTranslated text output: ' + output_file_name)
+
+  click.echo('Finished successfully.')
+  click.echo()
+  click.echo('Translated text output: ' + output_file_name)
   exit(0)
 
 

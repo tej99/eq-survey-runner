@@ -16,7 +16,7 @@
 		]
 	},
 	"messages": {
-		"MANDATORY": "Please answer before continuing.",
+		"MANDATORY": "Please provide an answer to continue.",
 		"INVALID_DATE": "The date entered is not valid.  Please correct your answer.",
 		"NOT_INTEGER": "Please only enter whole numbers into the field.",
 		"NEGATIVE_INTEGER": "The value cannot be negative. Please correct your answer.",
@@ -35,7 +35,7 @@
 					"questions": [{
 						"id": "6cc86b54-330c-4465-99b2-34cc7073dc2c",
 						"title": "What are the dates of the sales period you are reporting for?",
-						"description": "If possible, this should be for the period {{exercise.start_date|pretty_date}} to {{exercise.end_date|pretty_date}}.",
+						"description": "If possible, this should be for the period {{exercise.start_date|format_date}} to {{exercise.end_date|format_date}}.",
 						"type": "DateRange",
 						"answers": [{
 							"id": "6fd644b0-798e-4a58-a393-a438b32fe637",
@@ -58,8 +58,17 @@
 				}, {
 					"id": "d9d25a21-41b8-42b2-ac7b-fb21b1036d71",
 					"title": "Commodities - Retail Turnover",
-					"description": "<p>- You should enter figures for the reporting period stated above<br>- You should round your figures to the nearest (£) pound</p><h4>Include</h4><ul><li>VAT</li><li>Internet Sales</li></ul>",
+					"description": "<p>- You should enter figures for the reporting period stated above<br>- You should round your figures to the nearest (£) pound</p>",
 					"questions": [{
+                        "guidance": [
+                            {
+                                "title": "Include",
+                                "list": [
+                                    "VAT",
+                                    "Internet Sales"
+                                ]
+                            }
+                        ],
 						"id": "eedb9f9f-2f2e-41f4-9186-ba7110d9e6a4",
 						"title": "",
 						"description": "",

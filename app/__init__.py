@@ -10,6 +10,7 @@ from app import settings
 from app.analytics.custom_google_analytics import CustomGoogleAnalytics
 from app.authentication.authenticator import Authenticator
 from app.authentication.cookie_session import SHA256SecureCookieSessionInterface
+from app.data_model.database import db_session
 from app.libs.utils import get_locale
 from app.submitter.submitter import SubmitterFactory
 
@@ -58,15 +59,9 @@ def rabbitmq_available():
         return False, "rabbit mq unavailable"
 
 
-def get_git_revision():
-    git_revision = settings.EQ_GIT_REF
-    return git_revision
-
-GIT_REVISION = get_git_revision()
-
-
 def git_revision():
-    return True, GIT_REVISION
+    return True, settings.EQ_GIT_REF
+
 
 login_manager = LoginManager()
 
@@ -98,7 +93,7 @@ class AWSReverseProxied(object):
         return self.app(environ, start_response)
 
 
-def create_app(config_name):
+def create_app():
     application = Flask(__name__, static_url_path='/s', static_folder='../static')
     headers = {'Content-Type': 'application/json',
                'Cache-Control': 'no-cache, no-store, must-revalidate',
@@ -115,14 +110,14 @@ def create_app(config_name):
     setup_babel(application)
 
     @application.after_request
-    def apply_caching(response):
+    def apply_caching(response):  # pylint: disable=unused-variable
         for k, v in SECURE_HEADERS.items():
             response.headers[k] = v
 
         return response
 
     @application.context_processor
-    def override_url_for():
+    def override_url_for():  # pylint: disable=unused-variable
         return dict(url_for=versioned_url_for)
 
     application.wsgi_app = AWSReverseProxied(application.wsgi_app)
@@ -133,13 +128,15 @@ def create_app(config_name):
 
     configure_logging(application)
 
+    login_manager.init_app(application)
+
     if settings.EQ_DEV_MODE:
         # TODO fix health check so it no longer sends message to queue
         add_health_check(application, headers)
         start_dev_mode(application)
 
     # always add safe health check
-    add_safe_health_check(application, headers)
+    add_safe_health_check(application)
 
     if settings.EQ_PROFILING:
         setup_profiling(application)
@@ -151,6 +148,10 @@ def create_app(config_name):
     application.config['THEME_PATHS'] = os.path.dirname(os.path.abspath(__file__))
     Themes(application, app_identifier="surveyrunner")
 
+    @application.teardown_appcontext
+    def shutdown_session(exception=None):  # pylint: disable=unused-variable,unused-argument
+        db_session.remove()
+
     return application
 
 
@@ -158,7 +159,6 @@ def setup_profiling(application):
     # Setup profiling
 
     from werkzeug.contrib.profiler import ProfilerMiddleware, MergeStream
-    import os
 
     profiling_dir = "profiling"
 
@@ -196,7 +196,7 @@ def configure_logging(application):
     logging.basicConfig(level=levels[settings.EQ_LOG_LEVEL], format=log_format)
 
     # set the logger for this application and stop using flasks broken solution
-    application._logger = logging.getLogger(__name__)
+    application._logger = logging.getLogger(__name__)  # pylint: disable=protected-access
 
     # turn boto logging to critical as it logs far too much and it's only used
     # for cloudwatch logging
@@ -204,21 +204,24 @@ def configure_logging(application):
     if settings.EQ_CLOUDWATCH_LOGGING:
         setup_cloud_watch_logging(application)
 
+    # Set werkzeug logging level
+    if settings.EQ_WERKZEUG_LOG_LEVEL:
+        werkzeug_logger = logging.getLogger('werkzeug')
+        werkzeug_logger.setLevel(level=levels[settings.EQ_WERKZEUG_LOG_LEVEL])
+
     # setup file logging
     rotating_log_file = RotatingFileHandler(
-      LOG_NAME, maxBytes=LOG_SIZE, backupCount=LOG_NUMBER)
+        LOG_NAME, maxBytes=LOG_SIZE, backupCount=LOG_NUMBER)
     logging.getLogger().addHandler(rotating_log_file)
 
     # setup splunk logging
     if settings.EQ_SPLUNK_LOGGING:
         setup_splunk_logging()
-    application.logger.debug("Initializing login manager for application")
-    login_manager.init_app(application)
-    application.logger.debug("Login Manager initialized")
 
-    # workaround flask crazy logging mechanism
+    # workaround flask crazy logging mechanism (https://github.com/pallets/flask/issues/641)
     application.logger_name = "nowhere"
-    application.logger
+    # the line below is required to trigger disabling the logger
+    application.logger  # pylint: disable=pointless-statement
 
 
 def setup_splunk_logging():
@@ -252,7 +255,7 @@ def setup_cloud_watch_logging(application):
 
 def start_dev_mode(application):
     # import and register the dev mode blueprint
-    from .dev_mode import dev_mode_blueprint
+    from .dev_mode.views import dev_mode_blueprint
     application.register_blueprint(dev_mode_blueprint)
     application.debug = True
     # Not in dev mode, so use secure_session_cookies
@@ -280,7 +283,7 @@ def add_blueprints(application):
 def setup_secure_cookies(application):
     application.secret_key = settings.EQ_SECRET_KEY
     application.permanent_session_lifetime = timedelta(
-      seconds=settings.EQ_SESSION_TIMEOUT)
+        seconds=settings.EQ_SESSION_TIMEOUT)
     application.session_interface = SHA256SecureCookieSessionInterface()
     application.config['SESSION_COOKIE_SECURE'] = True
 
@@ -293,14 +296,14 @@ def setup_babel(application):
 
 def add_health_check(application, headers):
     application.healthcheck = HealthCheck(
-      application, '/healthcheck', success_headers=headers, failed_headers=headers)
+        application, '/healthcheck', success_headers=headers, failed_headers=headers)
     application.healthcheck.add_check(rabbitmq_available)
     application.healthcheck.add_check(git_revision)
 
 
-def add_safe_health_check(application, headers):
+def add_safe_health_check(application):
     @application.route('/status')
-    def safe_health_check():
+    def safe_health_check():  # pylint: disable=unused-variable
         data = {'status': 'OK'}
         return json.dumps(data)
 
@@ -318,11 +321,11 @@ def versioned_url_for(endpoint, **values):
 
 
 def get_minimized_asset(filename):
-    '''
+    """
     If we're in production and it's a js or css file, return the minified version.
     :param filename: the original filename
     :return: the new file name will be .min.css or .min.js
-    '''
+    """
     if settings.EQ_MINIMIZE_ASSETS:
         if 'css' in filename:
             filename = filename.replace(".css", ".min.css")

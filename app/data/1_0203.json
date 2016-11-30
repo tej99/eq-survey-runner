@@ -48,7 +48,7 @@
                                             "validation": {
                                                 "messages": {
                                                     "INVALID_DATE": "The date entered is not valid.  Please correct your answer.",
-                                                    "MANDATORY": "Please answer before continuing."
+                                                    "MANDATORY": "Please provide an answer to continue."
                                                 }
                                             }
                                         },
@@ -64,12 +64,12 @@
                                             "validation": {
                                                 "messages": {
                                                     "INVALID_DATE": "The date entered is not valid.  Please correct your answer.",
-                                                    "MANDATORY": "Please answer before continuing."
+                                                    "MANDATORY": "Please provide an answer to continue."
                                                 }
                                             }
                                         }
                                     ],
-                                    "description": "If possible, this should be for the period {{exercise.start_date|pretty_date}} to {{exercise.end_date|pretty_date}}.",
+                                    "description": "If possible, this should be for the period {{exercise.start_date|format_date}} to {{exercise.end_date|format_date}}.",
                                     "display": {
                                         "properties": {}
                                     },
@@ -83,13 +83,22 @@
                             "validation": []
                         },
                         {
-                            "description": "<p>- You should enter figures for the reporting period stated above<br>- You should round your figures to the nearest (\u00a3) pound</p><h4>Include</h4><ul><li>VAT</li><li>Internet Sales</li></ul>",
+                            "description": "<p>- You should enter figures for the reporting period stated above<br>- You should round your figures to the nearest (\u00a3) pound</p>",
                             "display": {
                                 "properties": {}
                             },
                             "id": "d9d25a21-41b8-42b2-ac7b-fb21b1036d71",
                             "questions": [
                                 {
+                                    "guidance": [
+                                        {
+                                            "title": "Include",
+                                            "list": [
+                                                "VAT",
+                                                "Internet Sales"
+                                            ]
+                                        }
+                                    ],
                                     "answers": [
                                         {
                                             "display": {},

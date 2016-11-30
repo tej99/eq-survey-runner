@@ -14,20 +14,15 @@ def ensure_min(value, minimum):
         return value
 
 
-def parse_mode(str):
-    return str.upper() != 'FALSE'
+def parse_mode(string):
+    return string.upper() != 'FALSE'
 
 
-def get_key(key_name):
-    if key_name:
-        """
-        TODO remove these once the encrypted key story is finished
-        :return:
-        """
-        logger.debug("Opening file %", key_name)
-        key = open(key_name, 'r')
+def get_key(_key_name):
+    if _key_name:
+        logger.debug("Opening file %s", _key_name)
+        key = open(_key_name, 'r')
         contents = key.read()
-        logger.debug("Key is %s", contents)
         return contents
     else:
         return None
@@ -48,6 +43,7 @@ EQ_NEW_RELIC_CONFIG_FILE = os.getenv('EQ_NEW_RELIC_CONFIG_FILE', './newrelic.ini
 EQ_SR_LOG_GROUP = os.getenv('EQ_SR_LOG_GROUP', os.getenv('USER', 'UNKNOWN') + '-local')
 EQ_LOG_LEVEL = os.getenv('EQ_LOG_LEVEL', 'INFO')
 EQ_CLOUDWATCH_LOGGING = parse_mode(os.getenv("EQ_CLOUDWATCH_LOGGING", 'True'))
+EQ_WERKZEUG_LOG_LEVEL = os.getenv('EQ_WERKZEUG_LOG_LEVEL', 'INFO')
 EQ_SCHEMA_DIRECTORY = os.getenv('EQ_SCHEMA_DIRECTORY', 'app/data')
 EQ_SESSION_TIMEOUT = int(os.getenv('EQ_SESSION_TIMEOUT', '28800'))
 EQ_SECRET_KEY = os.getenv('EQ_SECRET_KEY', os.urandom(24))

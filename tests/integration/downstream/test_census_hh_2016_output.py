@@ -2,25 +2,28 @@ from werkzeug.datastructures import MultiDict
 
 from tests.integration.create_token import create_token
 from tests.integration.downstream.downstream_test_case import DownstreamTestCase
-from tests.integration.mci import mci_test_urls
 
 
 class TestCensusHH2016OutputFormat(DownstreamTestCase):
-    '''
+    """
     This class tests the eQ application in a black box capacity by feeding
     inputs in and checking the output that would be sent to SDX.
 
     Specifically, it injects a new version of the submitter which captures the
     unencrypted message and interrogates it for the census hh 2016 survey.
-    '''
+    """
 
     def setUp(self):
         super().setUp()
         self.token = create_token('hh2016', '0')
 
-    def test_output_format(self):
+    def get_first_page(self):
         resp = self.client.get('/session?token=' + self.token.decode(), follow_redirects=True)
         self.assertEquals(resp.status_code, 200)
+        return resp
+
+    def test_output_format(self):
+        resp = self.get_first_page()
 
         # We are on the landing page
         content = resp.get_data(True)
@@ -31,7 +34,7 @@ class TestCensusHH2016OutputFormat(DownstreamTestCase):
         form_data = {
             'action[start_questionnaire]': 'Start Questionnaire'
         }
-        resp = self.client.post('/questionnaire/0/hh2016/201604/789/introduction', data=form_data, follow_redirects=False)
+        resp = self.client.post('/questionnaire/0/hh2016/789/introduction', data=form_data, follow_redirects=False)
         self.assertEquals(resp.status_code, 302)
 
         block_one_url = resp.headers['Location']
@@ -61,7 +64,7 @@ class TestCensusHH2016OutputFormat(DownstreamTestCase):
 
         summary_url = resp.headers['Location']
 
-        resp = self.client.get(summary_url, follow_redirects=False)
+        self.client.get(summary_url, follow_redirects=False)
 
         self.assertTrue(summary_url.endswith('summary'))
 
@@ -71,7 +74,7 @@ class TestCensusHH2016OutputFormat(DownstreamTestCase):
 
         self.assertIsNone(TestCensusHH2016OutputFormat._submitter._message)
 
-        resp = self.client.post('/questionnaire/0/hh2016/201604/789/submit-answers', data=form_data, follow_redirects=False)
+        resp = self.client.post('/questionnaire/0/hh2016/789/submit-answers', data=form_data, follow_redirects=False)
         self.assertEquals(resp.status_code, 302)
 
         self.assertIsNotNone(TestCensusHH2016OutputFormat._submitter._message)

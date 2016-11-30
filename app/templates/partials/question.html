@@ -4,6 +4,7 @@
 
 {% set question_title = question.schema_item.title %}
 {% set question_subtitle = question.schema_item.subtitle %}
+{% set question_guidance = "" %}
 
 {% set question_titles %}
   {%- if question_title -%}
@@ -12,24 +13,80 @@
   {%- if question_subtitle -%}
     <br />
     <h3 class="question__subtitle mars">{{question_subtitle}}</h3>
-  {%- endif %}
+  {%- endif -%}
 {% endset %}
 
 {% set question_description %}
-  {%- if question.schema_item.description %}
+  {%- if question.schema_item.description -%}
     <div class="question__description mars" id="description-{{question.id}}">
       {{question.schema_item.description|safe}}
     </div>
   {% endif %}
 {% endset %}
 
-{% set question_answers %}
-  <div class="question__answers">
-    {%- for answer in question.answers -%}
-      {% include theme('partials/answer.html') %}
-    {%- endfor -%}
-  </div>
+{% set question_guidance %}
+  {%- if question.schema_item.guidance -%}
+    <div class="u-mb-s u-mb-l@s">
+      <div class="alert alert--simple alert--neutral" id="question-guidance-{{question.id}}">
+        {%- for guidance in question.schema_item.guidance -%}
+          {%- if guidance.title -%}
+            <h3 class="venus">{{guidance.title}}</h3>
+          {% endif %}
+          {%- if guidance.description -%}
+            <div class="mars">{{guidance.description|safe}}</div>
+          {% endif %}
+          {%- if guidance.list -%}
+            <ul class="mars">
+              {%- for item in guidance.list -%}
+                <li>{{item|safe}}</li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
 {% endset %}
+
+{% set question_answers %}
+ <div class="question__answers">
+   {%- if question.schema_item.type == 'RepeatingAnswer' %}
+     {%- for answer in question.answers %}
+       <div class="question__answer js-household-person">
+         <h3 class="neptune">{{ _('Person ') }}<span class="js-household-loopindex">{{ loop.index }}</span>
+           <small>(
+           {%- if loop.index == 1 -%}
+              <span class="js-household-action">{{ _('You') }}</span>
+           {%- else -%}
+               <button class="btn btn--link" name="action[remove_answer]"
+                       value="{{ loop.index0 }}">{{ _('Remove') }}
+                   <span class="u-vh">{{ _('Person') }} {{loop.index0}}</span>
+               </button>
+           {%- endif -%}
+           )</small>
+         </h3>
+         {% include theme('partials/answer.html') %}
+       </div>
+     {%- endfor %}
+   {%- else %}
+     {%- for answer in question.answers -%}
+      <div class="question__answer">
+       {% include theme('partials/answer.html') %}
+     </div>
+     {%- endfor -%}
+   {%- endif %}
+ </div>
+{% endset %}
+
+{% set question_actions %}
+  {%- if question.schema_item.type == 'RepeatingAnswer' %}
+  <div class="question__actions">
+    <button class="btn btn--border btn--secondary venus js-household-btn" type="submit"
+          name="action[add_answer]">{{ _('Add another person') }}</button>
+  </div>
+  {%- endif %}
+{% endset %}
+
 
 <div class="question" id="{{question.id}}">
 
@@ -50,6 +107,7 @@
         </legend>
 
         {{question_description|safe}}
+        {{question_guidance|safe}}
         {{question_answers|safe}}
 
       </fieldset>
@@ -58,6 +116,7 @@
 
       {{question_titles|safe}}
       {{question_description|safe}}
+      {{question_guidance|safe}}
       {{question_answers|safe}}
 
     {% endif %}
@@ -84,6 +143,7 @@
   {% else %}
 
     {{question_markup|safe}}
+    {{question_actions|safe}}
 
   {% endif %}
 

@@ -1,36 +1,46 @@
 from app.questionnaire.navigator import evaluate_rule
+from app.questionnaire_state.state_repeating_answer_question import RepeatingAnswerStateQuestion
 from app.templating.summary.answer import Answer
 
 
 class Question:
 
-    def __init__(self, block_id, question_schema, answers):
+    def __init__(self, question_schema, answers):
         self.id = question_schema['id']
         self.type = question_schema['type']
         self.skip_condition = question_schema.get('skip_condition')
         answer_schema = question_schema['answers']
         self.title = question_schema['title'] or answer_schema[0]['label']
-        self.answers = self._build_answers(block_id, question_schema, answer_schema, answers)
+        self.answers = self._build_answers(question_schema, answer_schema, answers)
 
     def is_skipped(self, all_answers):
         if self.skip_condition is not None:
             answer = all_answers.get(self.skip_condition['when']['id'])
-            return evaluate_rule(self.skip_condition, answer)
+            return evaluate_rule(self.skip_condition['when'], answer)
 
         return False
 
     @classmethod
-    def _build_answers(cls, block_id, question_schema, answer_schema, answers):
+    def _build_answers(cls, question_schema, answer_schema, answers):
         summary_answers = []
         answers_iterator = iter(answer_schema)
         for answer_schema in answers_iterator:
-            answer = cls._build_answer(question_schema, answer_schema, answers, answers_iterator)
-            summary_answers.append(Answer(block_id, answer_schema, answer))
+            if question_schema['type'] == 'RepeatingAnswer':
+                for answer_id, answer_index in RepeatingAnswerStateQuestion.iterate_over_instance_ids(answers.keys()):
+                    if answer_schema['id'] == answer_id:
+                        key = answer_id if answer_index == 0 else '_'.join([answer_id, str(answer_index)])
+                        answer = cls._build_answer(question_schema, answer_schema, answers, answers_iterator, key)
+                        summary_answers.append(Answer(answer_schema, answer))
+
+            else:
+                answer = cls._build_answer(question_schema, answer_schema, answers, answers_iterator)
+                summary_answers.append(Answer(answer_schema, answer))
+
         return summary_answers
 
     @classmethod
-    def _build_answer(cls, question_schema, answer_schema, answers, answers_iterator):
-        answer = answers.get(answer_schema['id'])
+    def _build_answer(cls, question_schema, answer_schema, answers, answers_iterator, answer_id=None):
+        answer = answers.get(answer_schema['id'] if answer_id is None else answer_id)
 
         if answer is None:
             return None
@@ -67,8 +77,8 @@ class Question:
         next_answer = next(answers_iterator)
         to_date = answers[next_answer['id']]
         return {
-          'from': answer,
-          'to': to_date,
+            'from': answer,
+            'to': to_date,
         }
 
     @staticmethod

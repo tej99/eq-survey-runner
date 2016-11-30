@@ -1,4 +1,4 @@
-@mixin btn($bg, $color) {
+@mixin btn($bg, $color, $color-hover: $color) {
   background-color: $bg;
   color: $color;
   border: none;
@@ -11,12 +11,25 @@
   text-decoration: none;
   &:hover {
     text-decoration: none;
-    color: $color;
+    color: $color-hover;
     background-color: darken($bg, 5%);
   }
   &:focus {
     background-color: $color-focus;
     outline: none;
+  }
+
+  &.btn--border {
+    font-weight: $font-weight-semibold;
+    background: $color;
+    border: 2px solid $bg;
+    color: $bg;
+    padding: 0.5rem 2rem;
+    &:hover,
+    &:focus {
+      background: $bg;
+      color: $color-hover;
+    }
   }
 }
 
@@ -32,9 +45,33 @@
   @include btn($color-dark-grey, $color-white);
 }
 
+.btn--light {
+  @include btn($color-white, transparent, $color-secondary);
+}
+
 .btn--lg {
   font-weight: $font-weight-semibold;
   padding: 0.9rem 5rem;
+}
+
+.btn--link {
+  padding: 0.1rem;
+  margin: 0;
+  display: inline-block;
+  color: $color-links;
+  background: transparent;
+  cursor: pointer;
+  font-size: inherit;
+  text-decoration: underline;
+  &:hover {
+    text-decoration: underline;
+    color: $color-links-hover;
+    background: transparent;
+  }
+  &:focus {
+    color: white;
+    background: $color-links;
+  }
 }
 
 .btn-group {

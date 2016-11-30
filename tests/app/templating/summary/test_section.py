@@ -2,7 +2,6 @@ from unittest import TestCase
 
 import mock
 
-from app.templating.model_builder import build_summary_model
 from app.templating.summary.section import Section
 
 
@@ -27,11 +26,12 @@ class TestSection(TestCase):
         section_schema = {'id': 'section_id', 'title': 'A section title', 'questions': [question_schema]}
 
         # When
-        section = Section('1', section_schema, answers)
+        section = Section(section_schema, answers, "some_link")
 
         # Then
         self.assertEqual(section.id, 'section_id')
         self.assertEqual(section.title, 'A section title')
+        self.assertEqual(section.link, "some_link")
         self.assertEqual(len(section.questions), 1)
 
     def test_create_section_with_multiple_questions(self):
@@ -44,7 +44,7 @@ class TestSection(TestCase):
         section_schema = {'id': 'section_id', 'title': 'A section title', 'questions': [first_question_schema, second_question_schema]}
 
         # When
-        section = Section('1', section_schema, answers)
+        section = Section(section_schema, answers, "some_link")
 
         # Then
         self.assertEqual(len(section.questions), 2)

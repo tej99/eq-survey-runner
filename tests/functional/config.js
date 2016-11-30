@@ -15,7 +15,7 @@ let config = {
   updateJob: true,
   specs: [`${paths.test.wdioSpec}/**/*.spec.js`],
   sync: true,
-  connectionRetryTimeout: 90000,
+  connectionRetryTimeout: 5000,
   connectionRetryCount: 3,
   capabilities: [{
     name: 'Chrome (local)',
@@ -42,7 +42,7 @@ const sauceLabsConfig = {
 if (process.env.TRAVIS === 'true') {
   config = {
     ...config,
-    logLevel: 'debug',
+    logLevel: 'silent',
     capabilities: [chrome]
   }
 } else {

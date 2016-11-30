@@ -1,5 +1,5 @@
 # eQ Survey Runner
-[![Build Status](https://travis-ci.org/ONSdigital/eq-survey-runner.svg?branch=master)](https://travis-ci.org/ONSdigital/eq-survey-runner) [![Code Issues](https://www.quantifiedcode.com/api/v1/project/1709e9d582cc479a86568a043117d4d0/badge.svg)](https://www.quantifiedcode.com/app/project/1709e9d582cc479a86568a043117d4d0) [![codecov](https://codecov.io/gh/ONSdigital/eq-survey-runner/branch/master/graph/badge.svg)](https://codecov.io/gh/ONSdigital/eq-survey-runner) [![Dependency Status](https://gemnasium.com/badges/github.com/ONSdigital/eq-survey-runner.svg)](https://gemnasium.com/github.com/ONSdigital/eq-survey-runner)
+[![Build Status](https://travis-ci.org/ONSdigital/eq-survey-runner.svg?branch=master)](https://travis-ci.org/ONSdigital/eq-survey-runner) [![Code Issues](https://www.quantifiedcode.com/api/v1/project/1709e9d582cc479a86568a043117d4d0/badge.svg)](https://www.quantifiedcode.com/app/project/1709e9d582cc479a86568a043117d4d0) [![codecov](https://codecov.io/gh/ONSdigital/eq-survey-runner/branch/master/graph/badge.svg)](https://codecov.io/gh/ONSdigital/eq-survey-runner) [![Dependency Status](https://gemnasium.com/badges/github.com/ONSdigital/eq-survey-runner.svg)](https://gemnasium.com/github.com/ONSdigital/eq-survey-runner)[![Codacy Badge](https://api.codacy.com/project/badge/Grade/82e63fc5bc5c43e8ba1ba6d13bfb4243)](https://www.codacy.com/app/ONSDigital/eq-survey-runner)
 
 ## Run with Docker
 
@@ -55,14 +55,14 @@ This will generate a JWT for you to log into the application. The script prints 
 
 ### Front-end Toolkit
 
-The front-end toolkit uses nodejs, npm and gulp.
+The front-end toolkit uses nodejs, yarn and gulp.
 
 Install nodejs `6.7.1`. Make sure npm is installed with `npm`.
 
-Install dependencies with:
+Install yarn with:
 
 ```
-npm install
+npm install yarn --global
 ```
 
 Compile the project with
@@ -186,6 +186,7 @@ EQ_CLOUDWATCH_LOGGING - feature flag to enable AWS cloudwatch logging
 EQ_GIT_REF - the latest git ref of HEAD on master
 EQ_SR_LOG_GROUP - The name of the log group to create (defaults to `username-local` for local development)
 EQ_LOG_LEVEL - The default logging level (defaults to 'INFO' for local development)
+EQ_WERKZEUG_LOG_LEVEL - The default logging level for werkzeug (defaults to 'INFO' for local development)
 EQ_SCHEMA_DIRECTORY - The directory that contains the schema files
 EQ_SESSION_TIMEOUT - The duration of the flask session, defaults to 30 minutes
 EQ_SECRET_KEY - The Flask secret key for signing cookies

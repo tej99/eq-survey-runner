@@ -4,9 +4,9 @@ from app.schema.item import Item
 
 
 class Block(Item):
-    def __init__(self):
-        self.id = None
-        self.title = None
+    def __init__(self, id=None):
+        super().__init__(id)
+        self.type = None
         self.sections = []
         self.children = self.sections
         self.container = None

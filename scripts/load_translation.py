@@ -1,5 +1,7 @@
 # TODO
 """
+- Loop through and replace text in deserialised json instead of replacing values in string.
+
 - Ignore any text between '<' and '>' and '{' and '}'.
 
 - Sort out the loop for string replacement. There's got to be a better way of doing it than this!
@@ -17,7 +19,7 @@ import json
 # import ast
 from collections import OrderedDict
 
-TEXT_SEPARATOR = "|"
+TEXT_SEPARATOR = "±"
 SCHEMA_DIR = "/Users/liamtoozer/projects/eq-survey-runner/app/data/"
 SCRIPTS_DIR = "/Users/liamtoozer/projects/eq-survey-runner/scripts/"
 TEXT_TO_TRANSLATE = 0
@@ -29,7 +31,7 @@ with open(SCHEMA_DIR + "1_0112.json", 'r', encoding="utf8") as jsonData:
 
 
 
-with open(SCRIPTS_DIR + "test.txt", "r", encoding="utf8") as file:
+with open(SCRIPTS_DIR + "1_0112.translate.txt", "r", encoding="utf8") as file:
 
   lines = list(file)
 
@@ -48,9 +50,12 @@ with open(SCRIPTS_DIR + "test.txt", "r", encoding="utf8") as file:
 
 
 
+
   # There's probably a much better way of doing this bit...
   index = 0
   for row in new_list:
+    print(row)
+
     if new_list[index][TEXT_TO_TRANSLATE] in json_str:
       json_str = json_str.replace(new_list[index][TEXT_TO_TRANSLATE], new_list[index][TRANSLATED_TEXT])
     index = index + 1
@@ -66,5 +71,5 @@ with open(SCRIPTS_DIR + "test.txt", "r", encoding="utf8") as file:
 
   target_file = open(SCHEMA_DIR + 'translated_1.json', 'w')
 
-  out = json.dumps(json_str, indent=4, separators=(',', ': '))
+  out = json.dumps(json_str, indent=4, ensure_ascii=False, separators=(', ', ': '))
   target_file.writelines(out)

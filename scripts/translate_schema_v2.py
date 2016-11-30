@@ -19,7 +19,7 @@ def get_text_for_container(container):
   extracted_text = []
 
   for key in ['description', 'guidance', 'label', 'title']:
-
+# if guidance then handle values correctly
     value = container.get(key)
 
     if value is not None and value != '':
@@ -31,20 +31,32 @@ def get_text_for_container(container):
 def get_text(data):
 
   translatable_text = []
+  #
+  # try:
+  #   translatable_text.append(data['introduction']['description'])
+  # except KeyError:
+  #   click.echo("INFO: SOME MEANINGFUL MSG")
+  #   pass
+  #
+  # try:
+  #   for value in data['introduction']['information_to_provide']):
+  #     translatable_text.append(value)
+  # except KeyError:
+  #   click.echo("INFO: SOME MEANINGFUL MSG")
+  #   pass
+  #
 
   # Get header text - could this be moved to separate function?
-  translatable_text.extend(get_text_for_container(data))
+  if 'description' in data.get('introduction'):
+    translatable_text.append("desc: " + data['introduction']['description'])
 
-  try:
-    translatable_text.append(data['introduction']['description'])
-  except KeyError:
-    pass  # key not present, so continue
-
-  try:
+  if 'information_to_provide' in data.get('introduction'):
     for value in data['introduction']['information_to_provide']:
       translatable_text.append(value)
-  except KeyError:
-    pass  # key not present, so continue
+
+  translatable_text.extend(get_text_for_container(data))
+
+
 
 
 
@@ -112,24 +124,22 @@ def deserialise_json(json_file_to_deserialise):
   with open(json_file_to_deserialise, 'r', encoding="utf8") as json_data:
     try:
       data = json.load(json_data)
+      return data
+
     except ValueError:
-      click.secho("Error decoding JSON. Please ensure file is valid JSON format.", fg=STDOUT_EXCEPTION)
-      exit(1)
-
-  return data
-
-
-
+        # Throw this exception back up the callstack instead of echo-ing with Click
+        pass
+        # click.secho("Error decoding JSON. Please ensure file is valid JSON format.", fg=STDOUT_EXCEPTION)
+        # exit(1)
 
 
 @click.command()
-# @click.argument('json_file', required=True, type=click.Path(exists=True))
-@click.argument('json_file', required=False, default="/Users/liamtoozer/projects/eq-survey-runner/app/data/census_household.json", type=click.Path(exists=True))
-
+@click.argument('json_file', required=True, type=click.Path(exists=True))
+# @click.argument('json_file', required=True, default="/Users/liamtoozer/projects/eq-survey-runner/app/data/1_0112.json", type=click.Path(exists=True))
 @click.option('-o', '--output_directory', default=os.getcwd(),
               type=click.Path(exists=True), help='Specify directory for text output file.'
 )
-def main(json_file, output_directory):
+def command_line_handler(json_file, output_directory):
   """
 Takes a JSON file and outputs all translatable text into
 a separate text file in current directory (unless otherwise
@@ -138,7 +148,6 @@ specified with '--output_directory' or '-o' option).
 Parameters: \n
 \tJSON_FILE - JSON file in the current path or in a fully-qualified path.
   """
-
 
   click.echo('Creating list of translatable text from: ' + json_file)
   deserialised_json = deserialise_json(json_file)
@@ -162,4 +171,4 @@ Parameters: \n
 
 
 if __name__ == '__main__':
-    main()
+  command_line_handler()

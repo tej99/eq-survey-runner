@@ -128,8 +128,8 @@ def deserialise_json(json_file_to_deserialise):
 
     except ValueError:
         # Throw this exception back up the callstack instead of echo-ing with Click
-        pass
-        # click.secho("Error decoding JSON. Please ensure file is valid JSON format.", fg=STDOUT_EXCEPTION)
+        # pass
+        click.secho("Error decoding JSON. Please ensure file is valid JSON format.", fg=STDOUT_EXCEPTION)
         # exit(1)
 
 

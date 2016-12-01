@@ -124,7 +124,7 @@ def deserialise_json(json_file_to_deserialise):
 
 @click.command()
 # @click.argument('json_file', required=True, type=click.Path(exists=True))
-@click.argument('json_file', required=False, default="/Users/liamtoozer/projects/eq-survey-runner/app/data/census_household.json", type=click.Path(exists=True))
+@click.argument('json_file', required=False, default="/Users/darrellcox/projects/eq-survey-runner/app/data/census_household.json", type=click.Path(exists=True))
 
 @click.option('-o', '--output_directory', default=os.getcwd(),
               type=click.Path(exists=True), help='Specify directory for text output file.'

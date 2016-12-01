@@ -12,6 +12,7 @@
 
 <div>
   <div class="summary">
+
   {% for section in content %}
 
     <h2 class="summary__title saturn" id="{{section.id}}">{{section.title|safe}}</h2>
@@ -41,7 +42,7 @@
               {%- endif -%}
             </div>
             <div class="summary__edit">
-              <a href="{{answer.link}}" class="summary__edit-link" aria-describedby="{{answer.id}} {{answer.id}}-answer" data-qa="{{answer.id}}-edit">Edit <span class="u-vh">your answer</span></a>
+              <a href="{{ section.link }}#{{answer.id}}" class="summary__edit-link" aria-describedby="{{answer.id}} {{answer.id}}-answer" data-qa="{{answer.id}}-edit">Edit <span class="u-vh">your answer</span></a>
             </div>
           </div>
 
@@ -55,7 +56,7 @@
   </div>
 
   <form action="submit-answers" method="POST" novalidate>
-    <button class="btn btn--secondary u-mr-s qa-btn-submit-answers venus" type="submit" name="action[submit_answers]">Submit answers</button>
+    <button class="btn btn--primary u-mr-s qa-btn-submit-answers venus" type="submit" name="action[submit_answers]">Submit answers</button>
   </form>
 </div>
 

@@ -5,10 +5,20 @@ from werkzeug.datastructures import MultiDict
 from app.schema.widgets.multiple_choice_widget import MultipleChoiceWidget
 
 
+class MockMultipleChoiceWidget(MultipleChoiceWidget):
+    def __init__(self):
+        super().__init__('multiple_choice_widget')
+        self.type = 'mock_multiple_choice_widget'
+
+    @staticmethod
+    def _build_options(schema_item, answer_state):
+        pass
+
+
 class TestMultipleChoiceWidget(TestCase):
 
     def setUp(self):
-        self.widget = MultipleChoiceWidget('multiple_choice_widget')
+        self.widget = MockMultipleChoiceWidget()
 
     def test_get_other_input_returns_none_for_empty_input(self):
         assert self.widget.get_other_input({}) is None
@@ -51,4 +61,10 @@ class TestMultipleChoiceWidget(TestCase):
 
     def test_get_other_value_when_single_value_called_other_returns_none(self):
         post_vars = {'multiple_choice_widget': ['Other']}
+        assert self.widget.get_other_input(post_vars) is None
+
+    def test_get_other_input_with_multi_dict_other_not_selected(self):
+        post_vars = MultiDict()
+        post_vars.add('multiple_choice_widget', 'Another Option')
+        post_vars.add('multiple_choice_widget', 'Other value')
         assert self.widget.get_other_input(post_vars) is None

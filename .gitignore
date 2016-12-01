@@ -22,6 +22,7 @@ pip-log.txt
 
 # Unit test / coverage reports
 .coverage
+coverage.xml
 .tox
 coverage/
 
@@ -66,3 +67,6 @@ tests/a11y
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
 newrelic.ini
+
+# Added to prevent committing coverage reports.
+htmlcov/

@@ -23,7 +23,8 @@ def create_payload(user):
             "ru_ref": "12346789012A",
             "ru_name": "Apple",
             "return_by": "2016-04-30",
-            "employment_date": "2016-06-10"}
+            "employment_date": "2016-06-10",
+            "region_code": "GB-GBN"}
 
 
 def generate_token():
@@ -31,7 +32,7 @@ def generate_token():
     user = os.getenv('USER', 'UNKNOWN')
     payload = create_payload(user)
     token = encoder.encode(payload)
-    encrypted_token = encoder.encrypt(token)
+    encrypted_token = encoder.encrypt_token(token)
     return encrypted_token
 
 if __name__ == '__main__':

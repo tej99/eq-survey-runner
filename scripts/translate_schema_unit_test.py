@@ -1,7 +1,9 @@
 import unittest
 import re
 import os
-
+import click
+import json
+from click.testing import CliRunner
 
 def get_text_for_container(container):
     extracted_text = ''
@@ -107,6 +109,29 @@ def create_output_file_name_with_directory(output_directory, json_file):
   return file_name_with_directory
 
 
+@click.command()
+@click.argument('test_file_name')
+def command_line_handler(test_file_name):
+  click.echo('(TEST) Creating list of translatable text from: ' + test_file_name)
+
+
+
+def deserialise_json(json_file_to_deserialise):
+  with open(json_file_to_deserialise, 'r', encoding="utf8") as json_data:
+    try:
+      data = json.load(json_data)
+      return data
+
+    except ValueError:
+      click.secho("Error decoding JSON. Please ensure file is valid JSON format.", fg=STDOUT_EXCEPTION)
+      exit(1)
+
+
+## Not certain how to unit test optional flag arguments with click?
+# @click.command()
+# @click.option('-o')
+# def command_line_with_option(output_directory):
+#   click.echo('(TEST) Creating list of translatable text from: ' + output_directory)
 
 
 
@@ -182,13 +207,35 @@ class TestTranslationSchema(unittest.TestCase):
 
     def test_strip_directory_and_extension(self):
         # tests if directory and extension is removed from file name
-        full_file_name = strip_directory_and_extension("/directory/file_name.txt")
+        full_file_name = strip_directory_and_extension("/directory/file_name.json")
         self.assertEquals(full_file_name, "file_name")
 
     def test_create_output_file_name_with_directory(self):
         # tests if a file name and directory is changed to an outputfile
         full_file_name = create_output_file_name_with_directory("/directory/test_directory/", "file_name.json")
         self.assertEquals(full_file_name, "/directory/test_directory/file_name.translate.txt")
+
+    def test_command_line_handler_arg(self):
+        # test if a given argument is processed correctly
+        runner = CliRunner()
+        result = runner.invoke(command_line_handler, ['file_name.json'])
+        self.assertEquals(result.output, "(TEST) Creating list of translatable text from: file_name.json\n")
+
+## Not certain how to unit test optional flag arguments with click?
+    # def test_command_line_arg_with_option(self):
+    #     # test if a given argument and option is processed correctly
+    #     runner = CliRunner()
+    #     result = runner.invoke(command_line_with_option, o="/test/directory/")
+    #     self.assertEquals(result.output, "(TEST) Creating list of translatable text from: /test/directory/\n")
+
+    # def test_deserialise_json(self):
+    #   # test if a given json formatted file returns deserialised text
+    #   test_json_content = '{"testkey": "testvalue"}'
+    #   test_json_file = "test_json.json"
+
+
+
+
 
 
 if __name__ == '__main__':

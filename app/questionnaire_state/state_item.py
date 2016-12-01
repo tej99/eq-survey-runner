@@ -13,6 +13,8 @@ class StateItem(object):
         self.schema_item = schema_item
         self.skipped = False
         self.display_on_summary = True
+        self.answer_instance = 0
+        self.group_instance = 0
 
     def update_state(self, user_input):
         for child in self.children:
@@ -37,3 +39,12 @@ class StateItem(object):
 
         logger.debug("Item errors list is %s", errors)
         return errors
+
+    def find_state_item(self, schema_item):
+        for child in self.children:
+            if child.schema_item == schema_item:
+                return child
+            else:
+                return child.find_state_item(schema_item)
+
+        return None

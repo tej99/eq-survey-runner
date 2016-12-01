@@ -28,36 +28,25 @@ describe('RSI - Save and restore test', function() {
     expect(landingPage.isOpen()).to.be.true
   })
 
-  it('Given the rsi business survey 0102 is displayed when the same date period is reported then an error is displayed', function() {
-    // Given
-    startQuestionnaire('1_0102.json')
-
-    // When
-    reportingPeriod.setFromReportingPeriodDay('01')
-      .setFromReportingPeriodYear('2016')
-      .setToReportingPeriodDay('01')
-      .setToReportingPeriodYear('2016')
-      .submit()
-
-    // Then
-    expect(reportingPeriod.getAlertText()).to.contain('The \'period to\' date must be different to the \'period from\' date.')
-  })
-
   it('Given a rsi business survey 0102 previously had errors when I correct the errors then I can submit them', function() {
     // Given
     const collectionId = getRandomString(5)
     startQuestionnaire('1_0102.json', 'yoganandkunche', collectionId)
     reportingPeriod.setFromReportingPeriodDay('01')
+      .setFromReportingPeriodMonth(5)
       .setFromReportingPeriodYear('2016')
       .setToReportingPeriodDay('01')
+      .setToReportingPeriodMonth(5)
       .setToReportingPeriodYear('2016')
       .submit()
 
     // When
     openQuestionnaire('1_0102.json', 'yoganandkunche', collectionId)
     reportingPeriod.setFromReportingPeriodDay('01')
+      .setFromReportingPeriodMonth(5)
       .setFromReportingPeriodYear('2016')
       .setToReportingPeriodDay('01')
+      .setToReportingPeriodMonth(5)
       .setToReportingPeriodYear('2017')
       .submit()
     retailTurnoverPage.setRetailTurnover('2000')

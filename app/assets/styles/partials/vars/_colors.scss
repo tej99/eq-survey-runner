@@ -8,7 +8,7 @@ $color-lighter-grey: #f5f5f5;
 
 // brand
 
-$color-primary: #a8bd3a;
+$color-primary: #0f8243;
 $color-primary-dark: #677424;
 $color-secondary: #033e58;
 
@@ -24,6 +24,7 @@ $color-blue: #4263c2;
 $color-text: $color-black;
 $color-text-light: $color-very-dark-grey;
 $color-links: $color-blue;
+$color-links-hover: $color-secondary;
 $color-focus: $color-blue;
 $color-borders: $color-grey;
 $color-placeholder: lighten($color-text-light, 40%);

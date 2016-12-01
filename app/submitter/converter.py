@@ -4,6 +4,8 @@ import logging
 from datetime import datetime, timezone
 
 from app import settings
+from app.questionnaire_state.state_repeating_answer_question import extract_answer_instance_id
+
 
 logger = logging.getLogger(__name__)
 
@@ -54,6 +56,7 @@ class Converter(object):
         """
         Create the JSON answer format for down stream processing
 
+        :param metadata_store: the metadata store
         :param questionnaire: the questionnaire schema
         :param answers: the users answers as a dict of id/value
         :return: a JSON object in the following format:
@@ -84,11 +87,18 @@ class Converter(object):
         data = {}
 
         for key in answers.keys():
-            item = questionnaire.get_item_by_id(key)
+            answer_id, _ = extract_answer_instance_id(key)
+            item = questionnaire.get_item_by_id(answer_id)
             if item is not None:
                 value = answers[key]
                 if value is not None:
-                    data[item.code] = Converter._encode_value(value)
+                    if item.code not in data:
+                        data[item.code] = Converter._encode_value(value)
+                    else:
+                        if not isinstance(data[item.code], list):
+                            list_answers = [data[item.code]]
+                            data[item.code] = list_answers
+                        data[item.code].append(Converter._encode_value(value))
 
         metadata = {SubmitterConstants.USER_ID_KEY: metadata_store['user_id'],
                     SubmitterConstants.RU_REF_KEY: metadata_store['ru_ref']}

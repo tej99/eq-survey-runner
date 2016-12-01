@@ -16,7 +16,6 @@
         }
       },
       "required": [
-        "id",
         "condition",
         "value"
       ]
@@ -74,6 +73,12 @@
                 "title": {
                   "type": "string"
                 },
+                "type": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
                 "sections": {
                   "type": "array",
                   "items": {
@@ -101,6 +106,26 @@
                             },
                             "description": {
                               "type": "string"
+                            },
+                            "guidance": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "title": {
+                                    "type": "string"
+                                  },
+                                  "description": {
+                                    "type": "string"
+                                  },
+                                  "list": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string"
+                                    }
+                                  }
+                                }
+                              }
                             },
                             "skip_condition": {
                               "type": "object",
@@ -160,7 +185,6 @@
                                 "required": [
                                   "id",
                                   "q_code",
-                                  "label",
                                   "type",
                                   "mandatory"
                                 ]

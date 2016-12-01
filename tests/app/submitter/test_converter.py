@@ -48,6 +48,7 @@ JWT = {
   "return_by": "2016-07-07"
 }
 
+
 class TestConverter(SurveyRunnerTestCase):
     def test_prepare_answers(self):
         with self.application.test_request_context():
@@ -140,6 +141,92 @@ class TestConverter(SurveyRunnerTestCase):
 
             # Check the converter correctly
             self.assertEquals("0", answer_object["data"]["003"])
+
+    def test_answer_with_multiple_instances(self):
+        with self.application.test_request_context():
+            self.maxDiff = None
+
+            metadata = parse_metadata(JWT)
+
+            user_answer = {
+                "GHI": 0,
+                "GHI_1": 1,
+                "GHI_2": 2,
+            }
+
+            answer = Answer()
+            answer.id = "GHI"
+            answer.code = "003"
+
+            question = Question()
+            question.id = 'question-2'
+            question.add_answer(answer)
+
+            section = Section()
+            section.add_question(question)
+
+            block = Block()
+            block.id = 'block-1'
+            block.add_section(section)
+
+            group = Group()
+            group.id = 'group-1'
+            group.add_block(block)
+
+            questionnaire = Questionnaire()
+            questionnaire.survey_id = "021"
+            questionnaire.add_group(group)
+            questionnaire.register(question)
+            questionnaire.register(answer)
+
+            answer_object, submitted_at = Converter.prepare_answers(metadata, questionnaire, user_answer)
+            # Check the converter correctly
+            self.assertTrue('0' in answer_object["data"]["003"])
+            self.assertTrue('1' in answer_object["data"]["003"])
+            self.assertTrue('2' in answer_object["data"]["003"])
+
+    def test_prepare_answers_for_answer_containing_underscore(self):
+        with self.application.test_request_context():
+            self.maxDiff = None
+
+            metadata = parse_metadata(JWT)
+
+            user_answer = {
+                "full_name": 0,
+                "full_name_1": 1,
+                "full_name_2": 2,
+            }
+
+            answer = Answer()
+            answer.id = "full_name"
+            answer.code = "003"
+
+            question = Question()
+            question.id = 'question-2'
+            question.add_answer(answer)
+
+            section = Section()
+            section.add_question(question)
+
+            block = Block()
+            block.id = 'block-1'
+            block.add_section(section)
+
+            group = Group()
+            group.id = 'group-1'
+            group.add_block(block)
+
+            questionnaire = Questionnaire()
+            questionnaire.survey_id = "021"
+            questionnaire.add_group(group)
+            questionnaire.register(question)
+            questionnaire.register(answer)
+
+            answer_object, submitted_at = Converter.prepare_answers(metadata, questionnaire, user_answer)
+            # Check the converter correctly
+            self.assertTrue('0' in answer_object["data"]["003"])
+            self.assertTrue('1' in answer_object["data"]["003"])
+            self.assertTrue('2' in answer_object["data"]["003"])
 
 if __name__ == '__main__':
     unittest.main()

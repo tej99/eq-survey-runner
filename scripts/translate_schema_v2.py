@@ -14,11 +14,25 @@ OUTPUT_FILE_EXTENSION = ".translate.txt"
 STDOUT_EXCEPTION = 'red'
 
 
+# def get_text_for_container(container):
+#
+#   extracted_text = []
+#
+#   for key in ['description', 'guidance', 'label', 'title']:
+# # if guidance then handle values correctly
+#     value = container.get(key)
+#
+#     if value is not None and value != '':
+#       extracted_text.append(value)
+#
+#   return extracted_text
+
+
 def get_text_for_container(container):
 
   extracted_text = []
 
-  for key in ['description', 'guidance', 'label', 'title']:
+  for key in ['description', 'label', 'title']:
 # if guidance then handle values correctly
     value = container.get(key)
 
@@ -28,59 +42,74 @@ def get_text_for_container(container):
   return extracted_text
 
 
+
+
 def get_text(data):
 
-  translatable_text = []
-  #
-  # try:
-  #   translatable_text.append(data['introduction']['description'])
-  # except KeyError:
-  #   click.echo("INFO: SOME MEANINGFUL MSG")
-  #   pass
-  #
-  # try:
-  #   for value in data['introduction']['information_to_provide']):
-  #     translatable_text.append(value)
-  # except KeyError:
-  #   click.echo("INFO: SOME MEANINGFUL MSG")
-  #   pass
-  #
-
-  # Get header text - could this be moved to separate function?
-  if 'description' in data.get('introduction'):
-    translatable_text.append("desc: " + data['introduction']['description'])
-
-  if 'information_to_provide' in data.get('introduction'):
-    for value in data['introduction']['information_to_provide']:
-      translatable_text.append(value)
-
-  translatable_text.extend(get_text_for_container(data))
+    translatable_text = []
+    #
+    # try:
+    # translatable_text.append(data['introduction']['description'])
+    # except KeyError:
+    # click.echo("INFO: SOME MEANINGFUL MSG")
+    # pass
+    #
+    # try:
+    # for value in data['introduction']['information_to_provide']):
+    #   translatable_text.append(value)
+    # except KeyError:
+    # click.echo("INFO: SOME MEANINGFUL MSG")
+    # pass
 
 
+    # Get header text - could this be moved to separate function?
+    if 'description' in data.get('introduction'):
+        translatable_text.append(data['introduction']['description'])
+
+    if 'information_to_provide' in data.get('introduction'):
+        for value in data['introduction']['information_to_provide']:
+            translatable_text.append(value)
+
+    translatable_text.extend(get_text_for_container(data))
 
 
 
 
-  # Now build up translatable text from the nested dictionaries and lists
-  for group in data['groups']:
-    for block in group['blocks']:
-      translatable_text.extend(get_text_for_container(block))
 
-      for section in block['sections']:
-        translatable_text.extend(get_text_for_container(section))
 
-        for question in section['questions']:
-          translatable_text.extend(get_text_for_container(question))
+    # Now build up translatable text from the nested dictionaries and lists
+    for group in data['groups']:
+        translatable_text.extend(get_text_for_container(group))
 
-          for answer in question['answers']:
-            translatable_text.extend(get_text_for_container(answer))
+        for block in group['blocks']:
+            translatable_text.extend(get_text_for_container(block))
 
-            if 'validation' in answer:  # Ensure key is available!
+            for section in block['sections']:
+                translatable_text.extend(get_text_for_container(section))
 
-              for value in answer['validation']['messages'].values():
-                translatable_text.append(value)
+                for question in section['questions']:
+                    translatable_text.extend(get_text_for_container(question))
 
-  return translatable_text
+                    if 'guidance' in question:
+                        for guidance in question['guidance']:
+                            translatable_text.extend(get_text_for_container(guidance))
+
+                            for value in guidance['list']:
+                                translatable_text.append(value)
+
+        #             for answer in question['answers']:
+        #                 translatable_text.extend(get_text_for_container(answer))
+        #
+        #                 if 'validation' in answer:  # Ensure key is available!
+        #
+        #                     for value in answer['validation']['messages'].values():
+        #                         translatable_text.append(value)
+        #
+        #             for guidance in question['guidance']:
+        #                 print("hi")
+        #                 translatable_text.extend(get_text_for_container(guidance))
+
+    return translatable_text
 
 
 def sort_text(text_to_sort):
@@ -130,12 +159,12 @@ def deserialise_json(json_file_to_deserialise):
         # Throw this exception back up the callstack instead of echo-ing with Click
         # pass
         click.secho("Error decoding JSON. Please ensure file is valid JSON format.", fg=STDOUT_EXCEPTION)
-        # exit(1)
+        exit(1)
 
 
 @click.command()
-@click.argument('json_file', required=True, type=click.Path(exists=True))
-# @click.argument('json_file', required=True, default="/Users/liamtoozer/projects/eq-survey-runner/app/data/1_0112.json", type=click.Path(exists=True))
+# @click.argument('json_file', required=True, type=click.Path(exists=True))
+@click.argument('json_file', required=True, default="/Users/liamtoozer/projects/eq-survey-runner/app/data/small_census_household.json", type=click.Path(exists=True))
 @click.option('-o', '--output_directory', default=os.getcwd(),
               type=click.Path(exists=True), help='Specify directory for text output file.'
 )
@@ -153,6 +182,8 @@ Parameters: \n
   deserialised_json = deserialise_json(json_file)
   text = get_text(deserialised_json)
 
+  # for row in text:
+  #       print("%s" % row)
 
   click.echo('Removing duplicate text...')
   unique_text = remove_duplicates(text)

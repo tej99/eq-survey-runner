@@ -1,13 +1,8 @@
 import unittest
-from collections import OrderedDict
 
-import re
-import os
-import click
-from click.testing import CliRunner
-import json
 from mock import mock_open, patch
-from scripts.load_translation import deserialise_json
+
+from translations.load_translation import deserialise_json
 
 
 class TestLoadTranslation(unittest.TestCase):

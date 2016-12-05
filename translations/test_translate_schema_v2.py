@@ -1,9 +1,31 @@
 import unittest
 from mock import mock_open, patch
-from translate_schema_v2 import deserialise_json
+# from translate_schema_v2 import deserialise_json, get_text_for_container, remove_duplicates
+from translate_schema_v2 import *
 
 
 class TestLoadTranslation(unittest.TestCase):
+    def test_remove_duplicates(self):
+        test_duplication = remove_duplicates('aaaaaaaaa')
+        self.assertEqual(test_duplication, {'a'})
+
+    def test_get_text_for_container(self):
+        data = {
+            "title": "Survey",
+            "description": "Describe this",
+            "introduction": {
+                "description": "Describe the inside of this",
+                "information_to_provide": [
+                    "value of total retail turnover",
+                    "value of internet sales",
+                    "numbers of employees",
+                    "reasons for changes to figures"
+                ]
+            }
+        }
+        this_text = get_text_for_container(data)
+        self.assertEqual(this_text, ['Describe this', 'Survey'])
+
 
     def test_deserialise_json(self):
         mock = mock_open(read_data='{"title": "Survey"}')
@@ -12,10 +34,10 @@ class TestLoadTranslation(unittest.TestCase):
             self.assertEqual(deserialised_json_data['title'], 'Survey')
 
 # Having trouble getting this to work to test exception - any ideas?
-    # def test_deserialise_json_raises_exception(self):
-    #     mock = mock_open(read_data='{"title": "Survey"}')
-    #     with patch('builtins.open', mock, create=True):
-    #         self.assertRaises(ValueError, deserialise_json('sample.json'))
+#     def test_deserialise_json_raises_exception(self):
+#         mock = mock_open(read_data='{"title": "Survey"}')
+#         with patch('builtins.open', mock, create=True):
+#             self.assertRaises(ValueError, deserialise_json('sample.json'))
 
 
 if __name__ == '__main__':

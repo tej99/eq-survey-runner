@@ -1,5 +1,5 @@
 from app.questionnaire.navigator import evaluate_rule
-from app.questionnaire_state.state_repeating_answer_question import RepeatingAnswerStateQuestion
+from app.questionnaire_state.state_repeating_answer_question import iterate_over_instance_ids
 from app.templating.summary.answer import Answer
 
 
@@ -26,7 +26,7 @@ class Question:
         answers_iterator = iter(answer_schema)
         for answer_schema in answers_iterator:
             if question_schema['type'] == 'RepeatingAnswer':
-                for answer_id, answer_index in RepeatingAnswerStateQuestion.iterate_over_instance_ids(answers.keys()):
+                for answer_id, answer_index in iterate_over_instance_ids(answers.keys()):
                     if answer_schema['id'] == answer_id:
                         key = answer_id if answer_index == 0 else '_'.join([answer_id, str(answer_index)])
                         answer = cls._build_answer(question_schema, answer_schema, answers, answers_iterator, key)
@@ -69,7 +69,7 @@ class Question:
     @staticmethod
     def _get_checkbox_other_display_value(answer, answer_schema, option):
         options = {option['value'] for option in answer_schema['options']}
-        other_option_input = set(answer) - set(options) - {''}
+        other_option_input = [option for option in set(answer) - set(options) if option.strip()]
         return option['label'] if not other_option_input else other_option_input.pop()
 
     @staticmethod

@@ -97,17 +97,16 @@ def get_text(data):
                             for value in guidance['list']:
                                 translatable_text.append(value)
 
-        #             for answer in question['answers']:
-        #                 translatable_text.extend(get_text_for_container(answer))
-        #
-        #                 if 'validation' in answer:  # Ensure key is available!
+                    for answer in question['answers']:
+                        translatable_text.extend(get_text_for_container(answer))
+
+                        if 'options' in answer:  # Ensure key is available!
+                            for value in answer['options']:
+                                translatable_text.extend(get_text_for_container(value))
+
         #
         #                     for value in answer['validation']['messages'].values():
         #                         translatable_text.append(value)
-        #
-        #             for guidance in question['guidance']:
-        #                 print("hi")
-        #                 translatable_text.extend(get_text_for_container(guidance))
 
     return translatable_text
 
@@ -182,8 +181,6 @@ Parameters: \n
   deserialised_json = deserialise_json(json_file)
   text = get_text(deserialised_json)
 
-  # for row in text:
-  #       print("%s" % row)
 
   click.echo('Removing duplicate text...')
   unique_text = remove_duplicates(text)

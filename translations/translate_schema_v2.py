@@ -13,20 +13,6 @@ OUTPUT_FILE_EXTENSION = ".translate.txt"
 STDOUT_EXCEPTION = 'red'
 
 
-# def get_text_for_container(container):
-#
-#   extracted_text = []
-#
-#   for key in ['description', 'guidance', 'label', 'title']:
-# # if guidance then handle values correctly
-#     value = container.get(key)
-#
-#     if value is not None and value != '':
-#       extracted_text.append(value)
-#
-#   return extracted_text
-
-
 def get_text_for_container(container):
 
   extracted_text = []

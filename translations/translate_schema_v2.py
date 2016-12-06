@@ -9,22 +9,21 @@ import click
 import os
 
 TEXT_SEPARATOR = "±"
-OUTPUT_FILE_EXTENSION = ".translate.txt"
+OUTPUT_FILE_EXTENSION = "_translate.txt"
 STDOUT_EXCEPTION = 'red'
 
 
 def get_text_for_container(container):
 
-  extracted_text = []
+    extracted_text = []
 
-  for key in ['description', 'label', 'title']:
-# if guidance then handle values correctly
-    value = container.get(key)
+    for key in ['description', 'label', 'title']:
+        value = container.get(key)
 
-    if value is not None and value != '':
-      extracted_text.append(value)
+        if value is not None and value != '':
+            extracted_text.append(value)
 
-  return extracted_text
+    return extracted_text
 
 
 
@@ -33,8 +32,7 @@ def get_text(data):
 
     translatable_text = []
 
-    get_header_text(data, translatable_text)
-
+    translatable_text.extend(get_header_text(data))
 
 
     # Now build up translatable text from the nested dictionaries and lists
@@ -49,51 +47,65 @@ def get_text(data):
 
                 for question in section['questions']:
                     translatable_text.extend(get_text_for_container(question))
-                    translatable_text.extend(get_guidance_in_question(question))
+                    translatable_text.extend(get_guidance_text_in_question(question))
 
                     for answer in question['answers']:
                         translatable_text.extend(get_text_for_container(answer))
-
-                        translatable_text.extend(get_options_in_answer(answer))
+                        translatable_text.extend(get_options_text_in_answer(answer))
+                        translatable_text.extend(get_validation_text_in_answer(answer))
 
     return translatable_text
 
 
-def get_options_in_answer(answer):
-    translatable_text = []
+def get_options_text_in_answer(answer):
+    extracted_text = []
     if 'options' in answer:  # Ensure key is available!
-        for value in answer['options']:
-            translatable_text.extend(get_text_for_container(value))
+        for option in answer['options']:
+            extracted_text.extend(get_text_for_container(option))
 
-    return translatable_text
+            if 'other' in option:
+                extracted_text.extend(get_text_for_container(option['other']))
+
+    return extracted_text
 
 
-def get_guidance_in_question(question):
-    translatable_text = []
+def get_validation_text_in_answer(answer):
+    extracted_text = []
+    if 'validation' in answer:  # Ensure key is available!
+        for value in answer['validation']['messages']:
+            extracted_text.append(value)
+    return extracted_text
+
+
+def get_guidance_text_in_question(question):
+    extracted_text = []
     if 'guidance' in question:
         for guidance in question['guidance']:
-            translatable_text.extend(get_text_for_container(guidance))
+            extracted_text.extend(get_text_for_container(guidance))
 
             if 'list' in guidance:
                 for value in guidance['list']:
-                    translatable_text.append(value)
-    return translatable_text
+                    extracted_text.append(value)
+    return extracted_text
 
 
-def get_header_text(data, translatable_text):
-    # Get header text - could this be moved to separate function?
+def get_header_text(data):
+    extracted_text = []
     if 'description' in data.get('introduction'):
-        translatable_text.append(data['introduction']['description'])
+        extracted_text.append(data['introduction']['description'])
     if 'information_to_provide' in data.get('introduction'):
         for value in data['introduction']['information_to_provide']:
-            translatable_text.append(value)
-    translatable_text.extend(get_text_for_container(data))
+            extracted_text.append(value)
+
+    extracted_text.extend(get_text_for_container(data))
+
+    return extracted_text
 
 
 def sort_text(text_to_sort):
 
   sorted_text = list(text_to_sort)
-  sorted_text.sort(reverse=True)
+  sorted_text.sort(key=len, reverse=True)
 
   return sorted_text
 
@@ -107,7 +119,7 @@ def output_text_to_file(text_list, file_name):
 
     for line in text_list:
       test_file.write("%s" % line + TEXT_SEPARATOR + line.upper() + "\r\n")
-      print("%s" % line + TEXT_SEPARATOR + line.upper())     # Output the list - this is just for testing! Please remove after!
+      # print("%s" % line + TEXT_SEPARATOR + line.upper())     # Output the list - this is just for testing! Please remove after!
 
 
 def strip_directory_and_extension(file):

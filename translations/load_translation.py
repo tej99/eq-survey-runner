@@ -20,12 +20,12 @@ TEXT_TO_TRANSLATE = 0
 TRANSLATED_TEXT = 1
 
 
-with open(SCHEMA_DIR + "1_0112.json", 'r', encoding="utf8") as jsonData:
+with open(SCHEMA_DIR + "census_household.json", 'r', encoding="utf8") as jsonData:
     data = json.load(jsonData, object_pairs_hook=OrderedDict)
 
 
 
-with open(SCRIPTS_DIR + "1_0112.translate.txt", "r", encoding="utf8") as file:
+with open(SCRIPTS_DIR + "census_household.translate.txt", "r", encoding="utf8") as file:
 
   lines = list(file)
 
@@ -54,7 +54,7 @@ with open(SCRIPTS_DIR + "1_0112.translate.txt", "r", encoding="utf8") as file:
       json_str = json_str.replace(new_list[index][TEXT_TO_TRANSLATE], new_list[index][TRANSLATED_TEXT])
     index = index + 1
 
-  print(json_str)
+  # print(json_str)
 
   # Convert string into dictionary, ready for json.dumps()
   # Is this the best alternative to built-in eval()? Not sure of an alternative?
@@ -63,7 +63,7 @@ with open(SCRIPTS_DIR + "1_0112.translate.txt", "r", encoding="utf8") as file:
   json_str = OrderedDict(eval(json_str))
 
 
-  target_file = open(SCHEMA_DIR + 'translated_1.json', 'w')
+  target_file = open(SCHEMA_DIR + 'census_household_cy.json', 'w')
 
   out = json.dumps(json_str, indent=4, ensure_ascii=False, separators=(', ', ': '))
   target_file.writelines(out)

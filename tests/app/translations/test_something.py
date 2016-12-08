@@ -2,6 +2,7 @@ import unittest
 from translations.extract_translation_data import *
 import os
 import json
+from mock import mock_open, patch
 
 
 class ManipulateTranslationTest(unittest.TestCase):
@@ -18,8 +19,10 @@ class ManipulateTranslationTest(unittest.TestCase):
         self.assertEqual(test_output_to_file_with_directory, '')
 
     def test_deserialise_json(self):
-        test_deserialise = remove_duplicates('')
-        self.assertEqual(test_deserialise, '')
+        mock = mock_open(read_data='{"title": "Survey"}')
+        with patch('builtins.open', mock, create=True):
+            deserialised_json_data = deserialise_json('sample.json')
+            self.assertEqual(deserialised_json_data['title'], 'Survey')
 
 if __name__ == '__main__':
     unittest.main()

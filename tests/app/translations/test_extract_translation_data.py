@@ -2,6 +2,7 @@ import unittest
 from translations.extract_translation_data import *
 import os
 import json
+from mock import mock_open, patch
 
 
 class ExtractTranslationTest(unittest.TestCase):
@@ -9,9 +10,12 @@ class ExtractTranslationTest(unittest.TestCase):
         get_container_text = get_text_for_container({"label": "hello"})
         self.assertEqual(get_container_text, ['hello'])
 
+
     def test_get_text(self):
-        get_all_text = get_text('')
-        self.assertEqual(get_all_text, '')
+        mock = mock_open(read_data='{"title": "Survey"}')
+        with patch('builtins.open', mock, create=True):
+            get_all_text = get_text('sample.json')
+            self.assertEqual(get_all_text, 'Survey')
 
 # test these three with no data to show it can be handled
     def test_get_options_text_in_answer(self):
@@ -39,10 +43,15 @@ class ExtractTranslationTest(unittest.TestCase):
         get_guidance_text2 = get_guidance_text_in_question('')
         self.assertEqual(get_guidance_text2, [])
 
+
 # test to get all header data (no key available)
     def test_get_header_text(self):
-        get_all_header_text = get_header_text('mock?')
-        self.assertEqual(get_all_header_text, ['mock?'])
+        mock = mock_open(read_data='{"title": "Survey",'
+                                   '"description": "Describe"}')
+        with patch('builtins.open', mock, create=True):
+            get_all_header_text = get_header_text('title')
+            self.assertEqual(get_all_header_text, ['Survey'])
+
 
 if __name__ == '__main__':
     unittest.main()

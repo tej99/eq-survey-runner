@@ -8,7 +8,7 @@ import json
 import click
 import os
 
-TEXT_SEPARATOR = "|"
+TEXT_SEPARATOR = "±"
 OUTPUT_FILE_EXTENSION = "_translate.txt"
 STDOUT_EXCEPTION = 'red'
 

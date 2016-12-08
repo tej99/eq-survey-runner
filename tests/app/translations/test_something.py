@@ -1,21 +1,19 @@
 import unittest
 from translations.extract_translation_data import *
-import os
-import json
 from mock import mock_open, patch
 
 
 class ManipulateTranslationTest(unittest.TestCase):
     def test_output_text_to_file(self):
-        test_output_to_file = remove_duplicates('')
-        self.assertEqual(test_output_to_file, '')
+        test_output_text_to_file = output_text_to_file('')
+        self.assertEqual(test_output_text_to_file, '')
 
     def test_strip_directory_and_extension(self):
-        strip_dir_and_extension = remove_duplicates('')
-        self.assertEqual(strip_dir_and_extension, '')
+        test_strip_dir_and_extension = strip_directory_and_extension('')
+        self.assertEqual(test_strip_dir_and_extension, '')
 
     def test_create_output_file_name_with_directory(self):
-        test_output_to_file_with_directory = remove_duplicates('')
+        test_output_to_file_with_directory = create_output_file_name_with_directory('')
         self.assertEqual(test_output_to_file_with_directory, '')
 
     def test_deserialise_json(self):

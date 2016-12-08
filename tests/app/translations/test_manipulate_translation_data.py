@@ -1,7 +1,6 @@
 import unittest
 from translations.extract_translation_data import *
 import re
-import json
 
 
 def regular_expression(line):

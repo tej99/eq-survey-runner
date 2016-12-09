@@ -1,28 +1,40 @@
 # TODO
 """
 - Get unit tests set up for running of script (e.g. against different JSON, outputs etc)
+
+- Get values from dict recursively instead of multiple nested loops.
+
+- Think of better way to handle intermittent keys in get_conditional_text_for_container().
+
 - Add/amend other team/best practice stuff that's been missed out.
 """
-#
+
 import json
 import os
-from sys import argv
+import sys
 
-TEXT_SEPARATOR = "|"
+TEXT_SEPARATOR = "±"
 OUTPUT_FILE_EXTENSION = "_translate.txt"
 
 
 def get_text_for_container(container):
+
     extracted_text = []
 
-    for key in ['description', 'label', 'title']:
+    if isinstance(container, dict):
+        for key in ['description', 'label', 'title']:
+            value = container.get(key)
 
-        value = container.get(key)
+            if value is not None and value != '':
+                extracted_text.append(value)
 
-        if value is not None and value != '':
+    elif isinstance(container, list):
+        for value in container:
             extracted_text.append(value)
 
     return extracted_text
+
+
 
 
 def get_text(data):
@@ -42,58 +54,56 @@ def get_text(data):
 
                 for question in section['questions']:
                     translatable_text.extend(get_text_for_container(question))
-                    translatable_text.extend(get_guidance_text_in_question(question))
+                    translatable_text.extend(get_conditional_text_for_container(question))
 
                     for answer in question['answers']:
                         translatable_text.extend(get_text_for_container(answer))
-                        translatable_text.extend(get_options_text_in_answer(answer))
-                        translatable_text.extend(get_validation_text_in_answer(answer))
-                        translatable_text.extend(get_guidance_text_in_answer(answer))
+                        translatable_text.extend(get_conditional_text_for_container(answer))
 
     return translatable_text
 
 
-def get_guidance_text_in_answer(answer):
+def get_conditional_text_for_container(container):
     extracted_text = []
-    if 'guidance' in answer.keys():
-        extracted_text.append(answer['guidance'])
 
-    return extracted_text
+    if 'introduction' in container:
+
+        if 'description' in container['introduction']:
+            extracted_text.append(container['introduction']['description'])
+
+        if 'information_to_provide' in container['introduction']:
+            for value in container['introduction']['information_to_provide']:
+                extracted_text.append(value)
 
 
-def get_options_text_in_answer(answer):
-    extracted_text = []
-    if 'options' in answer.keys():  # Ensure key is available!
-        for options in answer['options']:
+    if 'options' in container:
+        for options in container['options']:
             extracted_text.extend(get_text_for_container(options))
 
-            if 'other' in options.keys():
+            if 'other' in options:
                 extracted_text.extend(get_text_for_container(options['other']))
 
-    return extracted_text
+
+    if 'guidance' in container:
+
+        guidance_text = container['guidance']
+
+        if isinstance(guidance_text, str):
+            extracted_text.append(container['guidance'])
+        else:
+            for guidance in container['guidance']:
+                extracted_text.extend(get_text_for_container(guidance))
+
+                if 'list' in guidance:
+                    extracted_text.extend(get_text_for_container(guidance['list']))
 
 
-def get_validation_text_in_answer(answer):
-    extracted_text = []
-    if 'validation' in answer.keys():
-        for value in answer['validation']['messages']:
+    if 'validation' in container:
+        for value in container['validation']['messages'].values():
             extracted_text.append(value)
 
     return extracted_text
 
-
-def get_guidance_text_in_question(question):
-    extracted_text = []
-
-    if 'guidance' in question.keys():
-        for guidance in question['guidance']:
-            extracted_text.extend(get_text_for_container(guidance))
-
-            if 'list' in guidance.keys():
-                for value in guidance['list']:
-                    extracted_text.append(value)
-
-    return extracted_text
 
 
 def get_header_text(data):
@@ -101,16 +111,17 @@ def get_header_text(data):
 
     extracted_text.extend(get_text_for_container(data))
 
-    if 'introduction' in data.keys():
+    if 'introduction' in data:
 
-        if 'description' in data['introduction'].keys():
+        if 'description' in data['introduction']:
             extracted_text.append(data['introduction']['description'])
 
-        if 'information_to_provide' in data['introduction'].keys():
+        if 'information_to_provide' in data['introduction']:
             for value in data['introduction']['information_to_provide']:
                 extracted_text.append(value)
 
     return extracted_text
+
 
 
 def sort_text(text_to_sort):
@@ -158,7 +169,6 @@ def deserialise_json(json_file_to_deserialise):
             return None
 
 
-
 def command_line_handler(json_file, output_directory):
 
     print('Creating list of translatable text from: ' + json_file)
@@ -181,12 +191,14 @@ def command_line_handler(json_file, output_directory):
     print('Finished successfully.')
     print()
     print('Translated text output: ' + output_file_name)
+    print()
     exit(0)
 
 
 if __name__ == '__main__':
-    # json_file = argv[1]
-    # output_directory = argv[2]
+
+    # json_file = sys.argv[1]
+    # output_directory = sys.argv[2]
     json_file = "/Users/liamtoozer/projects/eq-survey-runner/app/data/census_household.json"
     output_directory = "/Users/liamtoozer/projects/eq-survey-runner/translations"
 

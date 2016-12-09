@@ -5,8 +5,8 @@
 """
 #
 import json
-import click
 import os
+import click
 
 TEXT_SEPARATOR = "±"
 OUTPUT_FILE_EXTENSION = "_translate.txt"

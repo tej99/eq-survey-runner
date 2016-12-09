@@ -2,6 +2,7 @@
     "mime_type": "application/json/ons/eq",
     "questionnaire_id": "0",
     "schema_version": "0.0.1",
+    "data_version": "0.0.1",
     "survey_id": "0",
     "title": "2016 Census Test Survey",
     "description": "household",
@@ -125,7 +126,7 @@
                                             "mandatory": false,
                                             "options": [],
                                             "q_code": "helpother",
-                                            "type": "textfield",
+                                            "type": "TextField",
                                             "validation": {
                                                 "messages": {
                                                 }
@@ -226,7 +227,7 @@
                                             "mandatory": false,
                                             "options": [],
                                             "q_code": "deviceother",
-                                            "type": "textfield",
+                                            "type": "TextField",
                                             "validation": {
                                                 "messages": {}
                                             }
@@ -293,7 +294,7 @@
                                             "mandatory": false,
                                             "options": [],
                                             "q_code": "paperother",
-                                            "type": "textfield",
+                                            "type": "TextField",
                                             "validation": {
                                                 "messages": {}
                                             }
@@ -380,7 +381,7 @@
                                             "mandatory": false,
                                             "options": [],
                                             "q_code": "help2other",
-                                            "type": "textfield",
+                                            "type": "TextField",
                                             "validation": {
                                                 "messages": {}
                                             }

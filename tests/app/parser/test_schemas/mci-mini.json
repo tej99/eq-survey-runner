@@ -1,5 +1,6 @@
 {
     "schema_version": "0.0.1",
+    "data_version": "0.0.1",
     "questionnaire_id": "22",
     "survey_id": "23",
     "eq_id" : "1",
@@ -46,7 +47,7 @@
                                       "q_code": "146",
                                       "label": "Please explain any movements in your data, for example, sale held, branches opened or sold, extreme weather, or temporary closure of shop",
                                       "guidance": "",
-                                      "type": "Textarea",
+                                      "type": "TextArea",
                                       "mandatory":false,
                                       "display": {
                                           "properties": {

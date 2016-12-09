@@ -28,6 +28,9 @@
     "schema_version": {
       "type": "string"
     },
+    "data_version": {
+      "enum": ["0.0.1", "0.0.2"]
+    },
     "questionnaire_id": {
       "type": "string"
     },
@@ -90,6 +93,9 @@
                       "title": {
                         "type": "string"
                       },
+                      "number": {
+                        "type": "string"
+                      },
                       "description": {
                         "type": "string"
                       },
@@ -102,6 +108,9 @@
                               "type": "string"
                             },
                             "title": {
+                              "type": "string"
+                            },
+                            "number": {
                               "type": "string"
                             },
                             "description": {
@@ -136,7 +145,7 @@
                               }
                             },
                             "type": {
-                              "type": "string"
+                              "enum": ["General", "DateRange", "RepeatingAnswer", "Relationship"]
                             },
                             "answers": {
                               "type": "array",
@@ -156,7 +165,19 @@
                                     "type": "string"
                                   },
                                   "type": {
-                                    "type": "string"
+                                    "enum": [
+                                        "Checkbox",
+                                        "Currency",
+                                        "Date",
+                                        "MonthYearDate",
+                                        "Integer",
+                                        "Percentage",
+                                        "PositiveInteger",
+                                        "Radio",
+                                        "TextArea",
+                                        "TextField",
+                                        "Relationship"
+                                    ]
                                   },
                                   "options": {
                                     "type": "array",
@@ -233,6 +254,9 @@
                           },
                           "goto": {
                             "type": "string"
+                          },
+                          "type": {
+                            "enum": ["answer_value", "answer_count", "answer_count_minus_one"]
                           }
                         },
                         "required": [
@@ -266,10 +290,10 @@
   "required": [
     "mime_type",
     "schema_version",
+    "data_version",
     "questionnaire_id",
     "survey_id",
     "title",
-    "introduction",
     "groups",
     "theme"
   ]

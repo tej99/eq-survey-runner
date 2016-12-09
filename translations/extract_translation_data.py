@@ -67,7 +67,7 @@ def get_options_text_in_answer(answer):
 def get_validation_text_in_answer(answer):
     extracted_text = []
     if 'validation' in answer:
-        for value in answer['validation']['messages']:
+        for value in answer['validation']['messages'].values():
             extracted_text.append(value)
 
     return extracted_text

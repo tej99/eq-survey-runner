@@ -16,10 +16,18 @@ def evaluate_rule(when, answer_value):
     match_value = when['value']
     condition = when['condition']
 
+    answer_to_test = str(answer_value)
+
+    if isinstance(answer_value, list):
+        if len(answer_value) == 1:
+            answer_to_test = answer_value[0]
+        else:
+            return False
+
     # Evaluate the condition on the routing rule
-    if condition == 'equals' and match_value == answer_value:
+    if condition == 'equals' and match_value == answer_to_test:
         return True
-    elif condition == 'not equals' and match_value != answer_value:
+    elif condition == 'not equals' and match_value != answer_to_test:
         return True
     return False
 
@@ -100,6 +108,11 @@ class Navigator:
         self.answer_store = answer_store or AnswerStore()
         self.metadata = metadata or {}
         self.survey_json = survey_json
+
+        self.preceeding_path = []
+
+        if SchemaHelper.has_introduction(self.survey_json):
+            self.preceeding_path = self.PRECEEDING_INTERSTITIAL_PATH
 
         self.first_block_id = SchemaHelper.get_first_block_id(self.survey_json)
         self.first_group_id = SchemaHelper.get_first_group_id(self.survey_json)
@@ -210,7 +223,7 @@ class Navigator:
             "block_id": block_id,
             "group_id": self.first_group_id,
             "group_instance": 0,
-        } for block_id in Navigator.PRECEEDING_INTERSTITIAL_PATH]
+        } for block_id in self.preceeding_path]
 
         location_path += routing_path
 
@@ -239,10 +252,6 @@ class Navigator:
                     "block": block,
                 } for block in group['blocks']])
         return blocks
-
-    @classmethod
-    def get_first_location(cls):
-        return cls.PRECEEDING_INTERSTITIAL_PATH[0]
 
     def _get_current_location_index(self, current_group_id, current_block_id, current_iteration):
         current_group_id = current_group_id or self.first_group_id
@@ -298,8 +307,10 @@ class Navigator:
             if incomplete_blocks:
                 return incomplete_blocks[0]
 
+        first_location = self.get_location_path()[0]
+
         return {
-            'block_id': self.get_first_location(),
+            'block_id': first_location['block_id'],
             'group_id': SchemaHelper.get_first_group_id(self.survey_json),
             'group_instance': 0,
         }

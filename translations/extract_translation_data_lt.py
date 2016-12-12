@@ -10,10 +10,12 @@
 """
 
 import json
+from collections import OrderedDict
+
 import os
 import sys
 
-TEXT_SEPARATOR = "±"
+TEXT_SEPARATOR = ":"
 OUTPUT_FILE_EXTENSION = "_translate.txt"
 
 
@@ -136,10 +138,10 @@ def remove_duplicates(text_with_duplicates):
 
 
 def output_text_to_file(text_list, file_name):
-    with open(file_name, 'w', encoding="utf8") as test_file:
+    with open(file_name, 'w', encoding="utf8") as output_file:
 
         for line in text_list:
-            test_file.write("%s" % line + TEXT_SEPARATOR + line.upper() + "\r\n")
+            output_file.write("%s" % line + TEXT_SEPARATOR + line.upper() + "\r\n")
             # print("%s" % line + TEXT_SEPARATOR + line.upper())     # Output the list - this is just for testing! Please remove after!
 
 
@@ -161,7 +163,7 @@ def create_output_file_name_with_directory(output_directory, json_file):
 def deserialise_json(json_file_to_deserialise):
     with open(json_file_to_deserialise, 'r', encoding="utf8") as json_data:
         try:
-            data = json.load(json_data)
+            data = json.load(json_data, object_pairs_hook=OrderedDict)
             return data
 
         except ValueError:

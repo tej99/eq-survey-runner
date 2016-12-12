@@ -2,7 +2,7 @@
 """
 - Get unit tests set up for running of script (e.g. against different JSON, outputs etc)
 
-- Get values from dict recursively instead of multiple nested loops.
+- Get values from dict recursively instead of multiple nested loops?
 
 - Think of better way to handle intermittent keys in get_conditional_text_for_container().
 
@@ -10,12 +10,10 @@
 """
 
 import json
-from collections import OrderedDict
-
 import os
 import sys
 
-TEXT_SEPARATOR = ":"
+TEXT_SEPARATOR = "±"
 OUTPUT_FILE_EXTENSION = "_translate.txt"
 
 
@@ -37,12 +35,12 @@ def get_text_for_container(container):
     return extracted_text
 
 
-
-
 def get_text(data):
     translatable_text = []
 
-    translatable_text.extend(get_header_text(data))
+    # Get header section text
+    translatable_text.extend(get_text_for_container(data))
+    translatable_text.extend(get_conditional_text_for_container(data))
 
     # Now build up translatable text from the nested dictionaries and lists
     for group in data['groups']:
@@ -53,6 +51,7 @@ def get_text(data):
 
             for section in block['sections']:
                 translatable_text.extend(get_text_for_container(section))
+                translatable_text.extend(get_conditional_text_for_container(section))
 
                 for question in section['questions']:
                     translatable_text.extend(get_text_for_container(question))
@@ -68,24 +67,25 @@ def get_text(data):
 def get_conditional_text_for_container(container):
     extracted_text = []
 
-    if 'introduction' in container:
+    extracted_text.extend(get_introduction_text(container))
+    extracted_text.extend(get_options_text(container))
+    extracted_text.extend(get_guidance_text(container))
+    extracted_text.extend(get_validation_text(container))
 
-        if 'description' in container['introduction']:
-            extracted_text.append(container['introduction']['description'])
-
-        if 'information_to_provide' in container['introduction']:
-            for value in container['introduction']['information_to_provide']:
-                extracted_text.append(value)
+    return extracted_text
 
 
-    if 'options' in container:
-        for options in container['options']:
-            extracted_text.extend(get_text_for_container(options))
+def get_validation_text(container):
+    extracted_text = []
+    if 'validation' in container:
+        for value in container['validation']['messages'].values():
+            extracted_text.append(value)
 
-            if 'other' in options:
-                extracted_text.extend(get_text_for_container(options['other']))
+    return extracted_text
 
 
+def get_guidance_text(container):
+    extracted_text = []
     if 'guidance' in container:
 
         guidance_text = container['guidance']
@@ -99,31 +99,32 @@ def get_conditional_text_for_container(container):
                 if 'list' in guidance:
                     extracted_text.extend(get_text_for_container(guidance['list']))
 
+    return extracted_text
 
-    if 'validation' in container:
-        for value in container['validation']['messages'].values():
-            extracted_text.append(value)
+
+def get_options_text(container):
+    extracted_text = []
+    if 'options' in container:
+        for options in container['options']:
+            extracted_text.extend(get_text_for_container(options))
+
+            if 'other' in options:
+                extracted_text.extend(get_text_for_container(options['other']))
 
     return extracted_text
 
 
-
-def get_header_text(data):
+def get_introduction_text(container):
     extracted_text = []
+    if 'introduction' in container:
+        if 'description' in container['introduction']:
+            extracted_text.append(container['introduction']['description'])
 
-    extracted_text.extend(get_text_for_container(data))
-
-    if 'introduction' in data:
-
-        if 'description' in data['introduction']:
-            extracted_text.append(data['introduction']['description'])
-
-        if 'information_to_provide' in data['introduction']:
-            for value in data['introduction']['information_to_provide']:
+        if 'information_to_provide' in container['introduction']:
+            for value in container['introduction']['information_to_provide']:
                 extracted_text.append(value)
 
     return extracted_text
-
 
 
 def sort_text(text_to_sort):
@@ -142,7 +143,6 @@ def output_text_to_file(text_list, file_name):
 
         for line in text_list:
             output_file.write("%s" % line + TEXT_SEPARATOR + line.upper() + "\r\n")
-            # print("%s" % line + TEXT_SEPARATOR + line.upper())     # Output the list - this is just for testing! Please remove after!
 
 
 def strip_directory_and_extension(file):
@@ -163,7 +163,7 @@ def create_output_file_name_with_directory(output_directory, json_file):
 def deserialise_json(json_file_to_deserialise):
     with open(json_file_to_deserialise, 'r', encoding="utf8") as json_data:
         try:
-            data = json.load(json_data, object_pairs_hook=OrderedDict)
+            data = json.load(json_data)
             return data
 
         except ValueError:
@@ -177,7 +177,6 @@ def command_line_handler(json_file, output_directory):
     deserialised_json = deserialise_json(json_file)
 
     if deserialised_json is None:
-        # error was encountered
         exit(1)
 
     text = get_text(deserialised_json)

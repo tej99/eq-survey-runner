@@ -4,9 +4,6 @@ from mock import mock_open, patch
 
 
 class ManipulateTranslationTest(unittest.TestCase):
-    def test_output_text_to_file(self):
-        test_output_text_to_file = output_text_to_file('')
-        self.assertEqual(test_output_text_to_file, '')
 
     def test_strip_directory_and_extension(self):
         test_strip_dir_and_extension = strip_directory_and_extension('')
@@ -22,7 +19,11 @@ class ManipulateTranslationTest(unittest.TestCase):
             deserialised_json_data = deserialise_json('sample.json')
             self.assertEqual(deserialised_json_data['title'], 'Survey')
 
+    def test_deserialise_json_raises_exception(self):
+            mock = mock_open(read_data='{"title": "Survey"')
+            with patch('builtins.open', mock, create=True):
+                self.assertRaises(ValueError, deserialise_json('sample.json'))
+
 if __name__ == '__main__':
     unittest.main()
 
-# @click.command()

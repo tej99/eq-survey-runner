@@ -172,12 +172,20 @@ def get_summary(eq_id, form_type, collection_id):
 @questionnaire_blueprint.route('confirmation', methods=["GET"])
 @login_required
 def get_confirmation(eq_id, form_type, collection_id):
-    navigator = Navigator(g.schema_json, get_metadata(current_user), get_answer_store(current_user))
+    answer_store = get_answer_store(current_user)
+    navigator = Navigator(g.schema_json, get_metadata(current_user), answer_store)
 
     latest_location = navigator.get_latest_location(get_completed_blocks(current_user))
 
     if latest_location['block_id'] == 'confirmation':
+        this_block = {
+            'block_id': latest_location['block_id'],
+            'group_id': SchemaHelper.get_first_group_id(g.schema_json),
+            'group_instance': 0,
+        }
+
         q_manager = get_questionnaire_manager(g.schema, g.schema_json)
+        q_manager.build_state(this_block, answer_store)
 
         return _render_template(q_manager.state,
                                 group_id=latest_location['group_id'],
@@ -238,6 +246,16 @@ def post_household_composition(eq_id, form_type, collection_id, group_id):
         'group_instance': 0,
     }
 
+    if 'action[save_continue]' in request.form:
+        answer_store.remove(group_id=group_id, block_id='household-composition')
+
+        questionnaire_store = get_questionnaire_store(current_user.user_id, current_user.user_ik)
+        for answer in SchemaHelper.get_answers_that_repeat_in_block(g.schema_json, 'household-composition'):
+            groups_to_delete = SchemaHelper.get_groups_that_repeat_with_answer_id(g.schema_json, answer['id'])
+            for group in groups_to_delete:
+                answer_store.remove(group_id=group['id'])
+                questionnaire_store.completed_blocks[:] = [b for b in questionnaire_store.completed_blocks if b.get('group_id') != group['id']]
+
     valid = questionnaire_manager.process_incoming_answers(this_block, request.form)
 
     if 'action[add_answer]' in request.form:
@@ -252,6 +270,7 @@ def post_household_composition(eq_id, form_type, collection_id, group_id):
     if not valid:
         return _render_template(questionnaire_manager.state, group_id, 0, 'household-composition', template='questionnaire')
 
+    navigator.update_answer_store(get_answer_store(current_user))
     next_location = navigator.get_next_location(current_block_id='household-composition', current_iteration=0, current_group_id=group_id)
 
     return redirect(location_url(eq_id, form_type, collection_id, next_location))

@@ -1,6 +1,6 @@
 import logging
 
-from app.data_model.answer_store import Answer, AnswerStore
+from app.data_model.answer_store import AnswerStore
 from app.helpers.schema_helper import SchemaHelper
 from app.questionnaire.rules import evaluate_goto, evaluate_repeat
 
@@ -38,9 +38,14 @@ class Navigator:
 
     @classmethod
     def _block_index_for_location(cls, blocks, location):
-        if not cls.is_interstitial_block(location['block_id']):
-            return next(index for (index, b) in enumerate(blocks) if b["block"]["id"] == location['block_id'] and
-                        b["group_id"] == location['group_id'] and b['group_instance'] == location['group_instance'])
+        try:
+            if not cls.is_interstitial_block(location['block_id']):
+                return next(index for (index, b) in enumerate(blocks) if b["block"]["id"] == location['block_id'] and
+                            b["group_id"] == location['group_id'] and b['group_instance'] == location['group_instance'])
+        except StopIteration:
+            logger.error("Navigation failure looking for %s", location)
+            raise
+
         return None
 
     def build_path(self, blocks, this_location):
@@ -82,12 +87,11 @@ class Navigator:
 
                         # We're jumping backwards, so need to delete current answer
                         if not is_meta_rule and next_block_index is not None and block_index > next_block_index:
-                            answer = Answer(answer_id=rule['goto']['when']['id'],
-                                            answer_instance=0,
-                                            block_id=this_location['block_id'],
-                                            group_id=this_location['group_id'],
-                                            group_instance=this_location['group_instance'])
-                            self.answer_store.remove(answer)
+                            self.answer_store.remove(answer_id=rule['goto']['when']['id'],
+                                                     answer_instance=0,
+                                                     block_id=this_location['block_id'],
+                                                     group_id=this_location['group_id'],
+                                                     group_instance=this_location['group_instance'])
 
                         this_location = next_location
                         break

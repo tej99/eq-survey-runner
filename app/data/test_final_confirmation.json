@@ -68,12 +68,17 @@
                     "validation": []
                 },
                 {
-                    "display": {
-                        "properties": {}
-                    },
-                    "sections": [],
+                    "type": "interstitial",
                     "id": "confirmation",
-                    "title": ""
+                    "title": "Thank you for your answers, do you wish to submit",
+                    "sections": [
+                        {
+                            "title": "Thank you for your answers, do you wish to submit",
+                            "id": "questionnaire-completed-section",
+                            "questions": [
+                            ]
+                        }
+                    ]
                 }
             ],
             "display": {

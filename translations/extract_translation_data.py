@@ -142,7 +142,7 @@ def output_text_to_file(text_list, file_name):
     with open(file_name, 'w', encoding="utf8") as output_file:
 
         for line in text_list:
-            output_file.write("%s" % line + TEXT_SEPARATOR + "\r\n")
+            output_file.write("%s" % line + TEXT_SEPARATOR + line.upper() + "\r\n")
 
 
 def strip_directory_and_extension(file):
@@ -198,7 +198,9 @@ def command_line_handler(json_file, output_directory):
 
 if __name__ == '__main__':
 
-    json_file = sys.argv[1]
-    output_directory = sys.argv[2]
+    # json_file = sys.argv[1]
+    # output_directory = sys.argv[2]
+    json_file = "/Users/darrellcox/projects/eq-survey-runner/app/data/census_individual.json"
+    output_directory = "/Users/darrellcox/projects/eq-survey-runner/translations"
 
     command_line_handler(json_file, output_directory)

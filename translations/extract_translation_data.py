@@ -1,25 +1,35 @@
 # TODO
 """
 - Get unit tests set up for running of script (e.g. against different JSON, outputs etc)
+
+- Get values from dict recursively instead of multiple nested loops?
+
+- Think of better way to handle intermittent keys in get_conditional_text_for_container().
+
 - Add/amend other team/best practice stuff that's been missed out.
 """
-#
+
 import json
-import click
 import os
+import sys
 
 TEXT_SEPARATOR = "±"
 OUTPUT_FILE_EXTENSION = "_translate.txt"
-STDOUT_EXCEPTION = 'red'
 
 
 def get_text_for_container(container):
+
     extracted_text = []
 
-    for key in ['description', 'label', 'title']:
-        value = container.get(key)
+    if isinstance(container, dict):
+        for key in ['description', 'label', 'title']:
+            value = container.get(key)
 
-        if value is not None and value != '':
+            if value is not None and value != '':
+                extracted_text.append(value)
+
+    elif isinstance(container, list):
+        for value in container:
             extracted_text.append(value)
 
     return extracted_text
@@ -28,7 +38,9 @@ def get_text_for_container(container):
 def get_text(data):
     translatable_text = []
 
-    translatable_text.extend(get_header_text(data))
+    # Get header section text
+    translatable_text.extend(get_text_for_container(data))
+    translatable_text.extend(get_conditional_text_for_container(data))
 
     # Now build up translatable text from the nested dictionaries and lists
     for group in data['groups']:
@@ -39,23 +51,61 @@ def get_text(data):
 
             for section in block['sections']:
                 translatable_text.extend(get_text_for_container(section))
+                translatable_text.extend(get_conditional_text_for_container(section))
 
                 for question in section['questions']:
                     translatable_text.extend(get_text_for_container(question))
-                    translatable_text.extend(get_guidance_text_in_question(question))
+                    translatable_text.extend(get_conditional_text_for_container(question))
 
                     for answer in question['answers']:
                         translatable_text.extend(get_text_for_container(answer))
-                        translatable_text.extend(get_options_text_in_answer(answer))
-                        translatable_text.extend(get_validation_text_in_answer(answer))
+                        translatable_text.extend(get_conditional_text_for_container(answer))
 
     return translatable_text
 
 
-def get_options_text_in_answer(answer):
+def get_conditional_text_for_container(container):
     extracted_text = []
-    if 'options' in answer:  # Ensure key is available!
-        for options in answer['options']:
+
+    extracted_text.extend(get_introduction_text(container))
+    extracted_text.extend(get_options_text(container))
+    extracted_text.extend(get_guidance_text(container))
+    extracted_text.extend(get_validation_text(container))
+
+    return extracted_text
+
+
+def get_validation_text(container):
+    extracted_text = []
+    if 'validation' in container:
+        for value in container['validation']['messages'].values():
+            extracted_text.append(value)
+
+    return extracted_text
+
+
+def get_guidance_text(container):
+    extracted_text = []
+    if 'guidance' in container:
+
+        guidance_text = container['guidance']
+
+        if isinstance(guidance_text, str):
+            extracted_text.append(container['guidance'])
+        else:
+            for guidance in container['guidance']:
+                extracted_text.extend(get_text_for_container(guidance))
+
+                if 'list' in guidance:
+                    extracted_text.extend(get_text_for_container(guidance['list']))
+
+    return extracted_text
+
+
+def get_options_text(container):
+    extracted_text = []
+    if 'options' in container:
+        for options in container['options']:
             extracted_text.extend(get_text_for_container(options))
 
             if 'other' in options:
@@ -64,37 +114,15 @@ def get_options_text_in_answer(answer):
     return extracted_text
 
 
-def get_validation_text_in_answer(answer):
+def get_introduction_text(container):
     extracted_text = []
-    if 'validation' in answer:
-        for value in answer['validation']['messages'].values():
-            extracted_text.append(value)
+    if 'introduction' in container:
+        if 'description' in container['introduction']:
+            extracted_text.append(container['introduction']['description'])
 
-    return extracted_text
-
-
-def get_guidance_text_in_question(question):
-    extracted_text = []
-    if 'guidance' in question:
-        for guidance in question['guidance']:
-            extracted_text.extend(get_text_for_container(guidance))
-
-            if 'list' in guidance:
-                for value in guidance['list']:
-                    extracted_text.append(value)
-
-    return extracted_text
-
-
-def get_header_text(data):
-    extracted_text = []
-    if 'description' in data.get('introduction'):
-        extracted_text.append(data['introduction']['description'])
-
-    if 'information_to_provide' in data.get('introduction'):
-        for value in data['introduction']['information_to_provide']:
-            extracted_text.append(value)
-    extracted_text.extend(get_text_for_container(data))
+        if 'information_to_provide' in container['introduction']:
+            for value in container['introduction']['information_to_provide']:
+                extracted_text.append(value)
 
     return extracted_text
 
@@ -111,11 +139,10 @@ def remove_duplicates(text_with_duplicates):
 
 
 def output_text_to_file(text_list, file_name):
-    with open(file_name, 'w', encoding="utf8") as test_file:
+    with open(file_name, 'w', encoding="utf8") as output_file:
 
         for line in text_list:
-            test_file.write("%s" % line + TEXT_SEPARATOR + line.upper() + "\r\n")
-            # print("%s" % line + TEXT_SEPARATOR + line.upper())     # Output the list - this is just for testing! Please remove after!
+            output_file.write("%s" % line + TEXT_SEPARATOR + line.upper() + "\r\n")
 
 
 def strip_directory_and_extension(file):
@@ -140,43 +167,40 @@ def deserialise_json(json_file_to_deserialise):
             return data
 
         except ValueError:
-            # Throw this exception back up the callstack instead of echo-ing with Click
-            click.secho("Error decoding JSON. Please ensure file is valid JSON format.", fg=STDOUT_EXCEPTION)
-            exit(1)
+            print("Error decoding JSON. Please ensure file is in valid JSON format.")
+            return None
 
 
-@click.command()
-# @click.argument('json_file', required=True, type=click.Path(exists=True))
-@click.argument('json_file', required=True, default="/Users/darrellcox/projects/eq-survey-runner/app/data/census_household.json", type=click.Path(exists=True))
-@click.option('-o', '--output_directory', default=os.getcwd(),
-              type=click.Path(exists=True), help='Specify directory for text output file.'
-)
 def command_line_handler(json_file, output_directory):
-    """
-Takes a JSON file and outputs all translatable text into
-a separate text file in current directory (unless otherwise
-specified with '--output_directory' or '-o' option).
-Parameters: \n
-\tJSON_FILE - JSON file in the current path or in a fully-qualified path.
-    """
 
-    click.echo('Creating list of translatable text from: ' + json_file)
+    print('Creating list of translatable text from: ' + json_file)
     deserialised_json = deserialise_json(json_file)
+
+    if deserialised_json is None:
+        exit(1)
+
     text = get_text(deserialised_json)
 
-    click.echo('Removing duplicate text...')
+    print('Removing duplicate text...')
     unique_text = remove_duplicates(text)
     sorted_text = sort_text(unique_text)
 
-    click.echo('Outputting text to file...')
+    print('Outputting text to file...')
     output_file_name = create_output_file_name_with_directory(output_directory, json_file)
     output_text_to_file(sorted_text, output_file_name)
 
-    click.echo('Finished successfully.')
-    click.echo()
-    click.echo('Translated text output: ' + output_file_name)
+    print('Finished successfully.')
+    print()
+    print('Translated text output: ' + output_file_name)
+    print()
     exit(0)
 
 
 if __name__ == '__main__':
-    command_line_handler()
+
+    # json_file = sys.argv[1]
+    # output_directory = sys.argv[2]
+    json_file = "/Users/darrellcox/projects/eq-survey-runner/app/data/census_individual.json"
+    output_directory = "/Users/darrellcox/projects/eq-survey-runner/translations"
+
+    command_line_handler(json_file, output_directory)

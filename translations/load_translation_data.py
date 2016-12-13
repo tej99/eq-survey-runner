@@ -19,10 +19,10 @@ SCRIPTS_DIR = "/Users/darrellcox/projects/eq-survey-runner/translations/"
 TEXT_TO_TRANSLATE = 0
 TRANSLATED_TEXT = 1
 
-with open(SCHEMA_DIR + "census_household.json", 'r', encoding="utf8") as jsonData:
+with open(SCHEMA_DIR + "census_individual.json", 'r', encoding="utf8") as jsonData:
     data = json.load(jsonData, object_pairs_hook=OrderedDict)
 
-with open(SCRIPTS_DIR + "census_household_translate.txt", "r", encoding="utf8") as file:
+with open(SCRIPTS_DIR + "census_individual_translate.txt", "r", encoding="utf8") as file:
     lines = list(file)
 
     json_str = str(data)
@@ -54,7 +54,7 @@ with open(SCRIPTS_DIR + "census_household_translate.txt", "r", encoding="utf8") 
     # json_str = dict(ast.literal_eval(json_str))
     json_str = OrderedDict(eval(json_str))
 
-    target_file = open(SCHEMA_DIR + 'census_household_cy.json', 'w')
+    target_file = open(SCHEMA_DIR + 'census_individual_cy.json', 'w')
 
     out = json.dumps(json_str, indent=4, ensure_ascii=False, separators=(', ', ': '))
     target_file.writelines(out)

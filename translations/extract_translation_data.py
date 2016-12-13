@@ -198,9 +198,8 @@ def command_line_handler(json_file, output_directory):
 
 if __name__ == '__main__':
 
-    # json_file = sys.argv[1]
-    # output_directory = sys.argv[2]
-    json_file = "/Users/darrellcox/projects/eq-survey-runner/app/data/census_individual.json"
-    output_directory = "/Users/darrellcox/projects/eq-survey-runner/translations"
+    json_file = sys.argv[1]
+    output_directory = sys.argv[2]
+
 
     command_line_handler(json_file, output_directory)

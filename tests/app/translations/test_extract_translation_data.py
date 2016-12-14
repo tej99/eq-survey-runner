@@ -1,5 +1,5 @@
 import unittest
-from translations.extract_translation_data_lt import *
+from translations.extract_translation_data import *
 from mock import mock_open, patch
 
 data = {

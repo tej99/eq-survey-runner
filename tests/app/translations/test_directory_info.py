@@ -6,12 +6,12 @@ from mock import mock_open, patch
 class ManipulateTranslationTest(unittest.TestCase):
 
     def test_strip_directory_and_extension(self):
-        test_strip_dir_and_extension = strip_directory_and_extension('')
-        self.assertEqual(test_strip_dir_and_extension, '')
+        test_strip_dir_and_extension = strip_directory_and_extension('/test/directory/file.test')
+        self.assertEqual(test_strip_dir_and_extension, 'file')
 
     def test_create_output_file_name_with_directory(self):
-        test_output_to_file_with_directory = create_output_file_name_with_directory('')
-        self.assertEqual(test_output_to_file_with_directory, '')
+        test_output_to_file_with_directory = create_output_file_name_with_directory('/test/dir', 'file.json')
+        self.assertEqual(test_output_to_file_with_directory, '/test/dir/file_translate.txt')
 
     def test_deserialise_json(self):
         mock = mock_open(read_data='{"title": "Survey"}')

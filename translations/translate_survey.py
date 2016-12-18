@@ -77,27 +77,26 @@ def save_translated_json(translated_json, output_file_name):
 
 
 def command_line_handler(json_file, input_file, output_directory):
-
-    print('Loading source survey JSON from: ' + json_file)
     survey_json = deserialise_json(json_file)
     if survey_json is None:
         exit(1)
 
-    print('Reading translations from: ' + input_file)
     translations = load_translations(input_file)
     if translations is None:
         exit(1)
 
-    print('Translating: ' + input_file)
     translated_json = translate_json(survey_json, translations)
     if translated_json is None:
         exit(1)
 
     output_file_name = create_output_file_name_with_directory(output_directory, json_file)
-    print('Outputting translated survey JSON: ' + output_file_name)
     save_translated_json(translated_json, output_file_name)
 
-    print('Finished successfully.')
+    BOLD = '\033[1m'
+    GREEN = '\033[92m'
+    END = '\033[0m'
+    print()
+    print(BOLD + GREEN + 'SUCCESS' + END + ' - Translated JSON saved at ' + output_file_name)
     print()
     exit(0)
 

@@ -65,7 +65,7 @@ def strip_directory_and_extension(file):
 
 def create_output_file_name_with_directory(output_directory, input_file):
     file_name = strip_directory_and_extension(json_file)
-    file_name_with_extension = file_name + '.cy.json'
+    file_name_with_extension = file_name + '_cy.json'
     file_name_with_directory = os.path.join(output_directory, file_name_with_extension)
 
     return file_name_with_directory

@@ -13,6 +13,7 @@
     },
     "groups": [{
         "blocks": [{
+            "type": "questionnaire",
             "id": "conditional-routing-block",
             "title": "Test Conditional Routing",
             "sections": [{
@@ -55,28 +56,33 @@
                 {
                     "goto": {
                         "id" : "response-yes",
-                        "when": {
-                            "id" : "conditional-routing-answer",
-                            "condition": "equals",
-                            "value":"yes"
-                        }
+                        "when": [
+                            {
+                                "id" : "conditional-routing-answer",
+                                "condition": "equals",
+                                "value":"yes"
+                            }
+                        ]
                     }
 
                 },
                 {
                     "goto": {
                         "id": "response-no",
-                        "when": {
-                            "id" : "conditional-routing-answer",
-                            "condition": "equals",
-                            "value":"no"
-                        }
+                        "when": [
+                            {
+                                "id" : "conditional-routing-answer",
+                                "condition": "equals",
+                                "value":"no"
+                            }
+                        ]
                     }
 
                 }
             ]
         },
         {
+            "type": "questionnaire",
             "id": "response-yes",
             "title": "You responded yes",
             "sections": [{
@@ -110,6 +116,7 @@
             ]
         },
         {
+            "type": "questionnaire",
             "id": "response-no",
             "title": "You responded no",
             "sections": [{

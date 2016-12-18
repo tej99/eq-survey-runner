@@ -39,7 +39,7 @@ questionnaire_blueprint = Blueprint(name='questionnaire',
 @questionnaire_blueprint.before_request
 @login_required
 def check_survey_state():
-    g.schema_json, g.schema = get_schema()
+    g.schema_json, g.schema = get_schema(get_metadata(current_user))
     values = request.view_args
 
     if not _same_survey(values['eq_id'], values['form_type'], values['collection_id']):
@@ -86,7 +86,7 @@ def post_block(eq_id, form_type, collection_id, group_id, group_instance, block_
         'block_id': block_id,
     }
 
-    valid_location = this_block in navigator.get_location_path()
+    valid_location = this_block in navigator.get_routing_path(group_id, group_instance)
     valid_data = q_manager.validate(this_block, request.form)
 
     if not valid_location or not valid_data:
@@ -247,14 +247,7 @@ def post_household_composition(eq_id, form_type, collection_id, group_id):
     }
 
     if 'action[save_continue]' in request.form:
-        answer_store.remove(group_id=group_id, block_id='household-composition')
-
-        questionnaire_store = get_questionnaire_store(current_user.user_id, current_user.user_ik)
-        for answer in SchemaHelper.get_answers_that_repeat_in_block(g.schema_json, 'household-composition'):
-            groups_to_delete = SchemaHelper.get_groups_that_repeat_with_answer_id(g.schema_json, answer['id'])
-            for group in groups_to_delete:
-                answer_store.remove(group_id=group['id'])
-                questionnaire_store.completed_blocks[:] = [b for b in questionnaire_store.completed_blocks if b.get('group_id') != group['id']]
+        _remove_repeating_on_household_answers(answer_store, group_id)
 
     valid = questionnaire_manager.process_incoming_answers(this_block, request.form)
 
@@ -274,6 +267,25 @@ def post_household_composition(eq_id, form_type, collection_id, group_id):
     next_location = navigator.get_next_location(current_block_id='household-composition', current_iteration=0, current_group_id=group_id)
 
     return redirect(location_url(eq_id, form_type, collection_id, next_location))
+
+
+@questionnaire_blueprint.route('<group_id>/<int:group_instance>/permanent-or-family-home', methods=["POST"])
+@login_required
+def post_everyone_at_address_confirmation(eq_id, form_type, collection_id, group_id, group_instance):
+    if request.form.get('permanent-or-family-home-answer') == 'No':
+        _remove_repeating_on_household_answers(get_answer_store(current_user), group_id)
+    return post_block(eq_id, form_type, collection_id, group_id, group_instance, 'permanent-or-family-home')
+
+
+def _remove_repeating_on_household_answers(answer_store, group_id):
+    answer_store.remove(group_id=group_id, block_id='household-composition')
+    questionnaire_store = get_questionnaire_store(current_user.user_id, current_user.user_ik)
+    for answer in SchemaHelper.get_answers_that_repeat_in_block(g.schema_json, 'household-composition'):
+        groups_to_delete = SchemaHelper.get_groups_that_repeat_with_answer_id(g.schema_json, answer['id'])
+        for group in groups_to_delete:
+            answer_store.remove(group_id=group['id'])
+            questionnaire_store.completed_blocks[:] = [b for b in questionnaire_store.completed_blocks if
+                                                       b.get('group_id') != group['id']]
 
 
 def _delete_user_data():
@@ -348,16 +360,21 @@ def _render_template(context, group_id=None, group_instance=0, block_id=None, te
     metadata = get_metadata(current_user)
     metadata_context = build_metadata_context(metadata)
 
-    navigator = Navigator(g.schema_json, get_metadata(current_user), get_answer_store(current_user))
     group_id = group_id or SchemaHelper.get_first_group_id(g.schema_json)
-
+    navigator = Navigator(g.schema_json, get_metadata(current_user), get_answer_store(current_user))
+    completed_blocks = get_completed_blocks(current_user)
     previous_location = navigator.get_previous_location(current_group_id=group_id,
                                                         current_block_id=block_id,
                                                         current_iteration=group_instance)
 
+    front_end_navigation = None
+
+    if 'navigation' in g.schema_json and g.schema_json['navigation']:
+        front_end_navigation = navigator.get_front_end_navigation(completed_blocks, group_id, group_instance)
+
     previous_url = None
 
-    if previous_location is not None:
+    if previous_location is not None and block_id != SchemaHelper.get_first_block_id_for_group(g.schema_json, group_id):
         previous_url = block_url(eq_id=metadata['eq_id'],
                                  form_type=metadata['form_type'],
                                  collection_id=metadata['collection_exercise_sid'],
@@ -377,4 +394,5 @@ def _render_template(context, group_id=None, group_instance=0, block_id=None, te
     return render_theme_template(theme, template, meta=metadata_context,
                                  content=context,
                                  previous_location=previous_url,
-                                 schema=g.schema_json)
+                                 navigation=front_end_navigation,
+                                 schema_title=g.schema_json['title'])

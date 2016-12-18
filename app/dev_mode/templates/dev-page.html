@@ -2,6 +2,11 @@
 
 <!-- this page needs a total rethink, but this tidies things up a little for now -->
 
+{% block header %}{% endblock header %}
+{% block subheader %}{% endblock subheader %}
+{% block prefooter %}{% endblock prefooter %}
+{% block footer %}{% endblock footer %}
+
 <style media="screen">
 
 * { font-family: "lato" }
@@ -67,7 +72,9 @@ select {
 </style>
 
 <div class="container">
+
   <div class="u-mt-l">
+
     <div role="main" id="main" tabindex="-1">
 
       <form action="" method="POST" xmlns="http://www.w3.org/1999/html">
@@ -152,6 +159,14 @@ select {
                   <option name="GB-GBN" value="GB-GBN">GB-GBN</option>
                   <option name="GB-NI" value="GB-NI">GB-NI</option>
                   <option name="GB-WLS" value="GB-WLS">GB-WLS</option>
+                </select>
+             </div>
+
+            <div class="field-container">
+              <label for="language_code">Language</label>
+                <select id="language_code" name="language_code" class="qa-language-code">
+                  <option name="en" value="en">en</option>
+                  <option name="cy" value="cy">cy</option>
                 </select>
              </div>
 

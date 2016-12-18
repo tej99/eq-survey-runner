@@ -23,7 +23,8 @@ def translate_container(container, translations):
 
             if value is not None and value != '':
                 if value not in translations:
-                    print("No translation for text '" + value + "'")
+                    if 'format_household_name' not in value:
+                        print("No translation for text '" + value + "'")
                 else:
                     container[key] = translations[value]
 
@@ -111,9 +112,7 @@ def load_translations(input_file):
         source_text = row[0].value
         translated_text = row[1].value
         if source_text is not None:
-            if translated_text is None:
-                print('No translation for string: ' + source_text)
-            else:
+            if translated_text is not None:
                 translations[source_text] = translated_text
 
     return translations
@@ -159,6 +158,7 @@ def command_line_handler(json_file, input_file, output_directory):
     if translations is None:
         exit(1)
 
+    print()
     translated_json = translate_survey(survey_json, translations)
     if translated_json is None:
         exit(1)

@@ -38,9 +38,11 @@ def translate_container(container, translations):
 
 
 def translate_survey(survey_json, translations):
-    # Now build up translatable text from the nested dictionaries and lists
     for group in survey_json['groups']:
+        translate_container(group, translations)
+
         for block in group['blocks']:
+
             for section in block['sections']:
                 translate_container(section, translations)
 

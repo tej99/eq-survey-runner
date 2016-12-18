@@ -117,17 +117,6 @@ def load_translations(input_file):
     return translations
 
 
-def translate_json(survey_json, translations):
-    survey_json_str = json.dumps(survey_json)
-    for source_text, translated_text in translations.items():
-        if source_text in survey_json_str:
-            survey_json_str = survey_json_str.replace(source_text, translated_text)
-
-    translated_survey_json = json.loads(survey_json_str)
-
-    return translated_survey_json
-
-
 def deserialise_json(json_file_to_deserialise):
     with open(json_file_to_deserialise, 'r', encoding="utf8") as json_data:
         try:

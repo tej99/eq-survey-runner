@@ -16,6 +16,89 @@ from collections import OrderedDict
 from openpyxl import Workbook, load_workbook
 
 
+def translate_container(container, translations):
+    if isinstance(container, dict):
+        for key in ['description', 'label', 'title']:
+            value = container.get(key)
+
+            if value is not None and value != '':
+                if value not in translations:
+                    print("No translation for text '" + value + "'")
+                else:
+                    container[key] = translations[value]
+
+    elif isinstance(container, list):
+        for index, value in enumerate(container):
+            if value not in translations:
+                print("No translation for text '" + value + "'")
+            else:
+                container[index] = translations[value]
+
+    return container
+
+
+def translate_survey(survey_json, translations):
+    # Now build up translatable text from the nested dictionaries and lists
+    for group in survey_json['groups']:
+        for block in group['blocks']:
+            for section in block['sections']:
+                translate_container(section, translations)
+
+                for question in section['questions']:
+                    translate_container(question, translations)
+                    translate_validation_text(question, translations)
+                    translate_guidance_text(question, translations)
+
+                    for answer in question['answers']:
+                        answer = translate_container(answer, translations)
+                        translate_guidance_text(answer, translations)
+                        translate_options_text(answer, translations)
+                        translate_validation_text(answer, translations)
+
+    return survey_json
+
+
+def translate_validation_text(container, translations):
+    if 'validation' in container:
+        for key, value in container['validation']['messages'].items():
+            if value not in translations:
+                print("No translation for text '" + value + "'")
+            else:
+                container['validation']['messages'][key] = translations[value]
+
+    return container
+
+
+def translate_guidance_text(container, translations):
+    if 'guidance' in container:
+        guidance_text = container['guidance']
+
+        if isinstance(guidance_text, str):
+            if guidance_text not in translations:
+                print("No translation for text '" + guidance_text + "'")
+            else:
+                container['guidance'] = translations[guidance_text]
+        else:
+            for guidance in container['guidance']:
+                translate_container(guidance, translations)
+
+                if 'list' in guidance:
+                    guidance['list'] = translate_container(guidance['list'], translations)
+
+    return container
+
+
+def translate_options_text(container, translations):
+    if 'options' in container:
+        for options in container['options']:
+            options = translate_container(options, translations)
+
+            if 'other' in options:
+                options['other'] = translate_container(options['other'], translations)
+
+    return container
+
+
 def load_translations(input_file):
     wb = Workbook()
     wb = load_workbook(input_file)
@@ -85,7 +168,7 @@ def command_line_handler(json_file, input_file, output_directory):
     if translations is None:
         exit(1)
 
-    translated_json = translate_json(survey_json, translations)
+    translated_json = translate_survey(survey_json, translations)
     if translated_json is None:
         exit(1)
 

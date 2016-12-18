@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ "$#" -gt 2 -o "$#" -lt 1 ]; then
+if [ "$#" -gt 3 -o "$#" -lt 1 ]; then
     echo ""
     echo "Usage: $0 <json_file> <translations_file> [output_directory]"
     echo ""

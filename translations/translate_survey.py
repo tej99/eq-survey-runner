@@ -12,8 +12,27 @@
 import json
 import sys
 import os
+import re
 from collections import OrderedDict
 from openpyxl import Workbook, load_workbook
+
+
+def dumb_to_smart_quotes(string):
+    """Takes a string and returns it with dumb quotes, single and double,
+    replaced by smart quotes. Accounts for the possibility of HTML tags
+    within the string.
+    From https://gist.github.com/davidtheclark/5521432"""
+
+    # Find dumb single quotes coming directly after letters or punctuation,
+    # and replace them with right single quotes.
+    string = re.sub(r"([a-zA-Z0-9.,?!;:\"\'])'", r'\1’', string)
+    # Find any remaining dumb single quotes and replace them with
+    # left single quotes.
+    string = string.replace("'", '‘')
+    # Reverse: Find any SMART quotes that have been (mistakenly) placed around HTML
+    # attributes (following =) and replace them with dumb quotes.
+    string = re.sub(r'=‘(.*?)’', r"='\1'", string)
+    return string
 
 
 def translate_container(container, translations):
@@ -26,14 +45,14 @@ def translate_container(container, translations):
                     if 'format_household_name' not in value:
                         print("No translation for text '" + value + "'")
                 else:
-                    container[key] = translations[value]
+                    container[key] = dumb_to_smart_quotes(translations[value])
 
     elif isinstance(container, list):
         for index, value in enumerate(container):
             if value not in translations:
                 print("No translation for text '" + value + "'")
             else:
-                container[index] = translations[value]
+                container[index] = dumb_to_smart_quotes(translations[value])
 
     return container
 
@@ -67,7 +86,7 @@ def translate_validation_text(container, translations):
             if value not in translations:
                 print("No translation for text '" + value + "'")
             else:
-                container['validation']['messages'][key] = translations[value]
+                container['validation']['messages'][key] = dumb_to_smart_quotes(translations[value])
 
     return container
 
@@ -80,7 +99,7 @@ def translate_guidance_text(container, translations):
             if guidance_text not in translations:
                 print("No translation for text '" + guidance_text + "'")
             else:
-                container['guidance'] = translations[guidance_text]
+                container['guidance'] = dumb_to_smart_quotes(translations[guidance_text])
         else:
             for guidance in container['guidance']:
                 translate_container(guidance, translations)

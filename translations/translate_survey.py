@@ -32,91 +32,95 @@ def dumb_to_smart_quotes(string):
     # Reverse: Find any SMART quotes that have been (mistakenly) placed around HTML
     # attributes (following =) and replace them with dumb quotes.
     string = re.sub(r'=‘(.*?)’', r"='\1'", string)
-    return string
+    return string.strip()
 
 
-def translate_container(container, translations):
+def translate_container(container, context, translations):
     if isinstance(container, dict):
         for key in ['description', 'label', 'title']:
             value = container.get(key)
 
             if value is not None and value != '':
-                if value not in translations:
+                source_key = (context, value)
+                if source_key not in translations:
                     if 'format_household_name' not in value:
-                        print("No translation for text '" + value + "'")
+                        print("No translation for text '" + value + "' [" + context + "]")
                 else:
-                    container[key] = dumb_to_smart_quotes(translations[value])
+                    container[key] = dumb_to_smart_quotes(translations[source_key])
 
     elif isinstance(container, list):
         for index, value in enumerate(container):
-            if value not in translations:
+            source_key = (context, value)
+            if source_key not in translations:
                 print("No translation for text '" + value + "'")
             else:
-                container[index] = dumb_to_smart_quotes(translations[value])
+                container[index] = dumb_to_smart_quotes(translations[source_key])
 
     return container
 
 
 def translate_survey(survey_json, translations):
     for group in survey_json['groups']:
-        translate_container(group, translations)
+        translate_container(group, group['id'], translations)
 
         for block in group['blocks']:
 
             for section in block['sections']:
-                translate_container(section, translations)
+                translate_container(section, section['id'], translations)
 
                 for question in section['questions']:
-                    translate_container(question, translations)
-                    translate_validation_text(question, translations)
-                    translate_guidance_text(question, translations)
+                    translate_container(question, question['id'], translations)
+                    translate_validation_text(question, question['id'], translations)
+                    translate_guidance_text(question, question['id'], translations)
 
                     for answer in question['answers']:
-                        answer = translate_container(answer, translations)
-                        translate_guidance_text(answer, translations)
-                        translate_options_text(answer, translations)
-                        translate_validation_text(answer, translations)
+                        translate_container(answer, answer['id'], translations)
+                        translate_guidance_text(answer, answer['id'], translations)
+                        translate_options_text(answer, answer['id'], translations)
+                        translate_validation_text(answer, answer['id'], translations)
 
     return survey_json
 
 
-def translate_validation_text(container, translations):
+def translate_validation_text(container, context, translations):
     if 'validation' in container:
         for key, value in container['validation']['messages'].items():
-            if value not in translations:
+            source_key = (context + ' [validation message]', value)
+            if source_key not in translations:
                 print("No translation for text '" + value + "'")
             else:
-                container['validation']['messages'][key] = dumb_to_smart_quotes(translations[value])
+                container['validation']['messages'][key] = dumb_to_smart_quotes(translations[source_key])
 
     return container
 
 
-def translate_guidance_text(container, translations):
+def translate_guidance_text(container, context, translations):
     if 'guidance' in container:
         guidance_text = container['guidance']
 
         if isinstance(guidance_text, str):
-            if guidance_text not in translations:
+            source_key = (context + ' [answer guidance]', guidance_text)
+            if source_key not in translations:
                 print("No translation for text '" + guidance_text + "'")
             else:
-                container['guidance'] = dumb_to_smart_quotes(translations[guidance_text])
+                container['guidance'] = dumb_to_smart_quotes(translations[source_key])
         else:
             for guidance in container['guidance']:
-                translate_container(guidance, translations)
+                translate_container(guidance, context + ' [question guidance]', translations)
 
                 if 'list' in guidance:
-                    guidance['list'] = translate_container(guidance['list'], translations)
+                    guidance['list'] = translate_container(guidance['list'], context + ' [question guidance]', translations)
 
     return container
 
 
-def translate_options_text(container, translations):
+def translate_options_text(container, context, translations):
     if 'options' in container:
         for options in container['options']:
-            options = translate_container(options, translations)
+            options = translate_container(options, context, translations)
 
             if 'other' in options:
-                options['other'] = translate_container(options['other'], translations)
+                options['other'] = translate_container(options['other'], context, translations)
 
     return container
 
@@ -127,12 +131,12 @@ def load_translations(input_file):
     sheet = wb.get_sheet_by_name('Sheet')
 
     translations = {}
-    for row in sheet.iter_rows(row_offset=2, min_col=2, max_col=3):
-        source_text = row[0].value
-        translated_text = row[1].value
-        if source_text is not None:
+    for row in sheet.iter_rows(row_offset=2, min_col=1, max_col=3):
+        source_key = (row[0].value, row[1].value)
+        translated_text = row[2].value
+        if source_key is not None:
             if translated_text is not None:
-                translations[source_text] = translated_text
+                translations[source_key] = translated_text
 
     return translations
 
@@ -163,7 +167,7 @@ def create_output_file_name_with_directory(output_directory, input_file):
     return file_name_with_directory
 
 def save_translated_json(translated_json, output_file_name):
-    output = json.dumps(translated_json, indent=4, ensure_ascii=False, separators=(', ', ': '))
+    output = json.dumps(translated_json, indent=4, ensure_ascii=False, separators=(',', ': '))
     with open(output_file_name, "w", encoding="utf8") as target_file:
         target_file.writelines(output)
 

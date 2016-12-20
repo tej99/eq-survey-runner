@@ -2,30 +2,6 @@ import unittest
 from translations.extract_translation_data import *
 from mock import mock_open, patch
 
-data = {
-    "options": [
-        {
-            "label": "Label Test",
-            "description": "Description Test"
-        }
-    ],
-    "validation": {
-        "messages": {
-            "mandatory": "Message Test"
-        }
-    },
-    "guidance": [
-        {
-            "label": "Guidance Test"
-        }
-    ],  "introduction": {
-        "description": "Description Test",
-        "information_to_provide": [
-          "Introduction Test"
-        ]
-    }
-}
-
 
 class ExtractTranslationTest(unittest.TestCase):
     def test_get_text_for_container_with_dict(self):
@@ -43,16 +19,6 @@ class ExtractTranslationTest(unittest.TestCase):
     def test_get_text_for_container_unknown_type(self):
         result_text = get_text_for_container('')
         self.assertEqual(result_text, [])
-
-
-    def test_get_conditional_text_for_container_with_dict(self):
-        container = {"validation": {"messages": {"mandatory": "Test"}}}
-        result_text = get_conditional_text_for_container(container)
-        self.assertEqual(result_text, ['Test'])
-
-    def test_get_conditional_text_for_container_when_empty(self):
-        container = get_conditional_text_for_container({})
-        self.assertEqual(container, [])
 
 
     def test_get_introduction_text(self):

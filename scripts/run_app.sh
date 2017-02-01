@@ -6,7 +6,6 @@ function open_url {
   open -a "/Applications/Google Chrome.app" $1
 }
 
-
 if [ -n "$VIRTUAL_ENV" ]; then
   echo "Already in virtual environment $VIRTUAL_ENV"
 else
@@ -49,6 +48,8 @@ if [ ! -s "static" ]; then
   echo "WARNING: Frontend compilation needed"
   exit 1
 fi
+
+$DIR/run_translate_schemas.sh
 
 url="`python token_generator.py`"
 

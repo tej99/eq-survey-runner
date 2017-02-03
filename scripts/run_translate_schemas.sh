@@ -22,6 +22,7 @@ git clone -b 885-remove-cy-suffix https://github.com/ONSdigital/eq-translations.
       if [[ $line =~ $filename_regex ]]; then
         schema=${BASH_REMATCH[1]};
         country_code=${BASH_REMATCH[2]};
+        mkdir -p $path_to_parent/app/data/${country_code}
         ./scripts/run_translate_survey.sh $path_to_parent/app/data/${schema}.json translations/${schema}_translate_${country_code}.xlsx $path_to_parent/app/data/${country_code}
       fi
   done < <(find $path_to_parent/temp/eq-translations -name "*.xlsx" -exec basename {} \;)

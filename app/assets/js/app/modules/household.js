@@ -14,6 +14,7 @@ class HouseholdMember extends EventEmitter {
   bindToExisting(node) {
     this.node = node
     this.removeBtn = this.node.querySelector('.js-btn-remove')
+    this.removeBtn.setAttribute('type', 'button')
     this.bindToDOM()
   }
 
@@ -30,11 +31,7 @@ class HouseholdMember extends EventEmitter {
       }
     }
 
-    this.inputs = this.node.querySelectorAll('.js-btn-remove')
-    forEach(this.inputs, input => {
-      input.setAttribute('type', 'button')
-    })
-
+    this.inputs = this.node.querySelectorAll('input')
     this.actionNode = this.node.querySelector('.js-household-action')
     if (this.removeBtn) {
       this.removeBtn.addEventListener('click', this.onRemoveClick)

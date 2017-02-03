@@ -19,7 +19,7 @@ export const chromeNoJS = {
   version: '48.0',
   platform: 'OS X 10.11',
   chromeOptions: {
-    prefs: {"profile.managed_default_content_settings.javascript": 2},
+    prefs: {'profile.managed_default_content_settings.javascript': 2}
   },
   ...defaultCapabilities
 }

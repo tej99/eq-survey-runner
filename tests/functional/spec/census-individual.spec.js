@@ -127,12 +127,12 @@ describe('Census Individual', function () {
 
     })
 
-    it('Given the census theme is selected, then the help should not be visible', function() {
-        // Given
-        startCensusQuestionnaire('census_individual.json')
-        // Then
-        expect(browser.isVisible('.js-help-body')).to.be.false
-    })
+    // it('Given the census theme is selected, then the help should not be visible', function() {
+    //     // Given
+    //     startCensusQuestionnaire('census_individual.json')
+    //     // Then
+    //     expect(browser.isVisible('.js-help-body')).to.be.false
+    // })
 
     it('Given the census theme is selected, when I click the "help and support" button, then the help should be visible', function() {
 

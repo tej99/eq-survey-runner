@@ -30,22 +30,14 @@ class HouseholdMember extends EventEmitter {
       }
     }
 
-    this.inputs = this.node.querySelectorAll('input')
+    this.inputs = this.node.querySelectorAll('.js-btn-remove')
     forEach(this.inputs, input => {
-      input.addEventListener('keypress', this.onInputKeyPress)
+      input.setAttribute('type', 'button')
     })
 
     this.actionNode = this.node.querySelector('.js-household-action')
     if (this.removeBtn) {
       this.removeBtn.addEventListener('click', this.onRemoveClick)
-    }
-  }
-
-  onInputKeyPress(e) {
-    if (e.which === 13) {
-      e.preventDefault()
-      let saveAndContinueButton = document.getElementsByName('action[save_continue]')[0]
-      saveAndContinueButton.click()
     }
   }
 

@@ -20,6 +20,10 @@ JSONStream@^1.0.3:
     jsonparse "^1.2.0"
     through ">=2.2.7 <3"
 
+a11y-dialog@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/a11y-dialog/-/a11y-dialog-3.0.0.tgz#d596f454d03794e372da0aea39468f12d2e41b55"
+
 abbrev@1, abbrev@1.0.x:
   version "1.0.9"
   resolved "https://registry.yarnpkg.com/abbrev/-/abbrev-1.0.9.tgz#91b4792588a7738c25f35dd6f63752a2f8776135"

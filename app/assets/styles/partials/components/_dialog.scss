@@ -1,0 +1,34 @@
+.dialog[aria-hidden='true'] {
+  display: none;
+}
+
+.dialog__overlay {
+  z-index: 2;
+  background-color: rgba(0, 0, 0, 0.66);
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+}
+
+.dialog__body {
+  text-align: center;
+  padding: 3rem 6rem 4rem;
+  background-color: $color-white;
+  max-width: 90%;
+  width: 600px;
+  border-radius: 3px;
+  z-index: 3;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.circle {
+  opacity: 1;
+  // transition: stroke-dashoffset 0.3s;
+  stroke: $color-blue;
+  stroke-width: 6;
+}

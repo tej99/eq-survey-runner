@@ -1,3 +1,5 @@
+{% set width = 40 %}
+
 <div class="dialog js-timeout-dialog" id="timeout-dialog" aria-hidden="true">
 
   <div class="dialog__overlay" tabindex="-1" data-a11y-dialog-hide></div>
@@ -10,9 +12,9 @@
 
       <div class="time js-timeout">
 
-        <svg class="time__visual" width="120px" height="120px" viewBox="0 0 120 120" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-          <path fill="none" stroke="#D3D3D3" stroke-width="6" d="M62,101 C83.5391052,101 101,83.5391052 101,62 C101,40.4608948 83.5391052,23 62,23 C40.4608948,23 23,40.4608948 23,62 C23,83.5391052 40.4608948,101 62,101 Z"></path>
-          <path class="circle" fill="none" stroke="red" stroke-width="6" d="M62,101 C83.5391052,101 101,83.5391052 101,62 C101,40.4608948 83.5391052,23 62,23 C40.4608948,23 23,40.4608948 23,62 C23,83.5391052 40.4608948,101 62,101 Z"></path>
+        <svg class="time__visual" width="{{width * 2}}px" height="{{width * 2}}px" viewBox="0 0 {{width * 2}} {{width * 2}}" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+          <circle cx="{{width}}" cy="{{width}}" r="{{width}}" stroke="#D3D3D3" stroke-width="6" fill="none"></circle>
+          <circle class="time__circle js-timeout-circle" cx="{{width}}" cy="{{width}}" r="{{width}}" transform="rotate(-90 {{width}} {{width}})" fill="none" stroke="red" stroke-width="6" stroke-linecap="round"></circle>
         </svg>
 
         <div class="time__text venus js-timeout-time">0:00</div>

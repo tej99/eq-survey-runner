@@ -1,6 +1,6 @@
 {% set width = 40 %}
 
-<div class="dialog js-timeout-dialog" id="timeout-dialog" aria-hidden="true">
+<div class="dialog js-dialog" id="dialog" aria-hidden="true">
 
   <div class="dialog__overlay" tabindex="-1" data-a11y-dialog-hide></div>
 
@@ -22,9 +22,9 @@
       </div>
 
       <form class="" action="/" method="post">
-        <button class="btn btn--primary" type="button" data-a11y-dialog-hide>Continue survey</button>
+        <button class="btn btn--primary js-timeout-continue" type="button" data-a11y-dialog-hide>Continue survey</button>
         <br/>
-        <button class="btn btn--secondary btn--border" type="button" data-a11y-dialog-hide>Save and sign out</button>
+        <button class="btn btn--secondary btn--border" type="submit" data-a11y-dialog-hide>Save and sign out</button>
       </form>
     </div>
   </div>

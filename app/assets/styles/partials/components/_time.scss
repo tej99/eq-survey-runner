@@ -1,5 +1,23 @@
+@keyframes pulse {
+  from {
+    transform: scale3d(1, 1, 1);
+  }
+
+  50% {
+    transform: scale3d(1.2, 1.2, 1.2);
+  }
+
+  to {
+    transform: scale3d(1, 1, 1);
+  }
+}
+
 .time {
   position: relative;
+  &.is-warning {
+    animation: pulse 3s ease-out;
+    animation-iteration-count: infinite;
+  }
 }
 
 .time__visual {
@@ -11,8 +29,11 @@
 
 .time__circle {
   opacity: 1;
-  transition: stroke-dasharray 1s linear;
+  transition: stroke-dasharray 1s linear, stroke 1s ease-in;
   stroke: $color-blue;
+  .is-warning & {
+    stroke: $color-red;
+  }
 }
 
 .time__text {
@@ -26,7 +47,7 @@
   line-height: 1;
   text-align: center;
   transition: color 1s ease-in;
-  &.is-warning {
+  .is-warning & {
     color: $color-red;
   }
 }

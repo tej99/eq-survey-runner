@@ -128,6 +128,7 @@
     "a11y-dialog": "^3.0.0",
     "events": "^1.1.1",
     "lodash": "^4.17.4",
-    "rollup-plugin-node-resolve": "^2.0.0"
+    "rollup-plugin-node-resolve": "^2.0.0",
+    "whatwg-fetch": "^2.0.2"
   }
 }

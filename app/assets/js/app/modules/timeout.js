@@ -1,19 +1,21 @@
+import 'whatwg-fetch'
+
 import domready from './domready'
-import A11yDialog from 'a11y-dialog'
 import { padStart } from 'lodash'
+import dialog from './dialog'
 
 domready(() => {
   const timeLimit = 120 // seconds
   const magicRadius = 57.5 // magic number
-  const dialogEl = document.querySelector('.js-timeout-dialog')
+  const timeEl = document.querySelector('.js-timeout')
   const circle = document.querySelector('.js-timeout-circle')
   const timeText = document.querySelector('.js-timeout-time')
 
-  const dialog = new A11yDialog(dialogEl)
+  const continueBtn = document.querySelector('.js-timeout-continue')
 
   let timeLeft = 120 // seconds
 
-  if (circle) {
+  if (timeEl) {
     const circleRadius = circle.getAttribute('r')
     const stroke = circle.getAttribute('stroke-width')
 
@@ -31,7 +33,7 @@ domready(() => {
       const angle = (360 - (360 / (timeLimit / time))) / (magicRadius / circleRadius)
 
       if (time < 10) {
-        timeText.classList.add('is-warning')
+        timeEl.classList.add('is-warning')
       }
 
       if (angle > stroke) {
@@ -45,14 +47,18 @@ domready(() => {
       timeLeft = timeLeft - 1
       setTime(timeLeft)
 
-      if (timeLeft <= 120) {
-        dialog.show()
-      }
-
       if (timeLeft < 1) {
-        // dialog.hide()
         window.clearInterval(t)
       }
     }, 1000)
+
+    const continueSurvey = () => {
+
+    }
+
+    continueBtn.addEventListener('click', e => {
+      continueSurvey()
+      dialog.hide()
+    })
   }
 })

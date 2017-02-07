@@ -47,8 +47,8 @@ class HouseholdCompositionPage extends QuestionPage {
 
     browser.waitUntil(() => {
       return !browser.isVisible('button[value="' + index + '"]')
-    }, 5000, 'Person not removed');
-    return this;
+    }, 5000, 'Person not removed')
+    return this
   }
 
   returnKey() {

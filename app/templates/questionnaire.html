@@ -62,9 +62,8 @@
 
     {% endif %}
 
-    <form action="{{form_action|default('')}}" class="form qa-questionnaire-form" role="form" method="POST" novalidate>
-      <input type="submit" style="display: none" name="action[save_continue]" />
-      <div class="group" id="{{group.id}}">
+<form action="{{form_action|default('')}}" class="form qa-questionnaire-form" role="form" method="POST" novalidate>
+    <div class="group" id="{{group.id}}">
 
         <div class="block" id="{{block.id}}">
 

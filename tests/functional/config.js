@@ -28,7 +28,7 @@ let config = {
   sync: true,
   connectionRetryTimeout: 5000,
   connectionRetryCount: 3,
-  capabilities: [chrome, chromeNoJS],
+  capabilities: [chrome],
   framework: 'mocha',
   reporters: ['spec'],
   mochaOpts: {

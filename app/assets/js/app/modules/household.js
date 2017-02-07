@@ -65,7 +65,7 @@ class HouseholdMember extends EventEmitter {
     forEach(this.inputs, input => {
       const id = input.id
       const label = this.node.querySelector(`label[for=${id}]`)
-      const newId = `${id}_${index - 1}`
+      const newId = index > 0 ? `${id}_${index - 1}` : id
       input.setAttribute('id', newId)
       label.setAttribute('for', newId)
       input.setAttribute('name', `${input.name.split('_')[0]}_${index - 1}`)

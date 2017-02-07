@@ -45,9 +45,9 @@ class HouseholdCompositionPage extends QuestionPage {
   removePerson(index) {
     browser.click('button[value="' + index + '"]')
 
-      browser.waitUntil(() => {
-        return !browser.isVisible('button[value="' + index + '"]')
-      }, 5000, 'Person not removed');
+    browser.waitUntil(() => {
+      return !browser.isVisible('button[value="' + index + '"]')
+    }, 5000, 'Person not removed');
     return this;
   }
 

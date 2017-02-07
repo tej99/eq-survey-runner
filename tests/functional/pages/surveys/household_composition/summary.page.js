@@ -13,7 +13,7 @@ class HouseholdCompositionSummary extends SummaryPage {
   }
 
   isNameDisplayed(index, name) {
-      var element = browser.elements('#further-section ul li').value[index]
+    let element = browser.elements('#further-section ul li').value[index]
     return browser.elementIdText(element.ELEMENT).value === name
   }
 

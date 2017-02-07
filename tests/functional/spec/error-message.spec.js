@@ -19,6 +19,6 @@ describe('Error messages', function() {
     monthlyBusinessSurveyPage.focusErrorField()
 
     // Then
-    // expect(getElementId(browser.elementActive())).to.equal(getElementId(monthlyBusinessSurveyPage.getFromReportingPeriodDay()))
+    expect(getElementId(browser.elementActive())).to.equal(getElementId(monthlyBusinessSurveyPage.getFromReportingPeriodDay()))
   })
 })

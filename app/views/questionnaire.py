@@ -280,7 +280,6 @@ def get_sign_out(eq_id, form_type, collection_id):  # pylint: disable=unused-arg
     session_storage.clear()
     return signed_out_page
 
-
 @questionnaire_blueprint.route('submit-answers', methods=["POST"])
 @login_required
 def submit_answers(eq_id, form_type, collection_id):

@@ -1,4 +1,4 @@
-.dialog.is-hidden {
+.dialog[aria-hidden="true"] {
   display: none;
 }
 

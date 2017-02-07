@@ -15,6 +15,10 @@ logger = get_logger()
 dev_mode_blueprint = Blueprint('dev_mode', __name__, template_folder='templates')
 
 
+@dev_mode_blueprint.route('/timeout-continue', methods=["GET"])
+def get_timout_continue():  # pylint: disable=unused-argument
+    return 'true'
+
 @dev_mode_blueprint.route('/dev', methods=['GET', 'POST'])
 def dev_mode():
     if request.method == "POST":

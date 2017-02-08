@@ -2,7 +2,6 @@ import logging
 import calendar
 
 from wtforms import Form, FormField, SelectField, StringField
-from wtforms import validators
 
 from app.validation.validators import DateCheck, OptionalForm, DateRangeCheck, DateRequired, MonthYearCheck
 
@@ -70,7 +69,7 @@ def get_month_year_form(answer, error_messages):
 
     month_choices = [('', 'Select month')] + [(str(x), calendar.month_name[x]) for x in range(1, 13)]
 
-    validate_with = [validators.optional()]
+    validate_with = [OptionalForm()]
 
     if answer['mandatory'] is True:
         error_message = error_messages['MANDATORY']

@@ -4,6 +4,7 @@ from flask import Blueprint
 from flask import g
 from flask import redirect
 from flask import request
+from flask import session
 from flask import url_for
 from flask_login import current_user
 from flask_login import login_required
@@ -49,7 +50,7 @@ def check_survey_state():
                  ce_id=values['collection_id'], method=request.method, url_path=request.full_path)
 
     _check_same_survey(values['eq_id'], values['form_type'], values['collection_id'])
-
+    session.permanent = True
 
 @questionnaire_blueprint.after_request
 def add_cache_control(response):

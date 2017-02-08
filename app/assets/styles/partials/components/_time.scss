@@ -18,6 +18,9 @@
     animation: pulse 3s ease-out;
     animation-iteration-count: infinite;
   }
+  &.is-finished {
+    animation: none;
+  }
 }
 
 .time__visual {

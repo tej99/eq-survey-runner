@@ -9,18 +9,18 @@ domready(() => {
   const timeEl = document.querySelector('.js-timeout')
   const circle = document.querySelector('.js-timeout-circle')
   const timeText = document.querySelector('.js-timeout-time')
-
   const continueBtn = document.querySelector('.js-timeout-continue')
 
   if (!timeEl) return
 
-  let timeLeft = 120 // seconds
+  let timeLeft = timeLimit // seconds
 
   const handleContinue = () => {
     fetch('/timeout-continue')
-    .then(function() {
+    .then(() => {
       dialog.hide()
-    }).catch(function() {
+      timeLeft = timeLimit
+    }).catch(() => {
       console.log('eerrrooorrr')
     })
   }
@@ -29,15 +29,13 @@ domready(() => {
     if (e.which === 27) { // ESC Key
       e.preventDefault()
       e.stopImmediatePropagation()
-
       handleContinue()
     }
   }, false)
 
-  continueBtn.addEventListener('click', e => {
-    handleContinue()
-  })
+  continueBtn.addEventListener('click', handleContinue)
 
+  // must be initialised after the keydown listener
   dialog.init()
 
   const circleRadius = circle.getAttribute('r')
@@ -51,13 +49,16 @@ domready(() => {
     date.setSeconds(time)
     const mins = padStart(date.getUTCMinutes(), 2, '0')
     const seconds = padStart(date.getUTCSeconds(), 2, '0')
+    const angle = (360 - (360 / (timeLimit / time))) / (magicRadius / circleRadius)
 
     timeText.innerHTML = `${mins}:${seconds}`
 
-    const angle = (360 - (360 / (timeLimit / time))) / (magicRadius / circleRadius)
-
     if (time < 10) {
       timeEl.classList.add('is-warning')
+    }
+
+    if (time < 1) {
+      timeEl.classList.add('is-finished')
     }
 
     if (angle > stroke) {
@@ -75,5 +76,4 @@ domready(() => {
 
     if (timeLeft < 1) window.clearInterval(t)
   }, 1000)
-
 })

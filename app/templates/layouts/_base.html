@@ -12,6 +12,7 @@
     <meta content="" name="description">
     <meta content="width=device-width, initial-scale=1" name="viewport">
     <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.ico') }}">
+    <script>window.__EQ_SESSION_TIMEOUT__ = {{ session_timeout }}</script>
     <!--[if lt IE 9]>
       <script src="{{ url_for('static', filename='js/vendor/html5shiv.min.js') }}"></script>
     <![endif]-->
@@ -93,10 +94,6 @@
       <script src="{{ url_for('static', filename='js/bundle.js') }}"></script>
     {% endblock scripts %}
   	<!--<![endif]-->
-
-    <script>
-        window.__SESSION_TIMEOUT__ = {{ session_timeout }}
-    </script>
 
     </body>
 </html>

@@ -12,6 +12,7 @@ from flask_themes2 import render_theme_template
 from structlog import get_logger
 from werkzeug.exceptions import NotFound
 
+from app import settings
 from app.authentication.session_storage import session_storage
 from app.data_model.answer_store import Answer
 from app.globals import get_answer_store, get_completed_blocks, get_metadata, get_questionnaire_store
@@ -281,6 +282,20 @@ def get_sign_out(eq_id, form_type, collection_id):  # pylint: disable=unused-arg
     session_storage.clear()
     return signed_out_page
 
+
+@questionnaire_blueprint.route('timeout-continue', methods=["GET"])
+def get_timout_continue():  # pylint: disable=unused-argument
+    return 'true'
+
+
+@questionnaire_blueprint.route('session-expired', methods=["GET"])
+@login_required
+def get_session_expired(eq_id, form_type, collection_id):  # pylint: disable=unused-argument
+    signed_out_page = _render_template(get_questionnaire_manager(g.schema, g.schema_json), block_id='session-expired')
+    session_storage.clear()
+    return signed_out_page
+
+
 @questionnaire_blueprint.route('submit-answers', methods=["POST"])
 @login_required
 def submit_answers(eq_id, form_type, collection_id):
@@ -491,6 +506,7 @@ def _build_template(current_location, context=None, template=None):
 def _render_template(context, block_id, front_end_navigation=None, metadata_context=None, current_location=None, previous_url=None, template=None):
     theme = g.schema_json.get('theme', None)
     logger.debug("theme selected", theme=theme)
+    session_timeout = settings.EQ_SESSION_TIMEOUT - settings.EQ_SESSION_TIMEOUT_GRACE_PERIOD
     template = '{}.html'.format(template or block_id)
     return render_theme_template(theme, template,
                                  meta=metadata_context,
@@ -500,4 +516,5 @@ def _render_template(context, block_id, front_end_navigation=None, metadata_cont
                                  navigation=front_end_navigation,
                                  schema_title=g.schema_json['title'],
                                  legal_basis=g.schema_json['legal_basis'],
-                                 survey_id=g.schema_json['survey_id'],)
+                                 survey_id=g.schema_json['survey_id'],
+                                 session_timeout=session_timeout)

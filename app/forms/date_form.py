@@ -4,7 +4,7 @@ import calendar
 from wtforms import Form, FormField, SelectField, StringField
 from wtforms import validators
 
-from app.validation.validators import DateCheck, DateRangeCheck, DateRequired, MonthYearCheck
+from app.validation.validators import DateCheck, OptionalForm, DateRangeCheck, DateRequired, MonthYearCheck
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +28,7 @@ def get_date_form(answer=None, to_field_data=None, validate_range=False, error_m
         month = SelectField(choices=MONTH_CHOICES, default='')
         year = StringField()
 
-    validate_with = [validators.Optional()]
+    validate_with = [OptionalForm()]
 
     if not error_messages:
         date_messages = {}

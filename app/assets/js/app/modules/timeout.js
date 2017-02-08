@@ -3,9 +3,25 @@ import dialog from './dialog'
 import fetch from './fetch'
 import { padStart } from 'lodash'
 
+const sessionTimeout = window.__EQ_SESSION_TIMEOUT__ || 10000
+const timeLimit = 90 // seconds
+const magicRadius = 57.5 // magic number
+
+const getTimeLeft = () => (sessionTimeout - timeLimit)
+
+let timeLeft
+
+const handleContinue = () => {
+  fetch('/timeout-continue')
+  .then(() => {
+    dialog.hide()
+    timeLeft = timeLimit
+  }).catch(() => {
+    console.log('eerrrooorrr')
+  })
+}
+
 domready(() => {
-  const timeLimit = 120 // seconds
-  const magicRadius = 57.5 // magic number
   const timeEl = document.querySelector('.js-timeout')
   const circle = document.querySelector('.js-timeout-circle')
   const timeText = document.querySelector('.js-timeout-time')
@@ -13,17 +29,7 @@ domready(() => {
 
   if (!timeEl) return
 
-  let timeLeft = timeLimit // seconds
-
-  const handleContinue = () => {
-    fetch('/timeout-continue')
-    .then(() => {
-      dialog.hide()
-      timeLeft = timeLimit
-    }).catch(() => {
-      console.log('eerrrooorrr')
-    })
-  }
+  timeLeft = getTimeLeft()
 
   document.addEventListener('keydown', (e) => {
     if (e.which === 27) { // ESC Key

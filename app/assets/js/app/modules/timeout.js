@@ -59,7 +59,10 @@ domready(() => {
 
     if (time < 1) {
       timeEl.classList.add('is-finished')
+      window.clearInterval(t)
     }
+
+    if (timeLeft === 118) dialog.show()
 
     if (angle > stroke) {
       // adjust for stroke, but add a couple of px to account for stroke radius
@@ -69,11 +72,6 @@ domready(() => {
   }
 
   const t = window.setInterval(() => {
-    timeLeft = timeLeft - 1
-    setTime(timeLeft)
-
-    if (timeLeft === 118) dialog.show()
-
-    if (timeLeft < 1) window.clearInterval(t)
+    setTime(timeLeft--)
   }, 1000)
 })

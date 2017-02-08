@@ -10,14 +10,13 @@ class HouseholdCompositionPage extends QuestionPage {
 
   addPerson() {
     browser.click('button[name="action[add_answer]"]')
+    browser.pause(500)
     return this
   }
 
   removePerson(index) {
     browser.click('button[value="' + index + '"]')
-    browser.waitUntil(() => {
-      return !browser.isVisible('button[value="' + index + '"]')
-    }, 5000, 'Person not removed')
+    browser.pause(500)
     return this
   }
 

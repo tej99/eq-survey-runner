@@ -7,6 +7,16 @@ class MultipleChoiceWithOtherPage extends QuestionPage {
     return this
   }
 
+  clickBacon(){
+    browser.element('[name ="ca3ce3a3-ae44-4e30-8f85-5b6a7a2fb23c"]').click()
+    return this
+  }
+
+  clickCheese(){
+    browser.element('[name ="ca3ce3a3-ae44-4e30-8f85-5b6a7a2fb23c"]').click()
+    return this
+  }
+
   otherInputFieldExists() {
     return browser.isExisting('[data-qa="other-option"]')
   }
@@ -20,6 +30,14 @@ class MultipleChoiceWithOtherPage extends QuestionPage {
     return this
   }
 
+  getOtherInputField() {
+    return browser.element('[data-qa="other-option"]').getValue()
+  }
+
+  clickTopprevious() {
+    browser.element('a[id="top-previous"]').click()
+    return this
+  }
 }
 
 export default MultipleChoiceWithOtherPage

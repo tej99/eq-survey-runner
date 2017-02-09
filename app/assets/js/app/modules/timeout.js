@@ -14,6 +14,7 @@ let timeEl, circle, timeText, continueBtn, saveBtn
 const getTimeLeft = () => (sessionTimeout - timeLimit)
 
 let timeLeft
+let continueRetries = 5
 
 const handleContinue = (e) => {
   e.preventDefault()
@@ -23,9 +24,17 @@ const handleContinue = (e) => {
     dialog.hide()
     timeLeft = timeLimit
     continueBtn.classList.remove('is-loading')
+    continueRetries = 5
   }).catch(() => {
-    console.log('eerrrooorrr')
-    continueBtn.classList.remove('is-loading')
+    // if error retry 5 times
+    if (continueRetries-- > 0) {
+      window.setTimeout(() => {
+        handleContinue(e)
+      }, 1000)
+    } else {
+      continueBtn.classList.remove('is-loading')
+      continueRetries = 5
+    }
   })
 }
 

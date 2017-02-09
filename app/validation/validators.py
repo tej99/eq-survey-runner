@@ -59,10 +59,14 @@ class OptionalForm(object):
         empty_form = True
 
         for formfield in form:
+            has_raw_data = hasattr(formfield, 'raw_data')
+
+            is_empty = has_raw_data and len(formfield.raw_data) == 0
+            is_blank = has_raw_data and len(formfield.raw_data) >= 1 \
+                and isinstance(formfield.raw_data[0], string_types) and not formfield.raw_data[0]
+
             # By default we'll receive empty arrays for values not posted, so need to allow empty lists
-            empty_field = hasattr(formfield, 'raw_data') and \
-                          (True if len(formfield.raw_data) == 0 else
-                           isinstance(formfield.raw_data[0], string_types) and not formfield.raw_data[0])
+            empty_field = True if is_empty else is_blank
 
             empty_form &= empty_field
 

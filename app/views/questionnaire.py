@@ -53,6 +53,7 @@ def check_survey_state():
     _check_same_survey(values['eq_id'], values['form_type'], values['collection_id'])
     session.permanent = True
 
+
 @questionnaire_blueprint.after_request
 def add_cache_control(response):
     response.cache_control.no_cache = True
@@ -291,7 +292,7 @@ def get_timout_continue():  # pylint: disable=unused-argument
 @questionnaire_blueprint.route('session-expired', methods=["GET"])
 @login_required
 def get_session_expired(eq_id, form_type, collection_id):  # pylint: disable=unused-argument
-    signed_out_page = _render_template(get_questionnaire_manager(g.schema, g.schema_json), block_id='session-expired')
+    signed_out_page = _render_template({}, block_id='session-expired')
     session_storage.clear()
     return signed_out_page
 
@@ -507,6 +508,11 @@ def _render_template(context, block_id, front_end_navigation=None, metadata_cont
     theme = g.schema_json.get('theme', None)
     logger.debug("theme selected", theme=theme)
     session_timeout = settings.EQ_SESSION_TIMEOUT - settings.EQ_SESSION_TIMEOUT_GRACE_PERIOD
+    expired_url = url_for('questionnaire.get_session_expired',
+                          collection_id=metadata_context['survey']['collection_id'],
+                          eq_id = metadata_context['survey']['eq_id'],
+                          form_type = metadata_context['survey']['form_type']) \
+        if metadata_context is not None else None
     template = '{}.html'.format(template or block_id)
     return render_theme_template(theme, template,
                                  meta=metadata_context,
@@ -517,4 +523,5 @@ def _render_template(context, block_id, front_end_navigation=None, metadata_cont
                                  schema_title=g.schema_json['title'],
                                  legal_basis=g.schema_json['legal_basis'],
                                  survey_id=g.schema_json['survey_id'],
-                                 session_timeout=session_timeout)
+                                 session_timeout=session_timeout,
+                                 expired_url=expired_url)

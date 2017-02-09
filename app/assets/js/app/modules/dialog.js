@@ -1,4 +1,3 @@
-import domready from './domready'
 import A11yDialog from 'a11y-dialog'
 
 let a11ydialog

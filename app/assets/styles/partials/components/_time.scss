@@ -1,26 +1,5 @@
-@keyframes pulse {
-  from {
-    transform: scale3d(1, 1, 1);
-  }
-
-  50% {
-    transform: scale3d(1.2, 1.2, 1.2);
-  }
-
-  to {
-    transform: scale3d(1, 1, 1);
-  }
-}
-
 .time {
   position: relative;
-  &.is-warning {
-    animation: pulse 3s ease-out;
-    animation-iteration-count: infinite;
-  }
-  &.is-finished {
-    animation: none;
-  }
 }
 
 .time__visual {

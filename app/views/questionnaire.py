@@ -510,13 +510,13 @@ def _render_template(context, block_id, front_end_navigation=None, metadata_cont
     session_timeout = settings.EQ_SESSION_TIMEOUT - settings.EQ_SESSION_TIMEOUT_GRACE_PERIOD
     expired_url = url_for('questionnaire.get_session_expired',
                           collection_id=metadata_context['survey']['collection_id'],
-                          eq_id = metadata_context['survey']['eq_id'],
-                          form_type = metadata_context['survey']['form_type']) \
+                          eq_id=metadata_context['survey']['eq_id'],
+                          form_type=metadata_context['survey']['form_type']) \
         if metadata_context is not None else None
     timeout_continue_url = url_for('questionnaire.get_timeout_continue',
-                          collection_id=metadata_context['survey']['collection_id'],
-                          eq_id = metadata_context['survey']['eq_id'],
-                          form_type = metadata_context['survey']['form_type']) \
+                                   collection_id=metadata_context['survey']['collection_id'],
+                                   eq_id=metadata_context['survey']['eq_id'],
+                                   form_type=metadata_context['survey']['form_type']) \
         if metadata_context is not None else None
     template = '{}.html'.format(template or block_id)
     return render_theme_template(theme, template,

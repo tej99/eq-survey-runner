@@ -48,6 +48,29 @@ export default function initAnalytics() {
       trigger.addEventListener('click', onClick)
     }
   })
+  const previousLinks = document.querySelectorAll('.js-previous-link')
+  forEach(previousLinks, previousLink => {
+    const onClick = e => {
+      const triggerData = {
+        hitType: 'event',
+        eventCategory: 'Navigation',
+        eventAction: 'previous-link'
+      }
+      trackEvent('send', triggerData)
+    }
+    previousLink.addEventListener('click', onClick)
+  })
+  const helpAndSupport = document.querySelector('.js-previous-link')
+  if (helpAndSupport) {
+    helpAndSupport.addEventListener('click', (e) => {
+      const triggerData = {
+        hitType: 'event',
+        eventCategory: 'Navigation',
+        eventAction: 'help-and-support'
+      }
+      trackEvent('send', triggerData)
+    })
+  }
 }
 
 domready(initAnalytics)

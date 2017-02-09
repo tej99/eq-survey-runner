@@ -93,8 +93,23 @@ def generate_form(block_json, data, error_messages):
         setattr(QuestionnaireForm, answer_id, field)
 
     if data:
-        form = QuestionnaireForm(MultiDict(data), meta={'csrf': False})
+        form_data = MultiDict(data)
+        clear_other_text_field(block_json, data, form_data)
+
+        form = QuestionnaireForm(form_data, meta={'csrf': False})
     else:
         form = QuestionnaireForm(meta={'csrf': False})
 
     return form
+
+
+def clear_other_text_field(block_json, data, form_data):
+    for question in SchemaHelper.get_questions_for_block(block_json):
+        for answer in question['answers']:
+            if 'parent_answer_id' in answer and \
+                    answer['parent_answer_id'] in data and \
+                    'Other' not in form_data.getlist(answer['parent_answer_id']) and \
+                    form_data.get(answer['id']) is not None and \
+                    form_data.get(answer['id']) != '':
+
+                form_data[answer['id']] = ''

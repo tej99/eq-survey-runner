@@ -75,6 +75,8 @@ class OptionalForm(object):
 
 
 class DateRequired(object):
+    field_flags = ('required', )
+
     def __init__(self, message=None):
         if not message:
             message = error_messages['MANDATORY']

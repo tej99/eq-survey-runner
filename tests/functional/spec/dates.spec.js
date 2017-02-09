@@ -171,7 +171,6 @@ describe('Date checks', function() {
       })
 
       it('Given the test_dates survey is selected when a partially completed optional date is submitted, an error is shown', function() {
-
             // Given the test_dates survey is selected
             startQuestionnaire('test_dates.json')
 
@@ -192,6 +191,40 @@ describe('Date checks', function() {
             DatesPage.setNonMandatoryDateAnswerDay(1)
                      .setNonMandatoryDateAnswerMonth(10)
                      .submit()
+            // Then
+            expect(DatesPage.getAlertText()).to.contain('The date entered is not valid. Please correct your answer.')
+      })
+
+      it('Given a optional date is successfully submitted, when the date is edited, it should then be possible to select an empty month', function() {
+            // Given the test_dates survey is selected
+            startQuestionnaire('test_dates.json')
+
+            // Setup the mandatory stuff
+            DatesPage.setFromReportingPeriodDay(1)
+              .setFromReportingPeriodMonth(1)
+              .setFromReportingPeriodYear(2016)
+              .setToReportingPeriodDay(3)
+              .setToReportingPeriodMonth(1)
+              .setToReportingPeriodYear(2017)
+              .setMonthYearMonth(6)
+              .setMonthYearYear(2018)
+              .setDateOfBirthDay(4)
+              .setDateOfBirthMonth(1)
+              .setDateOfBirthYear(1999)
+
+            DatesPage.setNonMandatoryDateAnswerDay(12)
+              .setNonMandatoryDateAnswerMonth(1)
+              .setNonMandatoryDateAnswerYear(2016)
+              .submit()
+
+            expect(SummaryPage.getDateRangeSummary()).to.contain('01 January 2016 to 03 January 2017')
+            expect(SummaryPage.getMonthYearDateSummary()).to.contain('June 2018')
+
+            // When
+            SummaryPage.editNonMandatoryDate()
+
+            DatesPage.setNonMandatoryDateAnswerMonth('')
+              .submit()
 
             // Then
             expect(DatesPage.getAlertText()).to.contain('The date entered is not valid. Please correct your answer.')

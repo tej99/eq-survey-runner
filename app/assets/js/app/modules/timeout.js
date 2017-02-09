@@ -3,34 +3,51 @@ import dialog from './dialog'
 import fetch from './fetch'
 import { padStart } from 'lodash'
 
-const sessionTimeout = window.__EQ_SESSION_TIMEOUT__ || 10000
-const timeLimit = 90 // seconds
+const sessionTimeout = 220 || window.__EQ_SESSION_TIMEOUT__ || 10000
+const timeLimit = window.__EQ_SESSION_TIMEOUT_PROMPT__ || 120 // seconds
+const sessionExpiredUrl = window.__EQ_SESSION_TIMEOUT_REDIRECT__ || '/'
 const magicRadius = 57.5 // magic number
+
+// DOM elements
+let timeEl, circle, timeText, continueBtn, saveBtn
 
 const getTimeLeft = () => (sessionTimeout - timeLimit)
 
 let timeLeft
 
-const handleContinue = () => {
+const handleContinue = (e) => {
+  e.preventDefault()
+  continueBtn.classList.add('is-loading')
   fetch('/timeout-continue')
   .then(() => {
     dialog.hide()
     timeLeft = timeLimit
+    continueBtn.classList.remove('is-loading')
   }).catch(() => {
     console.log('eerrrooorrr')
+    continueBtn.classList.remove('is-loading')
   })
 }
 
-domready(() => {
-  const timeEl = document.querySelector('.js-timeout')
-  const circle = document.querySelector('.js-timeout-circle')
-  const timeText = document.querySelector('.js-timeout-time')
-  const continueBtn = document.querySelector('.js-timeout-continue')
+const handleSave = (e) => {
+  e.preventDefault()
+  document.querySelector('.js-btn-save').click()
+  return false
+}
 
-  if (!timeEl) return
+domready(() => {
+  timeEl = document.querySelector('.js-timeout')
+  circle = document.querySelector('.js-timeout-circle')
+  timeText = document.querySelector('.js-timeout-time')
+  continueBtn = document.querySelector('.js-timeout-continue')
+  saveBtn = document.querySelector('.js-timeout-save')
+
+  // bail if there's no timeout or the DOM elements aren't there
+  if (!timeEl || !sessionTimeout) return
 
   timeLeft = getTimeLeft()
 
+  // intercept and override ESC key closing dialog
   document.addEventListener('keydown', (e) => {
     if (e.which === 27) { // ESC Key
       e.preventDefault()
@@ -40,6 +57,7 @@ domready(() => {
   }, false)
 
   continueBtn.addEventListener('click', handleContinue)
+  saveBtn.addEventListener('click', handleSave)
 
   // must be initialised after the keydown listener
   dialog.init()
@@ -64,11 +82,9 @@ domready(() => {
     }
 
     if (time < 1) {
-      timeEl.classList.add('is-finished')
       window.clearInterval(t)
+      window.location = sessionExpiredUrl
     }
-
-    if (timeLeft === 118) dialog.show()
 
     if (angle > stroke) {
       // adjust for stroke, but add a couple of px to account for stroke radius
@@ -78,6 +94,11 @@ domready(() => {
   }
 
   const t = window.setInterval(() => {
-    setTime(timeLeft--)
+    timeLeft--
+    console.log(timeLeft, timeLimit)
+    if (timeLeft <= timeLimit) {
+      setTime(timeLeft)
+      dialog.show()
+    }
   }, 1000)
 })

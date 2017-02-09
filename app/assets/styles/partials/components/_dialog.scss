@@ -2,6 +2,13 @@
   display: none;
 }
 
+.dialog__title {
+  padding: 0.5rem 1rem;
+  &:focus {
+    outline: none;
+  }
+}
+
 .dialog__overlay {
   z-index: 2;
   background-color: rgba(0, 0, 0, 0.66);
@@ -19,10 +26,10 @@
 
 .dialog__body {
   text-align: center;
-  padding: 3rem 6rem 4rem;
+  padding: 3rem 4rem 4rem;
   background-color: $color-white;
   max-width: 90%;
-  width: 600px;
+  width: 32rem;
   border-radius: 3px;
   z-index: 3;
   position: fixed;

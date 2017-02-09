@@ -12,7 +12,6 @@
     <meta content="" name="description">
     <meta content="width=device-width, initial-scale=1" name="viewport">
     <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.ico') }}">
-    <script>window.__EQ_SESSION_TIMEOUT__ = {{ session_timeout }}</script>
     <!--[if lt IE 9]>
       <script src="{{ url_for('static', filename='js/vendor/html5shiv.min.js') }}"></script>
     <![endif]-->
@@ -35,6 +34,14 @@
     {% endblock styles -%}
     {% endblock head -%}
     {{ analytics }}
+    <script>
+      window.__EQ_SESSION_TIMEOUT__ = {{ session_timeout|default('null') }};
+    </script>
+    {% if meta %}
+      <script>
+        window.__EQ_SESSION_TIMEOUT_REDIRECT__ = '{{ url_for('questionnaire.get_session_expired', collection_id=meta['survey']['collection_id'], eq_id=meta['survey']['eq_id'], form_type=meta['survey']['form_type'])|default(null)}}'
+      </script>
+    {% endif %}
   </head>
 
   <body>

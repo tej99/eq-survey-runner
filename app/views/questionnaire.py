@@ -285,7 +285,7 @@ def get_sign_out(eq_id, form_type, collection_id):  # pylint: disable=unused-arg
 
 
 @questionnaire_blueprint.route('timeout-continue', methods=["GET"])
-def get_timout_continue():  # pylint: disable=unused-argument
+def get_timeout_continue():  # pylint: disable=unused-argument
     return 'true'
 
 
@@ -513,6 +513,11 @@ def _render_template(context, block_id, front_end_navigation=None, metadata_cont
                           eq_id = metadata_context['survey']['eq_id'],
                           form_type = metadata_context['survey']['form_type']) \
         if metadata_context is not None else None
+    timeout_continue_url = url_for('questionnaire.get_timeout_continue',
+                          collection_id=metadata_context['survey']['collection_id'],
+                          eq_id = metadata_context['survey']['eq_id'],
+                          form_type = metadata_context['survey']['form_type']) \
+        if metadata_context is not None else None
     template = '{}.html'.format(template or block_id)
     return render_theme_template(theme, template,
                                  meta=metadata_context,
@@ -524,4 +529,5 @@ def _render_template(context, block_id, front_end_navigation=None, metadata_cont
                                  legal_basis=g.schema_json['legal_basis'],
                                  survey_id=g.schema_json['survey_id'],
                                  session_timeout=session_timeout,
-                                 expired_url=expired_url)
+                                 expired_url=expired_url,
+                                 timeout_continue_url=timeout_continue_url)

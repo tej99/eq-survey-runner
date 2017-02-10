@@ -29,13 +29,13 @@ const handleContinue = (e) => {
     continueRetryCount = continueRetryLimit
   }).catch(() => {
     // if error retry 5 times
-    console.log(continueRetryCount);
+    console.log(continueRetryCount)
     if (continueRetryCount-- > 0) {
       window.setTimeout(() => {
         handleContinue(e)
       }, 1000)
     } else {
-      console.log('else');
+      console.log('else')
       continueBtn.classList.remove('is-loading')
       continueRetryCount = continueRetryLimit
     }

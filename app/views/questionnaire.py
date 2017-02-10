@@ -285,7 +285,7 @@ def get_sign_out(eq_id, form_type, collection_id):  # pylint: disable=unused-arg
 
 
 @questionnaire_blueprint.route('timeout-continue', methods=["GET"])
-def get_timeout_continue():  # pylint: disable=unused-argument
+def get_timeout_continue(eq_id, form_type, collection_id):  # pylint: disable=unused-argument
     return 'true'
 
 

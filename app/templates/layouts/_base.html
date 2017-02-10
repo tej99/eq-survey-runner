@@ -36,12 +36,9 @@
     {{ analytics }}
     <script>
       window.__EQ_SESSION_TIMEOUT__ = {{ session_timeout|default('null') }};
+      window.__EQ_SESSION_CONTINUE_URL__ = '{{ timeout_continue_url|default('null') }}';
+      window.__EQ_SESSION_EXPIRED_URL__ = '{{ expired_url|default('null') }}';
     </script>
-    {% if meta %}
-      <script>
-        window.__EQ_SESSION_TIMEOUT_REDIRECT__ = '{{ url_for('questionnaire.get_session_expired', collection_id=meta['survey']['collection_id'], eq_id=meta['survey']['eq_id'], form_type=meta['survey']['form_type'])|default(null)}}'
-      </script>
-    {% endif %}
   </head>
 
   <body>

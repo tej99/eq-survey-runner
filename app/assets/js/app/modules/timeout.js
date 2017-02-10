@@ -5,7 +5,8 @@ import { padStart } from 'lodash'
 
 const sessionTimeout = 220 || window.__EQ_SESSION_TIMEOUT__ || 10000
 const timeLimit = window.__EQ_SESSION_TIMEOUT_PROMPT__ || 120 // seconds
-const sessionExpiredUrl = window.__EQ_SESSION_TIMEOUT_REDIRECT__ || '/'
+const sessionExpiredUrl = window.__EQ_SESSION_EXPIRED_URL__
+const sessionContinueUrl = window.__EQ_SESSION_CONTINUE_URL__
 const magicRadius = 57.5 // magic number
 
 // DOM elements
@@ -14,26 +15,29 @@ let timeEl, circle, timeText, continueBtn, saveBtn
 const getTimeLeft = () => (sessionTimeout - timeLimit)
 
 let timeLeft
-let continueRetries = 5
+const continueRetryLimit = 5
+let continueRetryCount = continueRetryLimit
 
 const handleContinue = (e) => {
   e.preventDefault()
   continueBtn.classList.add('is-loading')
-  fetch('/timeout-continue')
+  fetch(sessionContinueUrl)
   .then(() => {
     dialog.hide()
     timeLeft = timeLimit
     continueBtn.classList.remove('is-loading')
-    continueRetries = 5
+    continueRetryCount = continueRetryLimit
   }).catch(() => {
     // if error retry 5 times
-    if (continueRetries-- > 0) {
+    console.log(continueRetryCount);
+    if (continueRetryCount-- > 0) {
       window.setTimeout(() => {
         handleContinue(e)
       }, 1000)
     } else {
+      console.log('else');
       continueBtn.classList.remove('is-loading')
-      continueRetries = 5
+      continueRetryCount = continueRetryLimit
     }
   })
 }
@@ -61,7 +65,7 @@ domready(() => {
     if (e.which === 27) { // ESC Key
       e.preventDefault()
       e.stopImmediatePropagation()
-      handleContinue()
+      handleContinue(e)
     }
   }, false)
 
@@ -92,7 +96,7 @@ domready(() => {
 
     if (time < 1) {
       window.clearInterval(t)
-      window.location = sessionExpiredUrl
+      // window.location = sessionExpiredUrl
     }
 
     if (angle > stroke) {

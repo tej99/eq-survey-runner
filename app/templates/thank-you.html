@@ -26,5 +26,13 @@
     <p class="u-mb-m@s mars"><a href="https://www.ons.gov.uk/surveys">https://www.ons.gov.uk/surveys</a></p>
     <p class="mars">It is now safe to close this window.</p>
   </div>
+  <div class="u-mt-s">
+    <p class="mars">If you would like to leave feedback on the survey, please click on the button below</p>
+  </div>
 
+{% if feedback_enable%}
+<form action="/feedback" method="GET" novalidate>
+  <button class="btn btn--primary btn--lg u-mr-s qa-btn-get-started venus" type="submit" id="feedbackButton" >Feedback form</button>
+</form>
+{% endif %}
 {% endblock %}

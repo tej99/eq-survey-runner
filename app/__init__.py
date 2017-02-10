@@ -198,6 +198,9 @@ def add_blueprints(application):
     from app.jinja_filters import blueprint as filter_blueprint
     application.register_blueprint(filter_blueprint)
 
+    from app.views.feedback import feedback_blueprint
+    application.register_blueprint(feedback_blueprint)
+
 
 def setup_secure_cookies(application):
     application.secret_key = settings.EQ_SECRET_KEY

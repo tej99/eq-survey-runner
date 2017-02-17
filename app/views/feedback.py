@@ -39,6 +39,9 @@ def get_feedback():
                 'survey_type': survey_type,
                 'satisfaction': satisfaction,
                 'comment': comment,
+                'survey_id':'feedback',
+                "collection": {
+                "instrument_id": "1"},
             }
 
             submitter = SubmitterFactory.get_submitter()

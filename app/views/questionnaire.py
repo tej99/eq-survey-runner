@@ -273,9 +273,9 @@ def get_thank_you(eq_id, form_type, collection_id):  # pylint: disable=unused-ar
     thank_you_page = _build_template(current_location=current_location)
     # Delete user data on request of thank you page.
     _delete_user_data()
-    if settings.FEEDBACK_ENABLE:
-            session['feedback'] = True
-            session['form_type'] = form_type
+    if settings.FEEDBACK_ENABLED_ALL or form_type in settings.FEEDBACK_ENABLED_FOR:
+        session['feedback'] = True
+        session['form_type'] = form_type
     return thank_you_page
 
 
@@ -498,6 +498,9 @@ def _render_template(context, block_id, front_end_navigation=None, metadata_cont
     theme = g.schema_json.get('theme', None)
     logger.debug("theme selected", theme=theme)
     template = '{}.html'.format(template or block_id)
+    feedback_enable = False
+    if settings.FEEDBACK_ENABLED_ALL or request.view_args['form_type'] in settings.FEEDBACK_ENABLED_FOR:
+        feedback_enable = True
     return render_theme_template(theme, template,
                                  meta=metadata_context,
                                  content=context,
@@ -507,4 +510,4 @@ def _render_template(context, block_id, front_end_navigation=None, metadata_cont
                                  schema_title=g.schema_json['title'],
                                  legal_basis=g.schema_json['legal_basis'],
                                  survey_id=g.schema_json['survey_id'],
-                                 feedback_enable=settings.FEEDBACK_ENABLE,)
+                                 feedback_enable=feedback_enable,)

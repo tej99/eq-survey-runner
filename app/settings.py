@@ -102,7 +102,3 @@ EQ_JWT_LEEWAY_IN_SECONDS = 120
 
 FEEDBACK_ENABLED_ALL = parse_mode(os.getenv("FEEDBACK_ENABLED_ALL", "False"))
 FEEDBACK_ENABLED_FOR = os.getenv("FEEDBACK_ENABLED_FOR", "rogue_one, 0205, 0203")
-
-#have envvairble where all survey_types are entered as string with commas
-#THEN IN QUESTIONAIRE.PY JUST CHECK THE STRING IF THE SURVEYTYE IS INSIDE IT
-#need to find a way to put it in the render so html knows whether to show it or not
